@@ -1,0 +1,16 @@
+execute_process(
+  COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
+  OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+# Get numpy header directory
+execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from numpy import get_include; print(get_include())"
+  OUTPUT_VARIABLE NUMPY_HEADER_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+INCLUDE_DIRECTORIES(${NUMPY_HEADER_DIR})
+
+SET(CMAKE_SWIG_FLAGS "")
+
+SET_SOURCE_FILES_PROPERTIES(wt.i PROPERTIES CPLUSPLUS ON)
+SET_SOURCE_FILES_PROPERTIES(wt.i PROPERTIES SWIG_FLAGS "-includeall")
+
+SWIG_ADD_MODULE(pywt python wt.i)
+SWIG_LINK_LIBRARIES(pywt ${PYTHON_LIBRARIES} wt)
