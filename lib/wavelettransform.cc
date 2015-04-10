@@ -25,19 +25,19 @@ WaveletTransform::init_trafo()
   // Determine kernel size for every scale and round up to next integer for which the FFT can
   // be computed fast. Also group the resulting kernel lengths
   std::list< std::pair<size_t, std::list<double> > > kernelSizes;
-  for (size_t i=0; i<_scales.size(); i++) {
-    size_t kernelSize = FFT::roundUp(_scales[i]*_wavelet.timeWidth());
+  for (size_t j=0; j<_scales.size(); j++) {
+    size_t kernelSize = FFT::roundUp(std::ceil(_scales[j]*_wavelet.timeWidth()));
     if (0 == kernelSizes.size()) {
       // If first scale -> add new kernel size group
       kernelSizes.push_back(
-            std::pair<size_t, std::list<double> >(kernelSize, std::list<double>(1, _scales[i])) );
+            std::pair<size_t, std::list<double> >(kernelSize, std::list<double>(1, _scales[j])) );
     } else if (kernelSizes.back().first == kernelSize) {
       // If kernel size matches the last group
-      kernelSizes.back().second.push_back( _scales[i] );
+      kernelSizes.back().second.push_back( _scales[j] );
     } else {
       // If kernel size does not match last group -> add new kernel size group
       kernelSizes.push_back(
-            std::pair<size_t, std::list<double> >(kernelSize, std::list<double>(1, _scales[i])) );
+            std::pair<size_t, std::list<double> >(kernelSize, std::list<double>(1, _scales[j])) );
     }
   }
 
@@ -51,7 +51,7 @@ WaveletTransform::init_trafo()
     std::list<double>::iterator scale = group->second.begin();
     for (size_t j=0; scale != group->second.end(); scale++, j++) {
       for (size_t i=0; i<N; i++) {
-        kernels(i,j) = _wavelet.eval( (double(i)-double(N)/2)/(*scale) )/(*scale);
+        kernels(i,j) = _wavelet.eval( (i-double(N)/2)/(*scale) )/( *scale );
       }
     }
     _filterBank.push_back(new Convolution(kernels));

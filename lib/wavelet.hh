@@ -104,6 +104,35 @@ protected:
   MorletObj *_morlet;
 };
 
+
+class CauchyObj: public WaveletObj
+{
+public:
+  CauchyObj(double alpha=1);
+  virtual ~CauchyObj();
+
+  virtual CScalar eval(const Scalar &t) const;
+  virtual double timeWidth() const;
+  virtual double specWidth() const;
+
+protected:
+  double _alpha;
+};
+
+class Cauchy: public Wavelet
+{
+public:
+  Cauchy(double alpha=1.0);
+  explicit Cauchy(CauchyObj *obj);
+  Cauchy(const Cauchy &other);
+  virtual ~Cauchy();
+
+  Cauchy &operator=(const Cauchy &other);
+
+protected:
+  CauchyObj *_cauchy;
+};
+
 }
 
 #endif // __WT_WAVELET_HH__

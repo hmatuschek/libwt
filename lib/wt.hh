@@ -6,5 +6,6 @@
 #include "types.hh"
 #include "wavelet.hh"
 #include "wavelettransform.hh"
+#include "waveletsynthesis.hh"
 
 #endif // __WT_HH__

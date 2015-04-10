@@ -70,12 +70,14 @@ MorletObj::eval(const Scalar &t) const {
 
 double
 MorletObj::timeWidth() const {
-  return 4*sqrt(_dff);
+  // 99% power at scale 1
+  return 6./sqrt(_dff);
 }
 
 double
 MorletObj::specWidth() const {
-  return 4/sqrt(_dff);
+  // 99% power at scale 1
+  return 6*sqrt(_dff);
 }
 
 
@@ -110,3 +112,67 @@ Morlet::operator =(const Morlet &other) {
   _morlet = other._morlet;
   return *this;
 }
+
+
+
+/* ******************************************************************************************** *
+ * Implementation of Couchy wavelet object
+ * ******************************************************************************************** */
+CauchyObj::CauchyObj(double alpha)
+  : WaveletObj(), _alpha(alpha)
+{
+  // pass...
+}
+
+CauchyObj::~CauchyObj() {
+  // pass...
+}
+
+CScalar
+CauchyObj::eval(const Scalar &t) const {
+  return std::pow(CScalar(1,-2*M_PI*t/_alpha), -1-_alpha);
+}
+
+Scalar
+CauchyObj::timeWidth() const {
+  double eps = 1e-3;
+  return ( _alpha*_alpha * ( std::pow(eps, -2. / (_alpha+1)) - 1) / ((2*M_PI)*(2*M_PI)) );
+}
+
+Scalar
+CauchyObj::specWidth() const {
+  double eps = 1e-3;
+  return 1./( _alpha*_alpha * ( std::pow(eps, -2. / (_alpha+1)) - 1) / ((2*M_PI)*(2*M_PI)) );
+}
+
+
+Cauchy::Cauchy(double alpha)
+  : Wavelet(new CauchyObj(alpha)), _cauchy(static_cast<CauchyObj *>(_wavelet))
+{
+  // pass...
+}
+
+Cauchy::Cauchy(CauchyObj *obj)
+  : Wavelet(obj), _cauchy(obj)
+{
+  // pass...
+}
+
+Cauchy::Cauchy(const Cauchy &other)
+  : Wavelet(other), _cauchy(other._cauchy)
+{
+  // pass...
+}
+
+Cauchy::~Cauchy() {
+  // pass...
+}
+
+Cauchy &
+Cauchy::operator=(const Cauchy &other) {
+  Wavelet::operator =(other);
+  _cauchy = other._cauchy;
+  return *this;
+}
+
+

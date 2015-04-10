@@ -18,14 +18,15 @@ namespace wt {
 class Convolution
 {
 public:
-  /** Constructor.
-   * @param kernels Specifies the kernels to use. */
+  /** Constructor. The complex matrix @c kernels specifies the convolution filters to be used.
+   * Every colum specifies a filter kernel. */
   Convolution(const CMatrix &kernels);
   /** Destructor. */
   virtual ~Convolution();
 
   /** Performs the convolution of the signal passed by @c signal with the kernels passed to the
-   * constructor. The results are stored in the columns of the array @c out. */
+   * constructor. The results are stored in the columns of the array @c out. Hence, given a
+   * signal with N samples and K kernels, the output must be pre-allocated as a NxK array/matrix. */
   template <class iDerived, class oDerived>
   void apply(const Eigen::DenseBase<iDerived> &signal, Eigen::DenseBase<oDerived> &out)
   {
@@ -118,6 +119,7 @@ public:
 
   /** Returns the length of the kernels. */
   inline size_t kernelLength() const { return this->_M; }
+  /** Returns the number of kernels. */
   inline size_t numKernels() const { return this->_K; }
 
 protected:
