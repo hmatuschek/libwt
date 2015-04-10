@@ -33,7 +33,7 @@ wtcli_transform(Opt::Parser &parser)
 
   RVector scales(nScales);
   double scale = minScale, ds = (maxScale-minScale)/nScales;
-  for (size_t i=0; i<nScales; i++, scale+=ds) { scales[i] = ds; }
+  for (size_t i=0; i<nScales; i++, scale+=ds) { scales[i] = scale; }
 
   // Read input
   RMatrix input;
