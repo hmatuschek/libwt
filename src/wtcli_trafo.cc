@@ -8,6 +8,10 @@
 
 using namespace wt;
 
+wt::Scalar angle(const wt::CScalar &a) {
+  return std::atan2(a.real(),a.imag());
+}
+
 
 int
 wtcli_transform(Opt::Parser &parser)
@@ -72,9 +76,29 @@ wtcli_transform(Opt::Parser &parser)
 
   // output result
   if (to_stdout) {
-    CSV::write(res.array().abs(), std::cout);
+    if (parser.has_flag("abs")) {
+      CSV::write(res.array().abs(), std::cout);
+    } else if (parser.has_flag("angle")) {
+      CSV::write(res.unaryExpr(std::ptr_fun(angle)), std::cout);
+    } else if (parser.has_flag("real")) {
+      CSV::write(res.real(), std::cout);
+    } else if (parser.has_flag("imag")) {
+      CSV::write(res.imag(), std::cout);
+    } else {
+      CSV::write(res, std::cout);
+    }
   } else {
-    CSV::write(res.array().abs(), outfile);
+    if (parser.has_flag("abs")) {
+      CSV::write(res.array().abs(), outfile);
+    } else if (parser.has_flag("angle")) {
+      CSV::write(res.unaryExpr(std::ptr_fun(angle)), outfile);
+    } else if (parser.has_flag("real")) {
+      CSV::write(res.real(), outfile);
+    } else if (parser.has_flag("angle")) {
+      CSV::write(res.imag(), outfile);
+    } else {
+      CSV::write(res, outfile);
+    }
     outfile.close();
   }
 

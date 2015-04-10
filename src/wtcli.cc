@@ -24,7 +24,12 @@ int main(int argc, char *argv[])
         parser.Option("scales"),
         ( parser.opt(parser.Option("column")),
           parser.Value("infile") ),
-        parser.Value("outfile"));
+        ( parser.opt(
+            parser.Flag("abs") |
+            parser.Flag("angle") |
+            parser.Flag("real") |
+            parser.Flag("imag") ),
+          parser.Value("outfile") ) );
   parser.setGrammar(
         (cmd_help | cmd_version | cmd_gen | cmd_trafo) );
 
