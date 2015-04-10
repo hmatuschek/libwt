@@ -1,5 +1,6 @@
 #include "fft_fftw3.hh"
 #include "exception.hh"
+#include <iostream>
 
 using namespace wt;
 
@@ -26,14 +27,14 @@ FFT::FFT(CVector &inout, Direction dir)
 FFT::FFT(CMatrix &in, CMatrix &out, Direction dir) {
   ASSERT_DIM_EQUAL(in.rows(), out.rows());
   ASSERT_DIM_EQUAL(in.cols(), out.cols());
-  int iRowStride = in.rowStride(), iColStride = in.colStride();
+  int iRowStride = in.rowStride(),  iColStride = in.colStride();
   int oRowStride = out.rowStride(), oColStride = out.colStride();
   int n[1] = { in.rows() };
   _plan = fftw_plan_many_dft(
         1, n, in.cols(),
         reinterpret_cast<fftw_complex *>(in.data()), 0, iRowStride, iColStride,
         reinterpret_cast<fftw_complex *>(out.data()), 0, oRowStride, oColStride,
-        (dir == FORWARD) ? FFTW_FORWARD : FFTW_BACKWARD, FFTW_ESTIMATE);
+        (FORWARD == dir) ? FFTW_FORWARD : FFTW_BACKWARD, FFTW_ESTIMATE);
 }
 
 FFT::FFT(CMatrix &inout, Direction dir) {

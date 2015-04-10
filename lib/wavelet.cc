@@ -65,7 +65,7 @@ MorletObj::~MorletObj() {
 
 CScalar
 MorletObj::eval(const Scalar &t) const {
-  return std::exp(CScalar(0, 2*M_PI*t))*std::exp(-t*t*_dff/2)*std::sqrt(_dff/(2*M_PI));
+  return std::exp(CScalar(-t*t*_dff/2.0, 2*M_PI*t))*std::sqrt(_dff/(2*M_PI));
 }
 
 double

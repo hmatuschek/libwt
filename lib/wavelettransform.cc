@@ -1,6 +1,5 @@
 #include "wavelettransform.hh"
 #include <algorithm>
-#include <iostream>
 
 using namespace wt;
 
@@ -55,8 +54,6 @@ WaveletTransform::init_trafo()
         kernels(i,j) = _wavelet.eval( (double(i)-double(N)/2)/(*scale) )/(*scale);
       }
     }
-    std::cerr << "Create convolution operator with block-size " << kernels.rows()
-              << " containing " << kernels.cols() << " kernels." << std::endl;
     _filterBank.push_back(new Convolution(kernels));
   }
 }

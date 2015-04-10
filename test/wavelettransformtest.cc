@@ -18,9 +18,9 @@ WaveletTransformTest::testTrafo() {
   wt(signal, transformed);
   for (size_t i=0; i<N; i++) {
     UT_ASSERT_NEAR_EPS(
-          transformed(i,0).real(), wt.wavelet().eval((double(i)-N/2)/100).real()/100, 1e-5);
+          transformed(i,0).real(), wt.wavelet().eval((double(i)-N/2)/100).real()/100, 1e-9);
     UT_ASSERT_NEAR_EPS(
-          transformed(i,0).imag(), wt.wavelet().eval((double(i)-N/2)/100).imag()/100, 1e-5);
+          transformed(i,0).imag(), wt.wavelet().eval((double(i)-N/2)/100).imag()/100, 1e-9);
   }
 }
 

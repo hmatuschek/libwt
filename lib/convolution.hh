@@ -27,7 +27,8 @@ public:
   /** Performs the convolution of the signal passed by @c signal with the kernels passed to the
    * constructor. The results are stored in the columns of the array @c out. */
   template <class iDerived, class oDerived>
-  void apply(const Eigen::DenseBase<iDerived> &signal, Eigen::DenseBase<oDerived> &out) {
+  void apply(const Eigen::DenseBase<iDerived> &signal, Eigen::DenseBase<oDerived> &out)
+  {
     // First, clear _lastRes matrix
     this->_lastRes.setConstant(0);
 
@@ -35,36 +36,83 @@ public:
      * Perform overlap-add FFT
      */
     size_t N = signal.size();
-    size_t steps = N/this->_M + ( (N%this->_M) ? 1 : 0 );
+    size_t steps = N/this->_M;
+    size_t rem   = N%this->_M;
+    size_t out_offset = 0;
+
+    // Compute the first complete steps
     for (size_t i=0; i<steps; i++) {
-      // Get the indices of the piece of the signal being processed [a,b), hence b-a is
-      // the length of the piece
-      size_t a = i*this->_M, b = std::min((i+1)*this->_M, N);
-      size_t n = b-a, pad = 2*this->_M-b+a;
-      // Store piece into forward trafo buffer
-      this->_part.block(0,0, n,1).noalias() = signal.block(a,0, n,1);
+      // Store piece into forward-trafo buffer
+      this->_part.head(this->_M).noalias() = signal.block(i*this->_M,0, _M,1);
       // 0-pad
-      this->_part.tail(pad).setConstant(CScalar(0));
+      this->_part.tail(this->_M).setConstant(0);
+
       // perform forward FFT
       this->_fwd.exec();
 
       // Multiply result of forward FFT of the signal piece with every (transformed) kernel
-      for (size_t j=0; j<_K; j++) {
+      for (size_t j=0; j<this->_K; j++) {
         this->_work.col(j).noalias() =
-            this->_part.cwiseProduct(this->_kernelF.col(j).conjugate());
+            this->_part.cwiseProduct(this->_kernelF.col(j));
       }
+
       // Peform backward trafo
       this->_rev.exec();
 
-      // Compute result of partial convolution and store it into the output buffer
-      out.block(a,0, n,this->_K).noalias() =
-          (this->_work.topLeftCorner(n,this->_K) +
-           this->_lastRes.topLeftCorner(n,this->_K))/(2*this->_M);
-
-      // Store remaining part for next step (if needed)
-      if ((i+1)<steps) {
-        this->_lastRes.noalias() = this->_work.block(this->_M,0, this->_M, this->_K);
+      /*
+       * Compute result of convolution and store it into the output buffer
+       */
+      if (0 == out_offset) { // first block
+        out.topRows(this->_M/2).noalias() =
+            ( ( this->_work.block(this->_M/2, 0, this->_M/2, this->_K)
+                + this->_lastRes.topRows(this->_M/2) )/(2*this->_M) );
+        out_offset += ( this->_M/2 );
+      } else { // intermediate blocks
+        out.block(out_offset, 0, this->_M, this->_K).noalias() =
+            ( ( this->_work.topRows(this->_M) + this->_lastRes)/(2*this->_M) );
+        out_offset += this->_M;
       }
+      // Store remaining part for next step unless we are at the last step
+      this->_lastRes.noalias() = this->_work.bottomRows(this->_M);
+    }
+
+    // Perform final step (if rem>0)
+    if (rem) {
+      // Store remaining samples
+      this->_part.head(rem).noalias() = signal.block(steps*this->_M,0, rem,1);
+      // 0-pad
+      this->_part.tail(2*this->_M-rem).setConstant(0);
+
+      // perform forward FFT
+      this->_fwd.exec();
+
+      // Multiply result of forward FFT of the signal piece with every (transformed) kernel
+      for (size_t j=0; j<this->_K; j++) {
+        this->_work.col(j).noalias() =
+            this->_part.cwiseProduct(this->_kernelF.col(j));
+      }
+
+      // Peform backward trafo
+      this->_rev.exec();
+
+      // store result if _M/2+rem < _M
+      if (this->_M >= (rem+this->_M/2)) {
+        out.block(out_offset, 0, rem+this->_M/2, this->_K).noalias() =
+            ( ( this->_work.topRows(rem+this->_M/2) +
+                this->_lastRes.topRows(rem+this->_M/2) ) / (2*this->_M) );
+      } else {
+        out.block(out_offset, 0, this->_M, this->_K).noalias() =
+            ( ( this->_work.topRows(this->_M) +
+                this->_lastRes.topRows(this->_M) ) / (2*this->_M) );
+        out_offset += this->_M;
+        size_t n = rem+this->_M/2-this->_M;
+        out.block(out_offset, 0, n, this->_K).noalias() =
+            (this->_work.block(this->_M, 0, n, this->_K) / (2*this->_M));
+      }
+    } else {
+      // store last _M/2 samples if rem==0
+      out.block(out_offset, 0, this->_M/2, this->_K).noalias() =
+          ( this->_work.block(this->_M-rem, 0, this->_M/2, this->_K) / (2*this->_M) );
     }
   }
 
