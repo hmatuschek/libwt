@@ -1,8 +1,7 @@
 #ifndef __WT_WAVELETSYNTHESIS_HH__
 #define __WT_WAVELETSYNTHESIS_HH__
 
-#include "types.hh"
-#include "wavelet.hh"
+#include "waveletanalysis.hh"
 #include "convolution.hh"
 #include <vector>
 
@@ -10,32 +9,19 @@
 namespace wt {
 
 /** Implements the wavelet synthesis, means the reconstruction of the signal from
- * a wavelet transformed. */
-class WaveletSynthesis
+ * a wavelet transformed.
+ * @ingroup analyses */
+class WaveletSynthesis: public WaveletAnalysis
 {
 public:
   /** Constructor. */
   WaveletSynthesis(const Wavelet &wavelet, const RVector &scales);
   /** Constructor using double pointers for the python/numpy interface. */
   WaveletSynthesis(const Wavelet &wavelet, double *scales, int Nscales);
+  /** Constructor from other wavelet analysis. */
+  WaveletSynthesis(const WaveletAnalysis &other);
   /** Destructor. */
   virtual ~WaveletSynthesis();
-
-  /** Returns the number of scales of this wavelet transform. */
-  inline size_t nScales() const { return _scales.size(); }
-
-  /** Returns the scales of the wavelet transform. */
-  inline const RVector &scales() const { return _scales; }
-
-  /** Returns the (the first @c Nscales) scales of the wavelet transform stored in @c outScales. */
-  inline void scales(double *outScales, int Nscales) {
-    for (int i=0; i<std::min(int(_scales.size()), Nscales); i++) {
-      outScales[i] = _scales(i);
-    }
-  }
-
-  /** Returns the wavelet instance of this transform. */
-  inline const Wavelet &wavelet() const { return _wavelet; }
 
   /** Performs the wavelet synthesis. */
   template <class iDerived, class oDerived>
@@ -63,10 +49,6 @@ protected:
   void init_synthesis();
 
 protected:
-  /** The (mother-) wavelet to of the transform. */
-  Wavelet _wavelet;
-  /** The scales (in samples) of the transform. */
-  RVector _scales;
   /** The list of convolution filters applied for the wavelet transform. */
   std::vector<Convolution *> _filterBank;
 };

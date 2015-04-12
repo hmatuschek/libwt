@@ -4,15 +4,20 @@
 using namespace wt;
 
 WaveletSynthesis::WaveletSynthesis(const Wavelet &wavelet, const RVector &scales)
-  : _wavelet(wavelet), _scales(scales), _filterBank()
+  : WaveletAnalysis(wavelet, scales), _filterBank()
 {
   init_synthesis();
 }
 
 WaveletSynthesis::WaveletSynthesis(const Wavelet &wavelet, double *scales, int Nscales)
-  : _wavelet(wavelet), _scales(Nscales), _filterBank()
+  : WaveletAnalysis(wavelet, scales, Nscales), _filterBank()
 {
-  for (int i=0; i<Nscales; i++) { _scales(i) = scales[i]; }
+  init_synthesis();
+}
+
+WaveletSynthesis::WaveletSynthesis(const WaveletAnalysis &other)
+  : WaveletAnalysis(other), _filterBank()
+{
   init_synthesis();
 }
 

@@ -7,7 +7,7 @@ using namespace wt;
 void
 WaveletTransformTest::testTrafo() {
   // Delta peak
-  size_t N=1024;
+  int N=1024;
   CVector signal = CVector::Zero(N); signal(N/2) = 1;
   // Perform WT of delta-peak on single scale
   //  -> evaluation of wavelet at that scale
@@ -16,11 +16,11 @@ WaveletTransformTest::testTrafo() {
 
   WaveletTransform wt(Morlet(), scales);
   wt(signal, transformed);
-  for (size_t i=0; i<N; i++) {
+  for (int i=0; i<N; i++) {
     UT_ASSERT_NEAR_EPS(
-          transformed(i,0).real(), wt.wavelet().evalAnalysis((double(i)-N/2)/100).real()/100, 1e-8);
+          transformed(i,0).real(), wt.wavelet().evalAnalysis(double(i-N/2)/100).real()/100, 1e-6);
     UT_ASSERT_NEAR_EPS(
-          transformed(i,0).imag(), wt.wavelet().evalAnalysis((double(i)-N/2)/100).imag()/100, 1e-8);
+          transformed(i,0).imag(), wt.wavelet().evalAnalysis(double(i-N/2)/100).imag()/100, 1e-6);
   }
 }
 

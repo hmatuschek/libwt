@@ -1,42 +1,26 @@
 #ifndef __WAVELETTRANSFORM_HH__
 #define __WAVELETTRANSFORM_HH__
 
-#include "types.hh"
-#include "wavelet.hh"
+#include "waveletanalysis.hh"
 #include "convolution.hh"
 #include <list>
 
 
 namespace wt {
 
-/** Implements a complex, continious wavelet transform (i.e. \cite<{Holscheinder1995}). */
-class WaveletTransform
+/** Implements a complex, continious wavelet transform (i.e. \cite Holschneider1998).
+ * @ingroup analyses */
+class WaveletTransform: public WaveletAnalysis
 {
 public:
   /** Constructs a wavelet transform from the given @c wavelet at the specified @c scales. */
   WaveletTransform(const Wavelet &wavelet, const RVector &scales);
-
   /** Constructs a wavelet transform from the given @c wavelet at the specified @c scales. */
   WaveletTransform(const Wavelet &wavelet, double *scales, int Nscales);
-
+  /** Constructor from other wavelet analysis. */
+  WaveletTransform(const WaveletAnalysis &other);
   /** Destructor. */
   virtual ~WaveletTransform();
-
-  /** Returns the number of scales of this wavelet transform. */
-  inline size_t nScales() const { return _scales.size(); }
-
-  /** Returns the scales of the wavelet transform. */
-  inline const RVector &scales() const { return _scales; }
-
-  /** Returns the (the first @c Nscales) scales of the wavelet transform stored in @c outScales. */
-  inline void scales(double *outScales, int Nscales) {
-    for (int i=0; i<std::min(int(_scales.size()), Nscales); i++) {
-      outScales[i] = _scales(i);
-    }
-  }
-
-  /** Returns the wavelet instance of this transform. */
-  inline const Wavelet &wavelet() const { return _wavelet; }
 
   /** Performs the wavelet transform on the given @c signal and stores the result into the given
    * @c out matrix. The wavelet transformed for the j-th scale is stored in the j-th column
@@ -56,10 +40,6 @@ protected:
   void init_trafo();
 
 protected:
-  /** The (mother-) wavelet to of the transform. */
-  Wavelet _wavelet;
-  /** The scales (in samples) of the transform. */
-  RVector _scales;
   /** The list of convolution filters applied for the wavelet transform. */
   std::list<Convolution *> _filterBank;
 };

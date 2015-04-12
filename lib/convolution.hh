@@ -6,7 +6,7 @@
 
 namespace wt {
 
-/** Implements the overlap-add covolution\cite{Smith2015} of a signal with several filter kernels
+/** Implements the overlap-add covolution\cite Smith2012 of a signal with several filter kernels
  * of the same size, each being shorter that the signal.
  *
  * As all kernels share the same size, hence the forward FFT of a piece of the input signal must
@@ -44,7 +44,8 @@ public:
     // Compute the first complete steps
     for (size_t i=0; i<steps; i++) {
       // Store piece into forward-trafo buffer
-      this->_part.head(this->_M).noalias() = signal.block(i*this->_M,0, _M,1);
+      this->_part.head(this->_M).noalias() =
+          signal.block(i*this->_M,0, _M,1).template cast<CScalar>();
       // 0-pad
       this->_part.tail(this->_M).setConstant(0);
 

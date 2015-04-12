@@ -10,12 +10,15 @@ namespace wt {
 class Error: public std::exception, public std::stringstream
 {
 public:
+  /** Empty constructor. */
   Error();
+  /** Constructor with message. */
   Error(const std::string &msg);
+  /** Copy constructor. */
   Error(const Error &other);
-
+  /** Destructor. */
   virtual ~Error() throw();
-
+  /** Returns the message of the exception. */
   virtual const char *what() const throw();
 };
 
