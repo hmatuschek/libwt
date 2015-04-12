@@ -7,7 +7,11 @@ using namespace wt;
 
 FFT::FFT(CVector &in, CVector &out, Direction dir)
 {
-  ASSERT_DIM_EQUAL(in.rows(), out.rows())
+  if (in.rows() != out.rows()) {
+    Error err;
+    err << __FILE__ << " @" << __LINE__
+        << "Dimension mismatch";
+  }
   _plan = fftw_plan_dft_1d(
         in.rows(),
         reinterpret_cast<fftw_complex *>(in.data()),
@@ -25,8 +29,17 @@ FFT::FFT(CVector &inout, Direction dir)
 }
 
 FFT::FFT(CMatrix &in, CMatrix &out, Direction dir) {
-  ASSERT_DIM_EQUAL(in.rows(), out.rows());
-  ASSERT_DIM_EQUAL(in.cols(), out.cols());
+  if (in.rows() != out.rows()) {
+    Error err;
+    err << __FILE__ << " @" << __LINE__
+        << "Dimension mismatch";
+  }
+  if (in.cols() != out.cols()) {
+    Error err;
+    err << __FILE__ << " @" << __LINE__
+        << "Dimension mismatch";
+  }
+
   int iRowStride = in.rowStride(),  iColStride = in.colStride();
   int oRowStride = out.rowStride(), oColStride = out.colStride();
   int n[1] = { in.rows() };

@@ -64,8 +64,13 @@ MorletObj::~MorletObj() {
 }
 
 CScalar
-MorletObj::eval(const Scalar &t) const {
-  return std::exp(CScalar(-t*t*_dff/2.0, 2*M_PI*t))*std::sqrt(_dff/(2*M_PI));
+MorletObj::evalAnalysis(const Scalar &t) const {
+  return std::exp(CScalar(-t*t*_dff, 2*M_PI*t))*std::sqrt(_dff/(2*M_PI));
+}
+
+CScalar
+MorletObj::evalSynthesis(const Scalar &t) const {
+  return this->evalAnalysis(t);
 }
 
 double
@@ -121,7 +126,9 @@ Morlet::operator =(const Morlet &other) {
 CauchyObj::CauchyObj(double alpha)
   : WaveletObj(), _alpha(alpha)
 {
-  // pass...
+  // Compute normalization constant
+  _norm = _alpha*exp(
+        std::log(std::sqrt(M_PI)) + std::lgamma(_alpha+0.5) - std::lgamma(_alpha+1))/(2*M_PI);
 }
 
 CauchyObj::~CauchyObj() {
@@ -129,8 +136,13 @@ CauchyObj::~CauchyObj() {
 }
 
 CScalar
-CauchyObj::eval(const Scalar &t) const {
-  return std::pow(CScalar(1,-2*M_PI*t/_alpha), -1-_alpha);
+CauchyObj::evalAnalysis(const Scalar &t) const {
+  return std::pow(CScalar(1,-2*M_PI*t/_alpha), -1-_alpha)/_norm;
+}
+
+CScalar
+CauchyObj::evalSynthesis(const Scalar &t) const {
+  return this->evalAnalysis(t);
 }
 
 Scalar

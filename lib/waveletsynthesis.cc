@@ -6,18 +6,18 @@ using namespace wt;
 WaveletSynthesis::WaveletSynthesis(const Wavelet &wavelet, const RVector &scales)
   : _wavelet(wavelet), _scales(scales), _filterBank()
 {
-  init_trafo();
+  init_synthesis();
 }
 
 WaveletSynthesis::WaveletSynthesis(const Wavelet &wavelet, double *scales, int Nscales)
   : _wavelet(wavelet), _scales(Nscales), _filterBank()
 {
   for (int i=0; i<Nscales; i++) { _scales(i) = scales[i]; }
-  init_trafo();
+  init_synthesis();
 }
 
 void
-WaveletSynthesis::init_trafo()
+WaveletSynthesis::init_synthesis()
 {
   // Sort scales (ascending order)
   std::sort(_scales.derived().data(), _scales.derived().data()+_scales.size());
@@ -30,7 +30,7 @@ WaveletSynthesis::init_trafo()
     size_t N = FFT::roundUp(std::ceil(_scales[j]*_wavelet.timeWidth()));
     CVector kernel(N);
     for (size_t i=0; i<N; i++) {
-      kernel(i) = (_wavelet.eval((i-double(N)/2)/_scales[j])/(_scales[j]*_scales[j]));
+      kernel(i) = (_wavelet.evalSynthesis((i-double(N)/2)/_scales[j])/(_scales[j]*_scales[j]));
     }
     _filterBank.push_back(new Convolution(kernel));
   }

@@ -13,21 +13,42 @@ using namespace wt;
 import_array();
 %}
 
-class Wavelet {
+
+%feature("autodoc","Base class of all mother wavelets.");
+class Wavelet
+{
+protected:
+  %feature("autodoc", "Hidden constructor.");
+  Wavelet();
+
 public:
   virtual ~Wavelet();
-  std::complex<double> eval(double t);
-  std::complex<double> operator() (double t);
+  %feature("autodoc", "Evaluates the unscaled analysis mother wavelet.");
+  std::complex<double> evalAnalysis(double t);
+  %feature("autodoc", "Evaluates the unscaled synthesis mother wavelet.");
+  std::complex<double> evalSynthesis(double t);
+  %feature("autodoc", "Returns the width of the unscaled (mother) wavelet in the time domain.");
+  double timeWidth() const;
+  %feature("autodoc", "Returns the width of the unscaled (mother) wavelet in the frequency domain.");
+  double specWidth() const;
 };
 
-class Morlet: public Wavelet {
+
+%feature("autodoc","Implements the Morlet \"wavelet\".");
+class Morlet: public Wavelet
+{
 public:
+  %feature("autodoc", "Constructor. The argument dff specifies the frequency resolution.");
   Morlet(double dff=2.0);
   virtual ~Morlet();
 };
 
-class Cauchy: public Wavelet {
+
+%feature("autodoc","Implements the Cauchy or Paul wavelet.");
+class Cauchy: public Wavelet
+{
 public:
+  %feature("autodoc", "Constructor. The argument alpha specifies the time resolution.");
   Cauchy(double alpha=1.0);
   virtual ~Cauchy();
 };
@@ -37,6 +58,8 @@ public:
 %apply (double* IN_ARRAY1, int DIM1) {(double* scales, int Nscales)};
 %apply (std::complex<double>* IN_ARRAY1, int DIM1) {(std::complex<double>* signal, int Nsig)};
 %apply (std::complex<double>* INPLACE_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* out, int Nrow, int Ncol)};
+
+
 
 class WaveletTransform {
 public:

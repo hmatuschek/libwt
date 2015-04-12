@@ -6,7 +6,7 @@
 namespace wt {
 
 
-/** Base class of all wavelet objects. */
+/** Base class of all wavelet (-pair) objects. */
 class WaveletObj: public Object
 {
 protected:
@@ -16,8 +16,12 @@ protected:
 public:
   /** Destructor. */
   virtual ~WaveletObj();
-  /** Needs to be implemented by any specialization to evaluate the actual wavelet at time @c t. */
-  virtual CScalar eval(const Scalar &t) const = 0;
+  /** Needs to be implemented by any specialization to evaluate the actual analysis wavelet at
+   * time @c t. */
+  virtual CScalar evalAnalysis(const Scalar &t) const = 0;
+  /** Needs to be implemented by any specialization to evaluate the actual synthesis wavelet at
+   * time @c t. */
+  virtual CScalar evalSynthesis(const Scalar &t) const = 0;
   /** Returns the "width" of the (unscaled) wavelet in time. Needs to be implemented by any
    * wavelet. */
   virtual double timeWidth() const = 0;
@@ -50,19 +54,21 @@ public:
   /** Assignment operator (reference counting). */
   Wavelet &operator=(const Wavelet &other);
 
-  /** Evaluates the (unscaled) wavelet at the specified position. */
-  inline CScalar eval(const Scalar &t) const {
-    return _wavelet->eval(t);
+  /** Evaluates the (unscaled) analysis wavelet at the specified position. */
+  inline CScalar evalAnalysis(const Scalar &t) const {
+    return _wavelet->evalAnalysis(t);
   }
-  /** Evaluates the (unscaled) wavelet at the specified position. */
-  inline CScalar operator() (const Scalar &t) const {
-    return _wavelet->eval(t);
+
+  /** Evaluates the (unscaled) analysis wavelet at the specified position. */
+  inline CScalar evalSynthesis(const Scalar &t) const {
+    return _wavelet->evalSynthesis(t);
   }
 
   /** Returns the width of the wavelet in time. */
   inline double timeWidth() const {
     return _wavelet->timeWidth();
   }
+
   /** Returns the width of the wavelet in frequencies. */
   inline double specWidth() const {
     return _wavelet->specWidth();
@@ -81,7 +87,9 @@ public:
   MorletObj(double dff=2);
   virtual ~MorletObj();
 
-  virtual CScalar eval(const Scalar &t) const;
+  virtual CScalar evalAnalysis(const Scalar &t) const;
+  virtual CScalar evalSynthesis(const Scalar &t) const;
+
   virtual double timeWidth() const;
   virtual double specWidth() const;
 
@@ -111,12 +119,15 @@ public:
   CauchyObj(double alpha=1);
   virtual ~CauchyObj();
 
-  virtual CScalar eval(const Scalar &t) const;
+  virtual CScalar evalAnalysis(const Scalar &t) const;
+  virtual CScalar evalSynthesis(const Scalar &t) const;
+
   virtual double timeWidth() const;
   virtual double specWidth() const;
 
 protected:
   double _alpha;
+  double _norm;
 };
 
 class Cauchy: public Wavelet

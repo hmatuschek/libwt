@@ -51,7 +51,7 @@ WaveletTransform::init_trafo()
     std::list<double>::iterator scale = group->second.begin();
     for (size_t j=0; scale != group->second.end(); scale++, j++) {
       for (size_t i=0; i<N; i++) {
-        kernels(i,j) = _wavelet.eval( (i-double(N)/2)/(*scale) )/( *scale );
+        kernels(i,j) = _wavelet.evalAnalysis( (i-double(N)/2)/(*scale) )/( *scale );
       }
     }
     _filterBank.push_back(new Convolution(kernels));
