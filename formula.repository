@@ -1,0 +1,32 @@
+\form#0:$(K+1)\,N\,\log(N)$
+\form#1:$(K+1)\,N\,\log(2\,M)$
+\form#2:$2\,M < N$
+\form#3:$s(t)$
+\form#4:$\psi(t)$
+\form#5:$b$
+\form#6:$a$
+\form#7:\[m(b,a) = \frac{1}{a}\int_{-\infty}^{\infty}\bar{s}(t)\,\psi\left(\frac{t-b}{a}\right)\,dt\,.\]
+\form#8:$g(t)$
+\form#9:\[m(b,a) = \frac{1}{a}\int_{-\infty}^{\infty}\bar{s}(t)\,g\left(\frac{t-b}{a}\right)\,dt\,,\]
+\form#10:$g$
+\form#11:$h(t)$
+\form#12:\[s(t) = \int_{-\infty}{\infty}\,dt\int_{0}^{\infty}\,\frac{da}{a}\bar{m}(b,a)\frac{1}{a}h\left(\frac{b-t}{a}\right)\]
+\form#13:\[s(t) = \int_{-\infty}^{\infty}\,dt\int_{0}^{\infty}\,\frac{da}{a}\bar{m}(b,a)\frac{1}{a}h\left(\frac{b-t}{a}\right)\,.\]
+\form#14:$N$
+\form#15:$M$
+\form#16:$O(M\,N\log N)$
+\form#17:$K$
+\form#18:$L$
+\form#19:$N = K\,L$
+\form#20:$O(K\,L\log L)=O(N\log L)$
+\form#21:$O(N\log N)$
+\form#22:\[m(b,a) = \int_{-\infty}^{\infty}\bar{s}(t)\,\frac{1}{a}g\left(\frac{t-b}{a}\right)\,dt\,,\]
+\form#23:\[s(t) = \frac{1}{c_{g,h}}\,\int_{0}^{\infty}\,\frac{da}{a}\,\int_{-\infty}^{\infty}\,dt\bar{m}(b,a)\,\frac{1}{a}h\left(\frac{b-t}{a}\right)\,,\]
+\form#24:$c_{g,h}$
+\form#25:$g,h$
+\form#26:\[s(t) = \frac{1}{c_{g,h}}\,\int_{0}^{\infty}\,\frac{da}{a}\,\int_{-\infty}^{\infty}\,dt\, \bar{m}(b,a)\,\frac{1}{a}h\left(\frac{b-t}{a}\right)\,,\]
+\form#27:\[ g(t) = \sqrt{\frac{\delta}{2\pi}}\exp(2\pi\,i\,t-t^2\,\delta) \]
+\form#28:$N\gg L$
+\form#29:\[ g(t) = \sqrt{\frac{\delta}{2\pi}}\exp(2\pi\,i\,t-t^2\,\delta)\,, \]
+\form#30:$\delta$
+\form#31:$\delta=2$
