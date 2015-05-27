@@ -23,16 +23,18 @@
  * factor which means, that the general dependency of the costs on the signal length and number of
  * scales remains in the order of \f$O(M\,N\log N)\f$.
  *
- * At small scales, the time localization of the wavelet can be exploited. There the
- * scaled wavelet can be approximated well by a filter kernel beeing much shorter than the time
- * series. The convolution of the (short) scaled wavelet with the (long) time series can then be
- * performed efficiently by using the well known "overlap-add" method\cite Smith2012.
+ * \image html scales_in_f_and_t.png "The Morlet wavelet at different scales in time and frequency."
  *
- * At large scales, the frequency localization of the wavelet can be exploited. There
- * the high-frequency components of the wavelet are basically zero and the convolution of these
- * long but low-frequency wavelets can be performed in an interleaved manner on sub-samples of the
- * signal. This approach is related to the "algorithm a trois"\cite Holschneider1990 for the
- * wavelet transform on dyadic grids.
+ * At small scales, the time localization of the wavelet can be exploited (see figure above, upper panel).
+ * There the scaled wavelet can be approximated well by a filter kernel beeing much shorter than
+ * the time series. The convolution of the (short) scaled wavelet with the (long) time series can
+ * then be performed efficiently by using the well known "overlap-add" method\cite Smith2012.
+ *
+ * At large scales (figure above, lower panel), the frequency localization of the wavelet can be
+ * exploited. There the high-frequency components of the wavelet are basically zero and the
+ * convolution of these long but low-frequency wavelets can be performed in an interleaved manner
+ * on sub-samples of the signal. This approach is related to the "algorithm a
+ * trois"\cite Holschneider1990 for the wavelet transform on dyadic grids.
  *
  * In both cases, a time series of length \f$N\f$ will be processed in terms of \f$K\f$
  * signals of length \f$L\f$, such that \f$N = K\,L\f$ (assuming the signal length can be factored

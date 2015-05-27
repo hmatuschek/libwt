@@ -32,19 +32,32 @@ public:
   {
     // signal length
     int N = signal.size();
+    // Get start indices for each transformation block
+    std::vector<size_t> blockIdxs(_filterBank.size());
+    for (size_t j=0; j<_filterBank.size(); j++) {
+      if (0 == j) {
+        blockIdxs[0] = 0;
+      } else {
+        blockIdxs[j] = blockIdxs[j-1] + _filterBank[j-1]->numKernels();
+      }
+    }
 
     // Iterate over all convolution filters grouping wavelets with the same size
-    std::vector<Convolution *>::iterator filters = _filterBank.begin();
-    for (size_t j=0; filters != _filterBank.end(); j+=(*filters)->numKernels(), filters++)
+    /// @todo Parallelize with OpenMP!
+    for (size_t j=0; j<_filterBank.size(); j++)
     {
+      // Get convolution filters
+      Convolution *filters = _filterBank[j];
       // Get subsampling
-      int M = (*filters)->subSampling();
-      // Get number of kernels in group
-      int K = (*filters)->numKernels();
+      int M = filters->subSampling();
+      // Get start column in output matrix
+      size_t outCol = blockIdxs[j];
+      // Get number of kernels in group / # columns in out
+      int K = filters->numKernels();
 
       if (1 == M) {
         // w/o sub-sampling -> direct overlap-add convolution
-        (*filters)->apply(signal, out.block(0, j, N, K).derived());
+        filters->apply(signal, out.block(0, outCol, N, K).derived());
         // continue with next block
         continue;
       }
@@ -64,11 +77,11 @@ public:
           subsig[i] = ((i*M+m) < N) ? CScalar(signal[i*M+m]) : 0;
         }
         // Apply overlap-add convolution
-        (*filters)->apply(subsig, subres.derived());
+        filters->apply(subsig, subres.derived());
         // Store results into output buffer (interleaved rows)
         for (int i=0; i<n; i++) {
           if ( (i*M+m) < N ) {
-            out.block(i*M+m, j, 1, K) = subres.row(i);
+            out.block(i*M+m, outCol, 1, K) = subres.row(i);
           }
         }
       }
@@ -83,7 +96,7 @@ protected:
   /** If @c true, the sub-sampling of the input signal is allowed. */
   bool _subSample;
   /** The list of convolution filters applied for the wavelet transform. */
-  std::vector< Convolution *> _filterBank;
+  std::vector<Convolution *> _filterBank;
 };
 
 }
