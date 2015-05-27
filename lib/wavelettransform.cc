@@ -33,7 +33,7 @@ WaveletTransform::init_trafo()
   // Determine kernel size for every scale and round up to next integer for which the FFT can
   // be computed fast. Also group the resulting kernels by length
   std::list< std::pair<size_t, std::list<double> > > kernelSizes;
-  for (size_t j=0; j<_scales.size(); j++) {
+  for (int j=0; j<_scales.size(); j++) {
     size_t kernelSize = FFT::roundUp(std::ceil(_scales[j]*2*_wavelet.cutOffTime()));
     if (0 == kernelSizes.size()) {
       // If first scale -> add new kernel size group

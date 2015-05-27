@@ -1,5 +1,6 @@
 #include "fft_fftw3.hh"
 #include <iostream>
+#include <cmath>
 
 using namespace wt;
 
@@ -38,7 +39,7 @@ FFT::FFT(CMatrix &in, CMatrix &out, Direction dir) {
 
   int iRowStride = in.rowStride(),  iColStride = in.colStride();
   int oRowStride = out.rowStride(), oColStride = out.colStride();
-  int n[1] = { in.rows() };
+  int n[1] = { int(in.rows()) };
   _plan = fftw_plan_many_dft(
         1, n, in.cols(),
         reinterpret_cast<fftw_complex *>(in.data()), 0, iRowStride, iColStride,
@@ -47,7 +48,7 @@ FFT::FFT(CMatrix &in, CMatrix &out, Direction dir) {
 }
 
 FFT::FFT(CMatrix &inout, Direction dir) {
-  int n[1] = { inout.rows() };
+  int n[1] = { int(inout.rows()) };
   int rowStride = inout.rowStride(), colStride = inout.colStride();
   _plan = fftw_plan_many_dft(
         1, n, inout.cols(),
