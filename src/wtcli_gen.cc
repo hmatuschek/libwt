@@ -1,6 +1,6 @@
 #include "wtcli_gen.hh"
 #include "option_parser.hh"
-#include "wt.hh"
+#include "types.hh"
 #include "csv.hh"
 #include <iostream>
 #include <fstream>

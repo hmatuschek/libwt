@@ -15,34 +15,36 @@
  * where \f$c_{g,h}\f$ is a normalization constant depending on the chosen wavelet pair \f$g,h\f$.
  *
  * \section implementation Efficient implementation of the continious wavelet transform.
- * In general, using the FFT convolution algorihtm to perform a wavelet transform of a singnal of
- * length \f$N\f$ at \f$M\f$ scales, the computational costs (tiem) are generally
+ * In general, using the FFT convolution algorihtm to perform a wavelet transform of a signal of
+ * length \f$N\f$ at \f$M\f$ scales, the computational costs (time) are generally
  * \f$O(M\,N\log N)\f$. Hence the tranform can get pretty slow for long signals. Exploiting, that
- * wavelets are usually well localized in the time and frequency domain, allows for a reduction of
- * the computational costs of the wavelet transform significantly. This gain, however, is a constant
- * factor which means, that the general dependency of the costs on the signal length remains in the
- * order of \f$O(M\,N\log N)\f$.
+ * wavelets are usually well localized in the time and frequency domain, allows for a significane
+ * reduction of the computational costs of the transform. This gain, however, is a constant
+ * factor which means, that the general dependency of the costs on the signal length and number of
+ * scales remains in the order of \f$O(M\,N\log N)\f$.
  *
- * Particularily at small scales, The time localization of the wavelet can be exploited. There the
- * scaled wavelet can be approximated well by a filterkernel beeing much smaller than the timer
+ * Particularily at small scales, the time localization of the wavelet can be exploited. There the
+ * scaled wavelet can be approximated well by a filter kernel beeing much shorter than the time
  * series. The convolution of the (short) scaled wavelet with the (long) time series can then be
  * performed efficiently by using the well known "overlap-add" method\cite Smith2012.
  *
  * Particularily at large scales, the frequency localization of the wavelet can be exploited. There
  * the high-frequency components of the wavelet are basically zero and the convolution of these
  * long but low-frequency wavelets can be performed in an interleaved manner on sub-samples of the
- * signal. This approach is connected to the "algorithm a trois"\cite Holschneider1990 for the
+ * signal. This approach is related to the "algorithm a trois"\cite Holschneider1990 for the
  * wavelet transform on dyadic grids.
  *
- * In both cases, a time-series of length \f$N\f$ will be processed in terms of \f$K\f$
- * signals of length \f$L\f$, such that \f$N = K\,L\f$. Hence the computational costs of the FFT
- * convolutions are \f$O(K\,L\log L)=O(N\log L)\f$ instead of \f$O(N\log N)\f$.
+ * In both cases, a time series of length \f$N\f$ will be processed in terms of \f$K\f$
+ * signals of length \f$L\f$, such that \f$N = K\,L\f$ (assuming the signal length can be factored
+ * that way, if not the signal will be zero-padded). Hence the computational costs of the FFT
+ * convolutions to obtain a single "voice" (wavelet trasform at a specific frequency/scale)
+ * are \f$O(K\,L\log L)=O(N\log L)\f$ instead of \f$O(N\log N)\f$. If \f$N\gg L\f$ the costs of
+ * the wavelet transform can be reduced significantly.
  */
 
 #ifndef __WT_HH__
 #define __WT_HH__
 
-#include "exception.hh"
 #include "types.hh"
 #include "wavelet.hh"
 #include "wavelettransform.hh"

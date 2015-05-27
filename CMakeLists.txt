@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 PROJECT(libwt)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
@@ -22,12 +22,16 @@ FIND_PACKAGE(PythonLibs)
 INCLUDE(${SWIG_USE_FILE})
 
 # If siwg and python found -> build python interface
-SET(BUILD_PYTHON_INTERFACE ${SWIG_FOUND} AND ${PYTHONINTERP_FOUND} ${PYTHON_LIBSFOUND})
+SET(BUILD_PYTHON_INTERFACE ${SWIG_FOUND} AND ${PYTHONINTERP_FOUND} AND ${PYTHON_LIBSFOUND})
 
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH} ${EIGEN3_INCLUDE_DIRS} ${FFTW3_INCLUDE_DIRS}
  "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 
 SET(LIBS ${FFTW3_LIBRARIES})
+
+SET(libwt_VERSION_MAJOR "1")
+SET(libwt_VERSION_MINOR "0")
+SET(libwt_VERSION_PATCH "0")
 
 #
 # Get default install directories under Linux
@@ -48,14 +52,12 @@ IF(UNIX AND APPLE)
  SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 ENDIF(UNIX AND APPLE)
 
-SET(libwt_VERSION_MAJOR "1")
-SET(libwt_VERSION_MINOR "0")
-SET(libwt_VERSION_PATCH "0")
 
 add_subdirectory(lib)
 add_subdirectory(src)
 add_subdirectory(test)
 if(BUILD_PYTHON_INTERFACE)
+ message(STATUS "Python interface enabled.")
  add_subdirectory(python)
 endif(BUILD_PYTHON_INTERFACE)
 

@@ -26,10 +26,10 @@ public:
   virtual CScalar evalSynthesis(const Scalar &t) const = 0;
   /** Returns the "width" of the (unscaled) wavelet in time. Needs to be implemented by any
    * wavelet. */
-  virtual double timeWidth() const = 0;
+  virtual double cutOffTime() const = 0;
   /** Returns the spectral width of the unscaled wavelet in frequency (frequency resolution).
    * This can be considered as the "width" of the Fourier transformed wavelet. */
-  virtual double specWidth() const = 0;
+  virtual double cutOffFreq() const = 0;
 };
 
 
@@ -68,13 +68,13 @@ public:
   }
 
   /** Returns the width of the wavelet in time. */
-  inline double timeWidth() const {
-    return _wavelet->timeWidth();
+  inline double cutOffTime() const {
+    return _wavelet->cutOffTime();
   }
 
   /** Returns the width of the wavelet in frequencies. */
-  inline double specWidth() const {
-    return _wavelet->specWidth();
+  inline double cutOffFreq() const {
+    return _wavelet->cutOffFreq();
   }
 
 protected:
@@ -98,16 +98,23 @@ public:
   /** Evaluates the mother wavelet at the specified time. */
   virtual CScalar evalSynthesis(const Scalar &t) const;
   /** Returns the with of the mother wavelet in the time domain. */
-  virtual double timeWidth() const;
+  virtual double cutOffTime() const;
   /** Returns the with of the mother wavelet in the frequency domain. */
-  virtual double specWidth() const;
+  virtual double cutOffFreq() const;
 
 protected:
   /** Holds the frequency resolution parameter. */
   double _dff;
 };
 
+
 /** The Morlet wavelet.
+ *
+ * \f[
+ *  g(t) = \sqrt{\frac{\delta}{2\pi}}\exp(2\pi\,i\,t-t^2\,\delta)\,,
+ * \f]
+ * where \f$\delta\f$ specifies the time-frequency resolution of the wavelet. Default
+ * \f$\delta=2\f$.
  * @ingroup wavelets */
 class Morlet: public Wavelet
 {
@@ -146,9 +153,9 @@ public:
   /** Evaluates the mother wavelet at the given time. */
   virtual CScalar evalSynthesis(const Scalar &t) const;
   /** Returns the width of the mother wavelet in the time domain. */
-  virtual double timeWidth() const;
+  virtual double cutOffTime() const;
   /** Returns the width of the mother wavelet in the frequency domain. */
-  virtual double specWidth() const;
+  virtual double cutOffFreq() const;
 
 protected:
   /** Holds the order. */

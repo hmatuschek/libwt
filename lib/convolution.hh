@@ -20,7 +20,7 @@ class Convolution
 public:
   /** Constructor. The complex matrix @c kernels specifies the convolution filters to be used.
    * Every colum specifies a filter kernel. */
-  Convolution(const CMatrix &kernels);
+  Convolution(const CMatrix &kernels, size_t subSample = 1);
   /** Destructor. */
   virtual ~Convolution();
 
@@ -123,6 +123,11 @@ public:
   /** Returns the number of kernels. */
   inline size_t numKernels() const { return this->_K; }
 
+  /** Returns the sub-sampling assinged to the convolution operation. */
+  inline size_t subSampling() const { return _subSampling; }
+  /** Sets the sub-sampling assinged to the convolution operation. */
+  void setSubSampling(size_t subSample) { _subSampling = subSample; }
+
 protected:
   /** The number of kernels. */
   size_t _K;
@@ -142,6 +147,12 @@ protected:
   CMatrix _work;
   /** Backward transformation. */
   FFT _rev;
+
+  /** Possible subsampling for the kernels.
+   * This property of the convolution is not computed or handled by the convolution itself,
+   * instead it is a property that can be assigned to it. I.e. kind of meta-data
+   * for the convolution operation. */
+  size_t _subSampling;
 };
 
 }

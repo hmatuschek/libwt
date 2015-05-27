@@ -17,4 +17,7 @@ typedef Eigen::Matrix<CScalar, Eigen::Dynamic, Eigen::Dynamic> CMatrix;
 
 }
 
+/// Implements ceil(a/b) for integers a & b.
+#define WT_IDIV_CEIL(a,b) ( (a/b) + ((a&b)?1:0) )
+
 #endif // __WT_TYPES_HH__

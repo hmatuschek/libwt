@@ -64,7 +64,8 @@ public:
     return 0 != dynamic_cast<typename T::ObjectType *>(_object);
   }
 
-  /** Container cast. */
+  /** Dynamic container cast. Retruns an empty container of type @c T if
+   * the cast fails. */
   template <class T>
   inline T as() {
     return T(dynamic_cast<typename T::ObjectType *>(_object));

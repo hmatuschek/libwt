@@ -32,7 +32,7 @@ WaveletSynthesis::init_synthesis()
   // Determine kernel size for every scale and round up to next integer for which the FFT can
   // be computed fast. Also group the resulting kernel lengths
   for (size_t j=0; j<_scales.size(); j++) {
-    size_t N = FFT::roundUp(std::ceil(_scales[j]*_wavelet.timeWidth()));
+    size_t N = FFT::roundUp(std::ceil(_scales[j]*2*_wavelet.cutOffTime()));
     CVector kernel(N);
     for (size_t i=0; i<N; i++) {
       kernel(i) = (_wavelet.evalSynthesis((i-double(N)/2)/_scales[j])/(_scales[j]*_scales[j]));

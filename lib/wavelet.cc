@@ -74,15 +74,15 @@ MorletObj::evalSynthesis(const Scalar &t) const {
 }
 
 double
-MorletObj::timeWidth() const {
+MorletObj::cutOffTime() const {
   // 99% power at scale 1
-  return 6./sqrt(_dff);
+  return 3./std::sqrt(_dff);
 }
 
 double
-MorletObj::specWidth() const {
+MorletObj::cutOffFreq() const {
   // 99% power at scale 1
-  return 6*sqrt(_dff);
+  return 1+3.*std::sqrt(_dff);
 }
 
 
@@ -146,15 +146,15 @@ CauchyObj::evalSynthesis(const Scalar &t) const {
 }
 
 Scalar
-CauchyObj::timeWidth() const {
-  double eps = 1e-3;
+CauchyObj::cutOffTime() const {
+  double eps = 1e-4;
   return ( _alpha*_alpha * ( std::pow(eps, -2. / (_alpha+1)) - 1) / ((2*M_PI)*(2*M_PI)) );
 }
 
 Scalar
-CauchyObj::specWidth() const {
-  double eps = 1e-3;
-  return 1./( _alpha*_alpha * ( std::pow(eps, -2. / (_alpha+1)) - 1) / ((2*M_PI)*(2*M_PI)) );
+CauchyObj::cutOffFreq() const {
+  double eps = 1e-4;
+  return 1+1./( _alpha*_alpha * ( std::pow(eps, -2. / (_alpha+1)) - 1) / ((2*M_PI)*(2*M_PI)) );
 }
 
 

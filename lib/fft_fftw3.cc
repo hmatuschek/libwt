@@ -1,5 +1,4 @@
 #include "fft_fftw3.hh"
-#include "exception.hh"
 #include <iostream>
 
 using namespace wt;
@@ -8,9 +7,8 @@ using namespace wt;
 FFT::FFT(CVector &in, CVector &out, Direction dir)
 {
   if (in.rows() != out.rows()) {
-    Error err;
-    err << __FILE__ << " @" << __LINE__
-        << "Dimension mismatch";
+    std::cerr << __FILE__ << " @" << __LINE__ << "Dimension mismatch"<< std::endl;
+    abort();
   }
   _plan = fftw_plan_dft_1d(
         in.rows(),
@@ -30,14 +28,12 @@ FFT::FFT(CVector &inout, Direction dir)
 
 FFT::FFT(CMatrix &in, CMatrix &out, Direction dir) {
   if (in.rows() != out.rows()) {
-    Error err;
-    err << __FILE__ << " @" << __LINE__
-        << "Dimension mismatch";
+    std::cerr << __FILE__ << " @" << __LINE__ << "Dimension mismatch" << std::endl;
+    abort();
   }
   if (in.cols() != out.cols()) {
-    Error err;
-    err << __FILE__ << " @" << __LINE__
-        << "Dimension mismatch";
+    std::cerr << __FILE__ << " @" << __LINE__ << "Dimension mismatch" << std::endl;
+    abort();
   }
 
   int iRowStride = in.rowStride(),  iColStride = in.colStride();

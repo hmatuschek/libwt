@@ -13,7 +13,9 @@ using namespace wt;
 import_array();
 %}
 
-
+/*
+ * Interfacing Wavelet classes
+ */
 %feature("autodoc","Base class of all mother wavelets.");
 class Wavelet
 {
@@ -28,9 +30,9 @@ public:
   %feature("autodoc", "Evaluates the unscaled synthesis mother wavelet.");
   std::complex<double> evalSynthesis(double t);
   %feature("autodoc", "Returns the width of the unscaled (mother) wavelet in the time domain.");
-  double timeWidth() const;
+  double cutOffTime() const;
   %feature("autodoc", "Returns the width of the unscaled (mother) wavelet in the frequency domain.");
-  double specWidth() const;
+  double cutOffFreq() const;
 };
 
 
@@ -54,16 +56,37 @@ public:
 };
 
 
+
+/*
+ * Interfacing WaveletAnalysis class.
+ */
+%apply (double* OUT_ARRAY1, int DIM1) {(double* outScales, int Nscales)};
+%apply (double* IN_ARRAY1, int DIM1) {(double* scales, int Nscales)};
+
+class WaveletAnalysis
+{
+protected:
+  WaveletAnalysis(const Wavelet &wavelet, double *scales, int Nscales);
+public:
+  size_t nScales() const;
+  void scales(double *outScales, int Nscales) const;
+  const Wavelet &wavelet() const;
+};
+
+
+
+/*
+ * Interfacing WaveletTransform class
+ */
 %numpy_typemaps(std::complex<double> , NPY_CDOUBLE, int)
 %apply (double* IN_ARRAY1, int DIM1) {(double* scales, int Nscales)};
 %apply (std::complex<double>* IN_ARRAY1, int DIM1) {(std::complex<double>* signal, int Nsig)};
 %apply (std::complex<double>* INPLACE_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* out, int Nrow, int Ncol)};
 
-
-
-class WaveletTransform {
+class WaveletTransform: public WaveletAnalysis
+{
 public:
-  WaveletTransform(const Wavelet &wavelet, double *scales, int Nscales);
+  WaveletTransform(const Wavelet &wavelet, double *scales, int Nscales, bool subSample=false);
   virtual ~WaveletTransform();
 };
 
@@ -86,10 +109,15 @@ void operator() (std::complex<double> *signal, int Nsig, std::complex<double> *o
 }
 
 
+
+/*
+ * Interfacing WaveletSynthesis class
+ */
 %apply (std::complex<double>* IN_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* transformed, int Nrow, int Ncol)};
 %apply (std::complex<double>* INPLACE_ARRAY1, int DIM1) {(std::complex<double>* out, int N)};
 
-class WaveletSynthesis {
+class WaveletSynthesis: public WaveletAnalysis
+{
 public:
   WaveletSynthesis(const Wavelet &wavelet, double *scales, int Nscales);
   virtual ~WaveletSynthesis();
