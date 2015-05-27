@@ -16,6 +16,8 @@
 namespace wt {
 
 /** Base class of all managed objects.
+ * In conjecture with @c Container, the references of all managed objects are handled automatically
+ * and a destroyed once the last reference to an object is lost.
  * @ingroup container */
 class Object
 {

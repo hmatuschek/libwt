@@ -49,7 +49,7 @@ protected:
   void init_synthesis();
 
 protected:
-  /** The list of convolution filters applied for the wavelet transform. */
+  /** The list of convolution filters applied for the wavelet synthesis. */
   std::vector<Convolution *> _filterBank;
 };
 

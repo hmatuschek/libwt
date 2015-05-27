@@ -18,17 +18,17 @@
  * In general, using the FFT convolution algorihtm to perform a wavelet transform of a signal of
  * length \f$N\f$ at \f$M\f$ scales, the computational costs (time) are generally
  * \f$O(M\,N\log N)\f$. Hence the tranform can get pretty slow for long signals. Exploiting, that
- * wavelets are usually well localized in the time and frequency domain, allows for a significane
+ * wavelets are usually well localized in the time and frequency domain, allows for a significant
  * reduction of the computational costs of the transform. This gain, however, is a constant
  * factor which means, that the general dependency of the costs on the signal length and number of
  * scales remains in the order of \f$O(M\,N\log N)\f$.
  *
- * Particularily at small scales, the time localization of the wavelet can be exploited. There the
+ * At small scales, the time localization of the wavelet can be exploited. There the
  * scaled wavelet can be approximated well by a filter kernel beeing much shorter than the time
  * series. The convolution of the (short) scaled wavelet with the (long) time series can then be
  * performed efficiently by using the well known "overlap-add" method\cite Smith2012.
  *
- * Particularily at large scales, the frequency localization of the wavelet can be exploited. There
+ * At large scales, the frequency localization of the wavelet can be exploited. There
  * the high-frequency components of the wavelet are basically zero and the convolution of these
  * long but low-frequency wavelets can be performed in an interleaved manner on sub-samples of the
  * signal. This approach is related to the "algorithm a trois"\cite Holschneider1990 for the

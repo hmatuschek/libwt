@@ -13,6 +13,7 @@ namespace wt {
  * be computed only once. This speeds up the convolution slightly. Further, assuming K kernels of
  * size M and a signal length of N samples. The direct FFT convolution cost would be
  * \f$(K+1)\,N\,\log(N)\f$, not including the costs of computing the FFTs of the kernels.
+ *
  * Using the overlap-add method, the costs are \f$(K+1)\,N\,\log(2\,M)\f$, which results into a
  * benifit if \f$2\,M < N\f$. */
 class Convolution

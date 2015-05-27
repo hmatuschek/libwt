@@ -15,7 +15,7 @@ public:
 
 public:
   /** Constructor.
-   * @param N Specifies the number of vector to sum over.
+   * @param N Specifies the number of vectors to sum over.
    * @param M Specifies the dimension of the vectors. */
   MovingSum(size_t N, size_t M)
     : _hist(N,M), _current(N), _currentIdx(0)
