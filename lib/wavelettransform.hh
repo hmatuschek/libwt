@@ -43,7 +43,7 @@ public:
     }
 
     // Iterate over all convolution filters grouping wavelets with the same size
-    #pragma omp for
+    #pragma omp parallel for
     for (size_t j=0; j<_filterBank.size(); j++)
     {
       // Get convolution filters
