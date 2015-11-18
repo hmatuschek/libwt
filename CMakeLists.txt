@@ -16,8 +16,7 @@ FIND_PACKAGE(PythonInterp)
 FIND_PACKAGE(PythonLibs)
 INCLUDE(${SWIG_USE_FILE})
 
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}
-    "-Wall -frtti -fexceptions -Wno-unknown-pragmas -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -Wall -frtti -fexceptions -Wno-unknown-pragmas -std=c++11")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -ggdb")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
