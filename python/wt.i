@@ -74,7 +74,6 @@ public:
 };
 
 
-
 /*
  * Interfacing WaveletTransform class
  */
@@ -107,7 +106,6 @@ void operator() (std::complex<double> *signal, int Nsig, std::complex<double> *o
   (*self)(signalMap, outMap);
 }
 }
-
 
 
 /*

@@ -1,13 +1,10 @@
 SET(WT_SOURCES
     object.cc fft_fftw3.cc convolution.cc wavelet.cc waveletanalysis.cc
-    wavelettransform.cc waveletsynthesis.cc)
-SET(WT_ARRAY_HEADERS
-    array/arrayobject.hh array/arrayiterator.hh array/arrayvalues.hh array/array.hh
-    array/operators.hh array/dataptr.hh)
+    wavelettransform.cc waveletsynthesis.cc waveletconvolution.cc api.cc)
 SET(WT_HEADERS
     wt.hh fft.hh types.hh movingaverage.hh
     object.hh fft_fftw3.hh convolution.hh wavelet.hh waveletanalysis.hh
-    wavelettransform.hh waveletsynthesis.hh)
+    wavelettransform.hh waveletsynthesis.hh waveletconvolution.hh api.hh)
 
 add_custom_target(wt_headers SOURCES ${WT_HEADERS})
 

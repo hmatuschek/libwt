@@ -56,6 +56,7 @@ ENDIF(UNIX AND APPLE)
 
 
 add_subdirectory(lib)
+add_subdirectory(utils)
 add_subdirectory(src)
 add_subdirectory(test)
 if(BUILD_PYTHON_INTERFACE)

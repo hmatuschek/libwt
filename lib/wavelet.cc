@@ -1,4 +1,5 @@
 #include "wavelet.hh"
+#include <cmath>
 
 using namespace wt;
 
@@ -14,39 +15,6 @@ WaveletObj::WaveletObj()
 
 WaveletObj::~WaveletObj() {
   // pass...
-}
-
-
-/* ******************************************************************************************** *
- * Implementation of Wavelet container
- * ******************************************************************************************** */
-Wavelet::Wavelet()
-  : Container(), _wavelet(0)
-{
-  // pass...
-}
-
-Wavelet::Wavelet(WaveletObj *obj)
-  : Container(obj), _wavelet(obj)
-{
-  // pass...
-}
-
-Wavelet::Wavelet(const Wavelet &other)
-  : Container(other), _wavelet(other._wavelet)
-{
-  // pass...
-}
-
-Wavelet::~Wavelet() {
-  // pass...
-}
-
-Wavelet &
-Wavelet::operator =(const Wavelet &other) {
-  Container::operator =(other);
-  _wavelet = other._wavelet;
-  return *this;
 }
 
 
@@ -73,6 +41,12 @@ MorletObj::evalSynthesis(const Scalar &t) const {
   return this->evalAnalysis(t);
 }
 
+CScalar
+MorletObj::evalRepKern(const Scalar &b, const Scalar &a) const {
+  /// @bug implement
+  return 0;
+}
+
 double
 MorletObj::cutOffTime() const {
   // 99% power at scale 1
@@ -84,40 +58,6 @@ MorletObj::cutOffFreq() const {
   // 99% power at scale 1
   return 1+3.*std::sqrt(_dff);
 }
-
-
-/* ******************************************************************************************** *
- * Implementation of Morlet container
- * ******************************************************************************************** */
-Morlet::Morlet(double dff)
-  : Wavelet(new MorletObj(dff)), _morlet(static_cast<MorletObj *>(_wavelet))
-{
-  // pass...
-}
-
-Morlet::Morlet(MorletObj *obj)
-  : Wavelet(obj), _morlet(obj)
-{
-  // pass...
-}
-
-Morlet::Morlet(const Morlet &other)
-  : Wavelet(other), _morlet(other._morlet)
-{
-  // pass...
-}
-
-Morlet::~Morlet() {
-  // pass...
-}
-
-Morlet &
-Morlet::operator =(const Morlet &other) {
-  Wavelet::operator =(other);
-  _morlet = other._morlet;
-  return *this;
-}
-
 
 
 /* ******************************************************************************************** *
@@ -145,6 +85,12 @@ CauchyObj::evalSynthesis(const Scalar &t) const {
   return this->evalAnalysis(t);
 }
 
+CScalar
+CauchyObj::evalRepKern(const Scalar &b, const Scalar &a) const {
+  return std::tgamma(2*_alpha+1) * std::pow(a, _alpha) *
+      std::pow(CScalar(1+a, -b/a),-(1+2*_alpha))/(2*M_PI);
+}
+
 Scalar
 CauchyObj::cutOffTime() const {
   double eps = 1e-4;
@@ -156,35 +102,3 @@ CauchyObj::cutOffFreq() const {
   double eps = 1e-4;
   return 1+1./( _alpha*_alpha * ( std::pow(eps, -2. / (_alpha+1)) - 1) / ((2*M_PI)*(2*M_PI)) );
 }
-
-
-Cauchy::Cauchy(double alpha)
-  : Wavelet(new CauchyObj(alpha)), _cauchy(static_cast<CauchyObj *>(_wavelet))
-{
-  // pass...
-}
-
-Cauchy::Cauchy(CauchyObj *obj)
-  : Wavelet(obj), _cauchy(obj)
-{
-  // pass...
-}
-
-Cauchy::Cauchy(const Cauchy &other)
-  : Wavelet(other), _cauchy(other._cauchy)
-{
-  // pass...
-}
-
-Cauchy::~Cauchy() {
-  // pass...
-}
-
-Cauchy &
-Cauchy::operator=(const Cauchy &other) {
-  Wavelet::operator =(other);
-  _cauchy = other._cauchy;
-  return *this;
-}
-
-

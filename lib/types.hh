@@ -21,6 +21,17 @@ typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> RMatrix;
 /** The complex valued matrix type. */
 typedef Eigen::Matrix<CScalar, Eigen::Dynamic, Eigen::Dynamic> CMatrix;
 
+template <typename Scalar>
+class Traits
+{
+  typedef Scalar Real;
+  typedef std::complex<Real> Complex;
+  typedef Eigen::Matrix<Real, Eigen::Dynamic, 1> RVector;
+  typedef Eigen::Matrix<Complex, Eigen::Dynamic, 1> CVector;
+  typedef Eigen::Matrix<Real, Eigen::Dynamic, Eigen::Dynamic> RMatrix;
+  typedef Eigen::Matrix<Complex, Eigen::Dynamic, Eigen::Dynamic> CMatrix;
+};
+
 }
 
 /// Implements ceil(a/b) for integers a & b.

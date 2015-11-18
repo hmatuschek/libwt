@@ -6,7 +6,7 @@
 #define __WT_WAVELETANALYSIS_HH__
 
 #include "types.hh"
-#include "wavelet.hh"
+#include "api.hh"
 
 namespace wt {
 
