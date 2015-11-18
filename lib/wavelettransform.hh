@@ -71,7 +71,7 @@ public:
       CVector subsig(n);
       for (int i=0; i<n; i++) {
         int mmax = std::min(N-i*M, M);
-        subsig[i] = signal.block(i*M, 1, mmax, 1).sum();
+        subsig[i] = signal.segment(i*M, mmax).sum();
       }
 
       // Apply overlap-add convolution
