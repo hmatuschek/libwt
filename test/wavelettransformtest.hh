@@ -7,6 +7,7 @@ class WaveletTransformTest : public wt::UnitTest::TestCase
 {
 public:
   void testTrafo();
+  void testSubsample();
 
 public:
   static wt::UnitTest::TestSuite *suite();

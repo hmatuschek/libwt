@@ -1,5 +1,5 @@
-SET(WT_UTILS_SOURCES csv.cc option_parser.cc)
-SET(WT_UTILS_HEADERS csv.hh option_parser.hh)
+SET(WT_UTILS_SOURCES csv.cc option_parser.cc unittest.cc cputime.cc)
+SET(WT_UTILS_HEADERS csv.hh option_parser.hh unittest.hh cputime.hh)
 
 add_custom_target(wt_utils_headers SOURCES ${WT_UTILS_HEADERS})
 
@@ -15,6 +15,4 @@ target_link_libraries(libwtutils ${LIBS})
 
 install(TARGETS libwtutils DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 INSTALL_HEADERS_WITH_DIRECTORY("${LIBSDR_HEADERS}" "${CMAKE_INSTALL_INCLUDEDIR}/libwt/uitls")
-#install(FILES "${CMAKE_CURRENT_BINARY_DIR}/config.hh"
-#        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/libwt")
 
