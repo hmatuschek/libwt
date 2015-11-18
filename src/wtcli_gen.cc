@@ -33,7 +33,7 @@ int wtcli_generate_signal(Opt::Parser &parser) {
     if (parser.has_option("delta")) {
       std::list<size_t>::iterator item = deltas.begin();
       for(; item != deltas.end(); item++) {
-        if (i == (*item)) { x[i] += 1; }
+        if (i == int(*item)) { x[i] += 1; }
       }
     }
     // apply sin

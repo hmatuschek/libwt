@@ -30,13 +30,13 @@ void
 WaveletConvolution::_init_convolution() {
   _reprodKernel.reserve(_scales.size());
   // For every location of the reproducting kernel ...
-  for (size_t i=0; i<_scales.size(); i++) {
+  for (int i=0; i<_scales.size(); i++) {
     // Scale of the rep. kern.
     double a = _scales[i];
     // Determine the approx. scale range the rep. kernel is supported on.
 
     // ...evaluate the kernel at every scale.
-    for (size_t j=0; j<_scales.size(); j++) {
+    for (int j=0; j<_scales.size(); j++) {
 
     }
   }
