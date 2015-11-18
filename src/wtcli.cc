@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
         parser.Option("scales"),
         ( parser.opt(parser.Option("column")),
           parser.Value("infile") ),
+        ( parser.opt(parser.Flag("subsample"))),
         ( parser.opt(
             parser.Flag("abs") |
             parser.Flag("angle") |

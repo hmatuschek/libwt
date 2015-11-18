@@ -10,6 +10,7 @@ namespace wt {
 /** Implements the convolution operation in the wavelet time-scale space. I.e. the convolution of a
  * time-scale function with the reproducing kernel of a wavelet pair will result into a projection of
  * that function onto the space of wavelet transformed.
+ * @bug Not implemented yet.
  * @ingroup analysis */
 class WaveletConvolution : public WaveletAnalysis
 {

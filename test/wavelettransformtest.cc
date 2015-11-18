@@ -8,19 +8,20 @@ void
 WaveletTransformTest::testTrafo() {
   // Delta peak
   int N=1024;
+  double scale = 200;
   CVector signal = CVector::Zero(N); signal(N/2) = 1;
   // Perform WT of delta-peak on single scale
   //  -> evaluation of wavelet at that scale
-  RVector scales(1); scales(0) = 100;
+  RVector scales(1); scales(0) = scale;
   CMatrix transformed(N, 1);
 
   WaveletTransform wt(Morlet(), scales);
   wt(signal, transformed);
   for (int i=0; i<N; i++) {
     UT_ASSERT_NEAR_EPS(
-          transformed(i,0).real(), wt.wavelet().evalAnalysis(double(i-N/2)/100).real()/100, 1e-6);
+          transformed(i,0).real(), wt.wavelet().evalAnalysis(double(i-N/2)/scale).real()/scale, 1e-5);
     UT_ASSERT_NEAR_EPS(
-          transformed(i,0).imag(), wt.wavelet().evalAnalysis(double(i-N/2)/100).imag()/100, 1e-6);
+          transformed(i,0).imag(), wt.wavelet().evalAnalysis(double(i-N/2)/scale).imag()/scale, 1e-5);
   }
 }
 
@@ -28,20 +29,21 @@ WaveletTransformTest::testTrafo() {
 void
 WaveletTransformTest::testSubsample() {
   // Delta peak
-  int N=1024;
+  int N=32*1024;
+  double scale = 200;
   CVector signal = CVector::Zero(N); signal(N/2) = 1;
   // Perform WT of delta-peak on single scale
   //  -> evaluation of wavelet at that scale
-  RVector scales(1); scales(0) = 100;
+  RVector scales(1); scales(0) = scale;
   CMatrix transformed(N, 1);
 
   WaveletTransform wt(Morlet(), scales, true);
   wt(signal, transformed);
   for (int i=0; i<N; i++) {
     UT_ASSERT_NEAR_EPS(
-          transformed(i,0).real(), wt.wavelet().evalAnalysis(double(i-N/2)/100).real()/100, 1e-6);
+          transformed(i,0).real(), wt.wavelet().evalAnalysis(double(i-N/2)/scale).real()/scale, 1e5);
     UT_ASSERT_NEAR_EPS(
-          transformed(i,0).imag(), wt.wavelet().evalAnalysis(double(i-N/2)/100).imag()/100, 1e-6);
+          transformed(i,0).imag(), wt.wavelet().evalAnalysis(double(i-N/2)/scale).imag()/scale, 1e5);
   }
 }
 

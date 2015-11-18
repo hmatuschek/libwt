@@ -67,22 +67,24 @@ public:
        */
       // Number of samples in the sub-sampled signal
       int n = WT_IDIV_CEIL(N,M);
-      // allocate some working arrays
-      CVector subsig(n);     // <- Will hold the sub-sampled signal
+      // subsample input signal
+      CVector subsig(n);
+      for (int i=0; i<n; i++) {
+        int mmax = std::min(N-i*M, M);
+        subsig[i] = signal.block(i*M, 1, mmax, 1).sum();
+      }
+
+      // Apply overlap-add convolution
       CMatrix subres(n, K);  // <- Will hold the sub-sampled result
-      // For every shift within the M-fold sub-sampling:
-      for (int m=0; m<M; m++) {
-        // subsample input signal
-        for (int i=0; i<n; i++) {
-          subsig[i] = ((i*M+m) < N) ? CScalar(signal[i*M+m]) : 0;
-        }
-        // Apply overlap-add convolution
-        filters->apply(subsig, subres.derived());
-        // Store results into output buffer (interleaved rows)
-        for (int i=0; i<n; i++) {
-          if ( (i*M+m) < N ) {
-            out.block(i*M+m, outCol, 1, K) = subres.row(i);
-          }
+      filters->apply(subsig, subres.derived());
+
+      // Interpolate results into output buffer
+      for (int i=0; i<n; i++) {
+        int mmax = std::min(N-i*M, M);
+        // For every shift within the M-fold sub-sampling:
+        for (int m=0; m<mmax; m++) {
+          out.block(i*M+m, outCol, 1, K) = (subres.row(i)*(M-m))/M;
+          if ((i+1)<n) { out.block(i*M+m, outCol, 1, K) += (subres.row(i+1)*m)/M; }
         }
       }
     }

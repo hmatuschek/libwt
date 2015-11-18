@@ -31,9 +31,12 @@ WaveletTransform::init_trafo()
   std::sort(_scales.derived().data(), _scales.derived().data()+_scales.size());
 
   // Determine kernel size for every scale and round up to next integer for which the FFT can
-  // be computed fast. Also group the resulting kernels by length
+  // be computed fast. Also group the resulting kernels by (rounded) size. This allows to perform
+  // the forward FFT only once for each group
   std::list< std::pair<size_t, std::list<double> > > kernelSizes;
   for (int j=0; j<_scales.size(); j++) {
+    // Get the "kernel size" in samples, round up to the next integer for which the
+    // convolution can be performed fast.
     size_t kernelSize = FFT::roundUp(std::ceil(_scales[j]*2*_wavelet.cutOffTime()));
     if (0 == kernelSizes.size()) {
       // If first scale -> add new kernel size group
@@ -81,6 +84,7 @@ WaveletTransform::init_trafo()
 }
 
 WaveletTransform::~WaveletTransform() {
+  // Free filter bank
   std::vector<Convolution *>::iterator filter = _filterBank.begin();
   for (; filter != _filterBank.end(); filter++) { delete *filter; }
 }

@@ -7,26 +7,48 @@ include(InstallHeadersWithDirectory)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
+# Some options to control build
+option(ENABLE_PYTHON "Build python binding" ON)
+option(ENABLE_OPENMP "Build with OpenMP support" ON)
+
+# Required packages
 FIND_PACKAGE(FFTW3 REQUIRED)
 FIND_PACKAGE(Eigen3 REQUIRED)
 
-FIND_PACKAGE(OpenMP)
-FIND_PACKAGE(SWIG)
-FIND_PACKAGE(PythonInterp)
-FIND_PACKAGE(PythonLibs)
-INCLUDE(${SWIG_USE_FILE})
+# Optional packages
+if(${ENABLE_OPENMP})
+ FIND_PACKAGE(OpenMP)
+endif(${ENABLE_OPENMP})
+if(${ENABLE_PYTHON})
+ FIND_PACKAGE(SWIG)
+ FIND_PACKAGE(PythonInterp)
+ FIND_PACKAGE(PythonLibs)
+ INCLUDE(${SWIG_USE_FILE})
+ # If siwg and python found -> build python interface
+ SET(BUILD_PYTHON_INTERFACE ${SWIG_FOUND} AND ${PYTHONINTERP_FOUND} AND ${PYTHON_LIBSFOUND})
+endif(${ENABLE_PYTHON})
 
+# Dump config
+if(${OPENMP_FOUND})
+ message(STATUS "OpenMP support enabled.")
+else(${OPENMP_FOUND})
+ message(STATUS "OpenMP support disabled.")
+endif(${OPENMP_FOUND})
+if(${BUILD_PYTHON_INTERFACE})
+ message(STATUS "Python interface enabled.")
+else(${BUILD_PYTHON_INTERFACE})
+ message(STATUS "Python interface disabled.")
+endif(${BUILD_PYTHON_INTERFACE})
+
+# compile & linker flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -Wall -frtti -fexceptions -Wno-unknown-pragmas -std=c++11")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -ggdb")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
-
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_INIT})
 set(CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_INIT})
 set(CMAKE_MODULE_LINKER_FLAGS ${CMAKE_MODULE_LINKER_FLAGS_INIT})
 
-# If siwg and python found -> build python interface
-SET(BUILD_PYTHON_INTERFACE ${SWIG_FOUND} AND ${PYTHONINTERP_FOUND} AND ${PYTHON_LIBSFOUND})
-
+# Fix include dirs
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH} ${EIGEN3_INCLUDE_DIRS} ${FFTW3_INCLUDE_DIRS}
  "${CMAKE_CURRENT_SOURCE_DIR}/lib" "${CMAKE_CURRENT_SOURCE_DIR}/utils")
 
@@ -60,10 +82,9 @@ add_subdirectory(lib)
 add_subdirectory(utils)
 add_subdirectory(src)
 add_subdirectory(test)
-if(BUILD_PYTHON_INTERFACE)
- message(STATUS "Python interface enabled.")
+if(${BUILD_PYTHON_INTERFACE})
  add_subdirectory(python)
-endif(BUILD_PYTHON_INTERFACE)
+endif(${BUILD_PYTHON_INTERFACE})
 
 
 # Source distribution packages:

@@ -55,7 +55,7 @@ MorletObj::cutOffTime() const {
 
 double
 MorletObj::cutOffFreq() const {
-  // 99% power at scale 1
+  // 99.% power at scale 1
   return 1+3.*std::sqrt(_dff);
 }
 

@@ -149,9 +149,9 @@ protected:
   /** Backward transformation. */
   FFT _rev;
 
-  /** Possible subsampling for the kernels.
-   * This property of the convolution is not computed or handled by the convolution itself,
-   * instead it is a property that can be assigned to it. I.e. kind of meta-data
+  /** Possible subsampling for the convolution kernels.
+   * This property of the convolution is not computed nor handled by the convolution itself,
+   * instead it is a property that can be assigned to it. I.e., a kind of meta-data
    * for the convolution operation. */
   size_t _subSampling;
 };
