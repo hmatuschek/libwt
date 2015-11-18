@@ -1,7 +1,7 @@
 #ifndef WAVELETTRANSDFORMTEST_HH
 #define WAVELETTRANSDFORMTEST_HH
 
-#include "unittest.hh"
+#include "utils/unittest.hh"
 
 class WaveletTransformTest : public wt::UnitTest::TestCase
 {

@@ -1,7 +1,7 @@
 #ifndef FFTTEST_HH
 #define FFTTEST_HH
 
-#include "unittest.hh"
+#include "utils/unittest.hh"
 #include "fft.hh"
 
 

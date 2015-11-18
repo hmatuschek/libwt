@@ -1,7 +1,7 @@
 #include "wtcli_trafo.hh"
 #include "wavelettransform.hh"
-#include "csv.hh"
-#include "option_parser.hh"
+#include "utils/csv.hh"
+#include "utils/option_parser.hh"
 
 #include <iostream>
 #include <fstream>

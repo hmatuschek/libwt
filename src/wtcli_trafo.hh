@@ -1,7 +1,7 @@
 #ifndef WTCLI_TRAFO_HH
 #define WTCLI_TRAFO_HH
 
-#include "option_parser.hh"
+#include "utils/option_parser.hh"
 
 int wtcli_transform(wt::Opt::Parser &parser);
 

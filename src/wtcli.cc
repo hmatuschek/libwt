@@ -1,7 +1,7 @@
 #include <iostream>
 #include "wtcli_gen.hh"
 #include "wtcli_trafo.hh"
-#include "option_parser.hh"
+#include "utils/option_parser.hh"
 
 using namespace wt;
 

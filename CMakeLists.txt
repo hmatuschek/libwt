@@ -50,7 +50,7 @@ set(CMAKE_MODULE_LINKER_FLAGS ${CMAKE_MODULE_LINKER_FLAGS_INIT})
 
 # Fix include dirs
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH} ${EIGEN3_INCLUDE_DIRS} ${FFTW3_INCLUDE_DIRS}
- "${CMAKE_CURRENT_SOURCE_DIR}/lib" "${CMAKE_CURRENT_SOURCE_DIR}/utils")
+ "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 
 SET(LIBS ${FFTW3_LIBRARIES})
 
@@ -80,7 +80,6 @@ ENDIF(UNIX AND APPLE)
 
 
 add_subdirectory(lib)
-add_subdirectory(utils)
 add_subdirectory(src)
 add_subdirectory(test)
 if(${BUILD_PYTHON_INTERFACE})
