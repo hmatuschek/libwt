@@ -13,13 +13,14 @@ set_target_properties(libwt PROPERTIES OUTPUT_NAME wt)
 set_target_properties(libwt PROPERTIES DEPENDS wt_headers)
 set_target_properties(libwt PROPERTIES VERSION
  "${libwt_VERSION_MAJOR}.${libwt_VERSION_MINOR}.${libwt_VERSION_PATCH}")
-set_target_properties(libwt PROPERTIES SOVERION "${libwt_VERSION_MAJOR}")
-set_target_properties(libwt PROPERTIES MACOSX_RPATH "${CMAKE_INSTALL_RPATH}")
+set_target_properties(libwt PROPERTIES SOVERION ${libwt_VERSION_MAJOR})
+set_target_properties(libwt PROPERTIES MACOSX_RPATH ${CMAKE_INSTALL_RPATH})
+set_target_properties(libwt PROPERTIES INSTALL_NAME_DIR ${CMAKE_INSTALL_RPATH})
 target_link_libraries(libwt ${LIBS})
 
 
 install(TARGETS libwt DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-INSTALL_HEADERS_WITH_DIRECTORY("${LIBSDR_HEADERS}" "${CMAKE_INSTALL_INCLUDEDIR}/libwt")
+INSTALL_HEADERS_WITH_DIRECTORY("${WT_HEADERS}" "${CMAKE_INSTALL_INCLUDEDIR}/libwt")
 #install(FILES "${CMAKE_CURRENT_BINARY_DIR}/config.hh"
 #        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/libwt")
 

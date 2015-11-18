@@ -10,6 +10,7 @@ set_target_properties(libwtutils PROPERTIES VERSION
  "${libwt_VERSION_MAJOR}.${libwt_VERSION_MINOR}.${libwt_VERSION_PATCH}")
 set_target_properties(libwtutils PROPERTIES SOVERION "${libwt_VERSION_MAJOR}")
 set_target_properties(libwtutils PROPERTIES MACOSX_RPATH "${CMAKE_INSTALL_RPATH}")
+set_target_properties(libwtutils PROPERTIES INSTALL_NAME_DIR ${CMAKE_INSTALL_RPATH})
 target_link_libraries(libwtutils ${LIBS})
 
 
