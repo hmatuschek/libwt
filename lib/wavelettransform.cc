@@ -32,7 +32,7 @@ WaveletTransform::init_trafo()
 
   // Determine kernel size for every scale and round up to next integer for which the FFT can
   // be computed fast. Also group the resulting kernels by (rounded) size. This allows to perform
-  // the forward FFT only once for each group
+  // the forward FFT of the signal only once for each group
   std::list< std::pair<size_t, std::list<double> > > kernelSizes;
   for (int j=0; j<_scales.size(); j++) {
     // Get the "kernel size" in samples, round up to the next integer for which the

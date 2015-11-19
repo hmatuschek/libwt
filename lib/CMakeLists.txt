@@ -7,7 +7,7 @@ SET(WT_SOURCES
     object.cc fft_fftw3.cc convolution.cc wavelet.cc waveletanalysis.cc
     wavelettransform.cc waveletsynthesis.cc waveletconvolution.cc api.cc)
 SET(WT_HEADERS
-    wt.hh fft.hh types.hh movingaverage.hh
+    wt.hh fft.hh types.hh
     object.hh fft_fftw3.hh convolution.hh wavelet.hh waveletanalysis.hh
     wavelettransform.hh waveletsynthesis.hh waveletconvolution.hh api.hh)
 

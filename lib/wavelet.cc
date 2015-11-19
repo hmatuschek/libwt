@@ -67,8 +67,8 @@ CauchyObj::CauchyObj(double alpha)
   : WaveletObj(), _alpha(alpha)
 {
   // Compute normalization constant
-  _norm = _alpha*exp(
-        std::log(std::sqrt(M_PI)) + std::lgamma(_alpha+0.5) - std::lgamma(_alpha+1))/(2*M_PI);
+  _norm = std::exp( 2*std::log(2*M_PI) + std::lgamma(2*_alpha+1)/2 - std::lgamma(_alpha+1)
+                    - (2*_alpha+1)*std::log(2)/2 - std::log(_alpha));
 }
 
 CauchyObj::~CauchyObj() {
@@ -77,12 +77,12 @@ CauchyObj::~CauchyObj() {
 
 CScalar
 CauchyObj::evalAnalysis(const Scalar &t) const {
-  return std::pow(CScalar(1,-2*M_PI*t/_alpha), -1-_alpha)/_norm;
+  return std::pow(CScalar(1, -2*M_PI*t/_alpha), -1-_alpha)/_norm;
 }
 
 CScalar
 CauchyObj::evalSynthesis(const Scalar &t) const {
-  return this->evalAnalysis(t);
+  return std::pow(CScalar(1, -2*M_PI*t/_alpha), -1-_alpha)/_norm;
 }
 
 CScalar
@@ -93,12 +93,13 @@ CauchyObj::evalRepKern(const Scalar &b, const Scalar &a) const {
 
 Scalar
 CauchyObj::cutOffTime() const {
-  double eps = 1e-4;
-  return ( _alpha*_alpha * ( std::pow(eps, -2. / (_alpha+1)) - 1) / ((2*M_PI)*(2*M_PI)) );
+  // where the envelope reduced to 1% of max.
+  double eps = 1e-2;
+  return _alpha*std::sqrt(std::pow(eps, -2/(_alpha+1))-1)/(2*M_PI);
 }
 
 Scalar
 CauchyObj::cutOffFreq() const {
-  double eps = 1e-4;
+  double eps = 1e-2;
   return 1+1./( _alpha*_alpha * ( std::pow(eps, -2. / (_alpha+1)) - 1) / ((2*M_PI)*(2*M_PI)) );
 }

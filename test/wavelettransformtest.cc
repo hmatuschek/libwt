@@ -7,7 +7,7 @@ using namespace wt;
 void
 WaveletTransformTest::testTrafo() {
   // Delta peak
-  int N=1024*1024;
+  int N=128*1024;
   double scale = 200;
   int Nscales = 10;
   CVector signal = CVector::Zero(N); signal(N/2) = 1;
@@ -30,7 +30,7 @@ WaveletTransformTest::testTrafo() {
 void
 WaveletTransformTest::testSubsample() {
   // Delta peak
-  int N=1024*1024;
+  int N=128*1024;
   int Nscales = 10;
   double scale = 200;
   CVector signal = CVector::Zero(N); signal(N/2) = 1;

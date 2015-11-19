@@ -10,6 +10,7 @@ class ConvolutionTest : public wt::UnitTest::TestCase
 public:
   void testSingle();
   void testMultiple();
+  void testShortSignal();
 
 public:
   static wt::UnitTest::TestSuite *suite();

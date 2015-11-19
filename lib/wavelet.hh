@@ -60,14 +60,14 @@ protected:
 };
 
 
-/** Implementation of the Cauchy wavelet.
+/** Implementation of an augmented Cauchy or Paul wavelet.
  * Do not use this class directly, consider using the associated container @c Cauchy. */
 class CauchyObj: public WaveletObj
 {
 public:
   /** Constructor.
    * @param alpha Specifies the time resolution. */
-  explicit CauchyObj(double alpha=1);
+  explicit CauchyObj(double alpha=2);
   /** Destructor. */
   virtual ~CauchyObj();
   /** Evaluates the mother wavelet at the given time. */

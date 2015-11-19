@@ -3,7 +3,6 @@
 
 #include "waveletanalysis.hh"
 #include "convolution.hh"
-#include "movingaverage.hh"
 #include <vector>
 
 

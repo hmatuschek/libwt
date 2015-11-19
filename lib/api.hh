@@ -63,12 +63,13 @@ protected:
 
 
 /** The Cauchy or Paul wavelet.
- * In contrast to the @c Morlet wavelet, the Cauchy or Paul wavelet is a proper wavelet with a similar good localization in time
- * and scale.
+ * In contrast to the @c Morlet wavelet, the Cauchy or Paul wavelet is a proper wavelet with a
+ * similar good localization in time and scale.
  *
- * The mother Cauchy or Paul wavelet is (up to constant factors)
+ * There are different definitoins of the Cauchy wavelet around. Here one is implemented where
+ * the center frequency is always 1 irrespective of the value of \f$\alpha\f$:
  * \f[
- * g(t) = h(t) = \frac{\Gamma(\alpha+1)}{\Gamma(\alpha+\frac{1}{2})} \left(1-2\pi\,i\,t\right)^{-(1+\alpha)}\,,
+ * g(t) = h(t) = \left(1-i\,\frac{2\pi\,t}{\alpha}\right)^{-(1+\alpha)}\,,
  * \f]
  * and its reproducing kernel
  * \f[
@@ -80,7 +81,7 @@ class Cauchy: public Wavelet
 public:
   /** Constructor.
    * @param alpha Specifies the time resolution. */
-  explicit Cauchy(double alpha=1.0);
+  explicit Cauchy(double alpha=2.0);
   /** Packs the given @c CauchyObj instance into a container. The ownership is taken. */
   Cauchy(CauchyObj *obj);
   /** Copy constructor, manages references. */

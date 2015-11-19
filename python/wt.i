@@ -16,7 +16,7 @@ import_array();
 /*
  * Interfacing Wavelet classes
  */
-%feature("autodoc","Base class of all mother wavelets.");
+%feature("autodoc", "Base class of all mother wavelets.");
 class Wavelet
 {
 protected:
@@ -118,6 +118,7 @@ class WaveletSynthesis: public WaveletAnalysis
 {
 public:
   WaveletSynthesis(const Wavelet &wavelet, double *scales, int Nscales);
+  WaveletSynthesis(const WaveletTransform &wt);
   virtual ~WaveletSynthesis();
 };
 

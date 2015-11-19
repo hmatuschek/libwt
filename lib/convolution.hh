@@ -9,7 +9,7 @@ namespace wt {
 /** Implements the overlap-add covolution\cite Smith2012 of a signal with several filter kernels
  * of the same size, each being shorter that the signal.
  *
- * As all kernels share the same size, hence the forward FFT of a piece of the input signal must
+ * As all kernels share the same size, the forward FFT of a piece of the input signal must
  * be computed only once. This speeds up the convolution slightly. Further, assuming K kernels of
  * size M and a signal length of N samples. The direct FFT convolution cost would be
  * \f$(K+1)\,N\,\log(N)\f$, not including the costs of computing the FFTs of the kernels.
@@ -98,8 +98,11 @@ public:
       // Peform backward trafo
       this->_rev.exec();
 
-      // store result if _M/2+rem < _M
-      if (this->_M >= (rem+this->_M/2)) {
+      /// @bug Does not work if signal is shorter than kernel!!!
+      if (0 == steps) {
+        out.block(0, 0, rem, this->_K).noalias() =
+            this->_work.block(this->_M/2, 0, rem, this->_K);
+      } else if (this->_M >= (rem+this->_M/2)) {
         out.block(out_offset, 0, rem+this->_M/2, this->_K).noalias() =
             ( ( this->_work.topRows(rem+this->_M/2) +
                 this->_lastRes.topRows(rem+this->_M/2) ) / (2*this->_M) );
