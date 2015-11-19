@@ -56,6 +56,42 @@ public:
 };
 
 
+/*
+ * Interfacing Convolution class
+ */
+%numpy_typemaps(std::complex<double> , NPY_CDOUBLE, int)
+%apply (std::complex<double>* IN_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* kernel, int Nrow, int Ncol)};
+%apply (std::complex<double>* IN_ARRAY1, int DIM1) {(std::complex<double>* signal, int Nsig)};
+%apply (std::complex<double>* INPLACE_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* out, int Nrow, int Ncol)};
+
+class Convolution
+{
+public:
+  Convolution(std::complex<double> *kernels, int Nrow, int Ncol);
+
+  size_t kernelLength() const;
+  size_t numKernels() const;
+};
+
+%extend Convolution {
+  void apply (std::complex<double> *signal, int Nsig, std::complex<double> *out, int Nrow, int Ncol) {
+    if (Nsig != Nrow) {
+      PyErr_Format(PyExc_ValueError,
+                   "Signal length and output rows do not match!");
+      return;
+    }
+    if (Ncol != self->numKernels()) {
+      PyErr_Format(PyExc_ValueError,
+                   "Number of kernels and output columns do not match!");
+      return;
+    }
+    Eigen::Map<CVector> signalMap(signal, Nsig);
+    Eigen::Map<CMatrix> outMap(out, Nsig, Ncol);
+    self->apply(signalMap, outMap);
+  }
+}
+
+
 
 /*
  * Interfacing WaveletAnalysis class.

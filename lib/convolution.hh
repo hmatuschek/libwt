@@ -21,6 +21,9 @@ class Convolution
 public:
   /** Constructor. The complex matrix @c kernels specifies the convolution filters to be used.
    * Every colum specifies a filter kernel. */
+  Convolution(const CScalar *kernels, int Nrow, int Ncol, size_t subSample = 1);
+  /** Constructor. The complex matrix @c kernels specifies the convolution filters to be used.
+   * Every colum specifies a filter kernel. */
   Convolution(const CMatrix &kernels, size_t subSample = 1);
   /** Destructor. */
   virtual ~Convolution();
@@ -101,7 +104,7 @@ public:
       /// @bug Does not work if signal is shorter than kernel!!!
       if (0 == steps) {
         out.block(0, 0, rem, this->_K).noalias() =
-            this->_work.block(this->_M/2, 0, rem, this->_K);
+            this->_work.block(this->_M/2, 0, rem, this->_K) / (2*this->_M) ;
       } else if (this->_M >= (rem+this->_M/2)) {
         out.block(out_offset, 0, rem+this->_M/2, this->_K).noalias() =
             ( ( this->_work.topRows(rem+this->_M/2) +
