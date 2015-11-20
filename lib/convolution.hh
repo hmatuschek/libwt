@@ -20,7 +20,7 @@ template <typename Scalar>
 class Convolution
 {
 public:
-  typedef typename Traits<Scalar>::Complex CScalar;
+  typedef typename Traits<Scalar>::Complex Complex;
   typedef typename Traits<Scalar>::CVector CVector;
   typedef typename Traits<Scalar>::CMatrix CMatrix;
 
@@ -40,7 +40,7 @@ public:
     FFT<Scalar>::exec(this->_kernelF, FFT<Scalar>::FORWARD);
   }
 
-  Convolution(const CScalar *kernels, int Nrow, int Ncol, size_t subSample=1)
+  Convolution(const Complex *kernels, int Nrow, int Ncol, size_t subSample=1)
     : _K(Ncol), _M(Nrow),
       _kernelF(2*_M, _K), _part(2*_M), _fwd(_part, FFT<Scalar>::FORWARD),
       _lastRes(_M, _K), _work(2*_M, _K), _rev(_work, FFT<Scalar>::BACKWARD),
@@ -74,7 +74,7 @@ public:
     for (size_t i=0; i<steps; i++) {
       // Store piece into forward-trafo buffer
       this->_part.head(this->_M).noalias() =
-          signal.block(i*this->_M,0, _M,1).template cast<CScalar>();
+          signal.block(i*this->_M,0, _M,1).template cast<Complex>();
       // 0-pad
       this->_part.tail(this->_M).setConstant(0);
 

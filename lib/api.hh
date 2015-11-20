@@ -20,7 +20,7 @@ class Wavelet : public Container
 {
 public:
   typedef double Scalar;
-  typedef typename Traits<Scalar>::Complex CScalar;
+  typedef typename Traits<Scalar>::Complex Complex;
 
   /** The object type of the container. */
   typedef WaveletObj ObjectType;
@@ -40,12 +40,12 @@ public:
   Wavelet &operator=(const Wavelet &other);
 
   /** Evaluates the (unscaled) analysis wavelet at the specified position. */
-  inline CScalar evalAnalysis(const Scalar &t) const {
+  inline Complex evalAnalysis(const Scalar &t) const {
     return _wavelet->evalAnalysis(t);
   }
 
   /** Evaluates the (unscaled) analysis wavelet at the specified position. */
-  inline CScalar evalSynthesis(const Scalar &t) const {
+  inline Complex evalSynthesis(const Scalar &t) const {
     return _wavelet->evalSynthesis(t);
   }
 

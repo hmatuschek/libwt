@@ -15,7 +15,7 @@ template <class Scalar>
 class WaveletTransform: public WaveletAnalysis
 {
 public:
-  typedef typename Traits<Scalar>::Complex CScalar;
+  typedef typename Traits<Scalar>::Complex Complex;
   typedef typename Traits<Scalar>::RVector RVector;
   typedef typename Traits<Scalar>::CVector CVector;
   typedef typename Traits<Scalar>::CMatrix CMatrix;
