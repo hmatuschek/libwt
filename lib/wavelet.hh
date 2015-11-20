@@ -8,6 +8,10 @@ namespace wt {
 /** Base class of all wavelet (-pair) objects. */
 class WaveletObj: public Object
 {
+public:
+  typedef double Scalar;
+  typedef Traits<Scalar>::Complex CScalar;
+
 protected:
   /** Hidden constructor. */
   WaveletObj();

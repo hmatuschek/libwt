@@ -5,7 +5,7 @@
 using namespace wt;
 
 
-FFT::FFT(CVector &in, CVector &out, Direction dir)
+FFT<double>::FFT(CVector &in, CVector &out, Direction dir)
 {
   if (in.rows() != out.rows()) {
     std::cerr << __FILE__ << " @" << __LINE__ << "Dimension mismatch"<< std::endl;
@@ -18,7 +18,7 @@ FFT::FFT(CVector &in, CVector &out, Direction dir)
         (dir == FORWARD) ? FFTW_FORWARD : FFTW_BACKWARD, FFTW_ESTIMATE);
 }
 
-FFT::FFT(CVector &inout, Direction dir)
+FFT<double>::FFT(CVector &inout, Direction dir)
 {
   _plan = fftw_plan_dft_1d(
         inout.rows(),
@@ -27,7 +27,7 @@ FFT::FFT(CVector &inout, Direction dir)
         (dir == FORWARD) ? FFTW_FORWARD : FFTW_BACKWARD, FFTW_ESTIMATE);
 }
 
-FFT::FFT(CMatrix &in, CMatrix &out, Direction dir) {
+FFT<double>::FFT(CMatrix &in, CMatrix &out, Direction dir) {
   if (in.rows() != out.rows()) {
     std::cerr << __FILE__ << " @" << __LINE__ << "Dimension mismatch" << std::endl;
     abort();
@@ -47,7 +47,7 @@ FFT::FFT(CMatrix &in, CMatrix &out, Direction dir) {
         (FORWARD == dir) ? FFTW_FORWARD : FFTW_BACKWARD, FFTW_ESTIMATE);
 }
 
-FFT::FFT(CMatrix &inout, Direction dir) {
+FFT<double>::FFT(CMatrix &inout, Direction dir) {
   int n[1] = { int(inout.rows()) };
   int rowStride = inout.rowStride(), colStride = inout.colStride();
   _plan = fftw_plan_many_dft(
@@ -57,41 +57,41 @@ FFT::FFT(CMatrix &inout, Direction dir) {
         (dir == FORWARD) ? FFTW_FORWARD : FFTW_BACKWARD, FFTW_ESTIMATE);
 }
 
-FFT::~FFT() {
+FFT<double>::~FFT() {
   fftw_destroy_plan(_plan);
 }
 
 void
-FFT::exec() {
+FFT<double>::exec() {
   fftw_execute(_plan);
 }
 
 void
-FFT::exec(CVector &in, CVector &out, Direction dir) {
+FFT<double>::exec(CVector &in, CVector &out, Direction dir) {
   FFT fft(in, out, dir);
   fft.exec();
 }
 
 void
-FFT::exec(CMatrix &in, CMatrix &out, Direction dir) {
+FFT<double>::exec(CMatrix &in, CMatrix &out, Direction dir) {
   FFT fft(in, out, dir);
   fft.exec();
 }
 
 void
-FFT::exec(CVector &inout, Direction dir) {
+FFT<double>::exec(CVector &inout, Direction dir) {
   FFT fft(inout, dir);
   fft.exec();
 }
 
 void
-FFT::exec(CMatrix &inout, Direction dir) {
+FFT<double>::exec(CMatrix &inout, Direction dir) {
   FFT fft(inout, dir);
   fft.exec();
 }
 
 size_t
-FFT::roundUp(size_t N) {
+FFT<double>::roundUp(size_t N) {
   if (0 == N) { return 0; }
   return std::pow(2, std::ceil(std::log2(N)));
 }

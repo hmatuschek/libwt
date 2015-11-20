@@ -8,22 +8,19 @@
 
 namespace wt {
 
-/** The real scalar type. */
+/*
 typedef double Scalar;
-/** The complex type derived from the scalar type. */
 typedef std::complex<Scalar> CScalar;
-/** The real valued (column) vector type. */
 typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> RVector;
-/** The complex valued (column) vector type. */
 typedef Eigen::Matrix<CScalar, Eigen::Dynamic, 1> CVector;
-/** The real valued matrix type. */
 typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> RMatrix;
-/** The complex valued matrix type. */
 typedef Eigen::Matrix<CScalar, Eigen::Dynamic, Eigen::Dynamic> CMatrix;
+*/
 
 template <typename Scalar>
 class Traits
 {
+public:
   typedef Scalar Real;
   typedef std::complex<Real> Complex;
   typedef Eigen::Matrix<Real, Eigen::Dynamic, 1> RVector;

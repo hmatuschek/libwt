@@ -2,7 +2,7 @@
 
 using namespace wt;
 
-WaveletConvolution::WaveletConvolution(const Wavelet &wavelet, const RVector &scales)
+WaveletConvolution::WaveletConvolution(const Wavelet &wavelet, const Eigen::VectorXd &scales)
   : WaveletAnalysis(wavelet, scales), _reprodKernel()
 {
   _init_convolution();

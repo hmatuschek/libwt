@@ -6,9 +6,17 @@
 
 namespace wt {
 
-/** Implements the generic FFT-plan interface for the FFTW3 library. */
-class FFT
+template <class Scalar> class FFT;
+
+
+/** Implements the generic double precision FFT-plan interface for the FFTW3 library. */
+template <>
+class FFT<double>
 {
+public:
+  typedef typename Traits<double>::CVector CVector;
+  typedef typename Traits<double>::CMatrix CMatrix;
+
 public:
   /** Specifies the possible FFT directions. */
   typedef enum {

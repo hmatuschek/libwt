@@ -17,7 +17,7 @@ class WaveletAnalysis
 {
 protected:
   /** Hidden constructor from the specified wavelet and scales. */
-  WaveletAnalysis(const Wavelet &wavelet, const RVector &scales);
+  WaveletAnalysis(const Wavelet &wavelet, const Eigen::VectorXd &scales);
   /** Hidden constructor from the specified wavelet and scales. */
   WaveletAnalysis(const Wavelet &wavelet, double *scales, int Nscales);
 
@@ -30,7 +30,7 @@ public:
   /** Returns the number of scales of this wavelet transform. */
   inline size_t nScales() const { return _scales.size(); }
   /** Returns the scales of the wavelet transform. */
-  inline const RVector &scales() const { return _scales; }
+  inline const Eigen::VectorXd &scales() const { return _scales; }
   /** Returns the (the first @c Nscales) scales of the wavelet transform stored in @c outScales. */
   inline void scales(double *outScales, int Nscales) const {
     for (int i=0; i<std::min(int(_scales.size()), Nscales); i++) {
@@ -44,7 +44,7 @@ protected:
   /** The (mother-) wavelet to of the transform. */
   Wavelet _wavelet;
   /** The scales (in samples) of the transform. */
-  RVector _scales;
+  Eigen::VectorXd _scales;
 };
 
 }

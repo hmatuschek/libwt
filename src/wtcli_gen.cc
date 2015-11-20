@@ -20,7 +20,7 @@ int wtcli_generate_signal(Opt::Parser &parser) {
     }
   }
 
-  RVector x = RVector::Zero(std::stoi(parser.get_values("samples").back()));
+  Eigen::VectorXd x = Eigen::VectorXd::Zero(std::stoi(parser.get_values("samples").back()));
   std::list<size_t> deltas;
   std::list<std::string>::const_iterator delta = parser.get_option("delta").begin();
   for(; delta != parser.get_option("delta").end(); delta++) { deltas.push_back(std::stoi(*delta)); }

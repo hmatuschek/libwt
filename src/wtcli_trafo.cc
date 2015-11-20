@@ -8,7 +8,7 @@
 
 using namespace wt;
 
-wt::Scalar angle(const wt::CScalar &a) {
+double angle(const std::complex<double> &a) {
   return std::atan2(a.real(),a.imag());
 }
 
@@ -31,12 +31,12 @@ wtcli_transform(Opt::Parser &parser)
     nScales = std::stoi(scaledef, &offset);
   }
 
-  RVector scales(nScales);
+  Eigen::VectorXd scales(nScales);
   double scale = minScale, ds = (maxScale-minScale)/nScales;
   for (size_t i=0; i<nScales; i++, scale+=ds) { scales[i] = scale; }
 
   // Read input
-  RMatrix input;
+  Eigen::MatrixXd input;
   if ("-" == parser.get_values("infile").back()) {
     CSV::read(input, std::cin);
   } else {
@@ -53,7 +53,7 @@ wtcli_transform(Opt::Parser &parser)
   if (parser.has_option("column")) {
     input_column = std::stoi(parser.get_option("column").back());
   }
-  CVector x = input.col(input_column).cast<CScalar>();
+  Eigen::VectorXcd x = input.col(input_column).cast< std::complex<double> >();
 
   // Determine output
   bool to_stdout = false;
@@ -70,8 +70,8 @@ wtcli_transform(Opt::Parser &parser)
   }
 
   // Create and perform transform
-  WaveletTransform wt(Morlet(2), scales, parser.has_flag("subsample"));
-  CMatrix res(x.size(), scales.size());
+  WaveletTransform<double> wt(Morlet(2), scales, parser.has_flag("subsample"));
+  Eigen::MatrixXcd res(x.size(), scales.size());
   wt(x, res);
 
   // output result

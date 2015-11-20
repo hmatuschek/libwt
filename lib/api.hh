@@ -19,6 +19,9 @@ namespace wt {
 class Wavelet : public Container
 {
 public:
+  typedef double Scalar;
+  typedef typename Traits<Scalar>::Complex CScalar;
+
   /** The object type of the container. */
   typedef WaveletObj ObjectType;
 

@@ -10,13 +10,13 @@ WaveletTransformTest::testTrafo() {
   int N=128*1024;
   double scale = 200;
   int Nscales = 10;
-  CVector signal = CVector::Zero(N); signal(N/2) = 1;
+  Eigen::VectorXcd signal = Eigen::VectorXcd::Zero(N); signal(N/2) = 1;
   // Perform WT of delta-peak on single scale
   //  -> evaluation of wavelet at that scale
-  RVector scales(Nscales); scales.setConstant(scale);
-  CMatrix transformed(N, Nscales);
+  Eigen::VectorXd scales(Nscales); scales.setConstant(scale);
+  Eigen::MatrixXcd transformed(N, Nscales);
 
-  WaveletTransform wt(Morlet(), scales);
+  WaveletTransform<double> wt(Morlet(), scales);
   wt(signal, transformed);
   for (int i=0; i<N; i++) {
     UT_ASSERT_NEAR_EPS(
@@ -33,13 +33,13 @@ WaveletTransformTest::testSubsample() {
   int N=128*1024;
   int Nscales = 10;
   double scale = 200;
-  CVector signal = CVector::Zero(N); signal(N/2) = 1;
+  Eigen::VectorXcd signal = Eigen::VectorXcd::Zero(N); signal(N/2) = 1;
   // Perform WT of delta-peak on single scale
   //  -> evaluation of wavelet at that scale
-  RVector scales(Nscales); scales.setConstant(scale);
-  CMatrix transformed(N, Nscales);
+  Eigen::VectorXd scales(Nscales); scales.setConstant(scale);
+  Eigen::MatrixXcd transformed(N, Nscales);
 
-  WaveletTransform wt(Morlet(), scales, true);
+  WaveletTransform<double> wt(Morlet(), scales, true);
   wt(signal, transformed);
   for (int i=0; i<N; i++) {
     UT_ASSERT_NEAR_EPS(

@@ -59,8 +59,8 @@ public:
 /*
  * Interfacing Convolution class
  */
-%numpy_typemaps(std::complex<double> , NPY_CDOUBLE, int)
-%apply (std::complex<double>* IN_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* kernel, int Nrow, int Ncol)};
+/*%numpy_typemaps(std::complex<double> , NPY_CDOUBLE, int)
+%apply (std::complex<double>* IN_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* kernels, int Nrow, int Ncol)};
 %apply (std::complex<double>* IN_ARRAY1, int DIM1) {(std::complex<double>* signal, int Nsig)};
 %apply (std::complex<double>* INPLACE_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* out, int Nrow, int Ncol)};
 
@@ -73,7 +73,7 @@ public:
   size_t numKernels() const;
 };
 
-%extend Convolution {
+%extend Convolution<double> {
   void apply (std::complex<double> *signal, int Nsig, std::complex<double> *out, int Nrow, int Ncol) {
     if (Nsig != Nrow) {
       PyErr_Format(PyExc_ValueError,
@@ -89,7 +89,7 @@ public:
     Eigen::Map<CMatrix> outMap(out, Nsig, Ncol);
     self->apply(signalMap, outMap);
   }
-}
+} */
 
 
 
@@ -118,7 +118,7 @@ public:
 %apply (std::complex<double>* IN_ARRAY1, int DIM1) {(std::complex<double>* signal, int Nsig)};
 %apply (std::complex<double>* INPLACE_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* out, int Nrow, int Ncol)};
 
-class WaveletTransform: public WaveletAnalysis
+/*class WaveletTransform: public WaveletAnalysis
 {
 public:
   WaveletTransform(const Wavelet &wavelet, double *scales, int Nscales, bool subSample=false);
@@ -141,7 +141,7 @@ void operator() (std::complex<double> *signal, int Nsig, std::complex<double> *o
   Eigen::Map<CMatrix> outMap(out, Nsig, Ncol);
   (*self)(signalMap, outMap);
 }
-}
+} */
 
 
 /*
@@ -150,7 +150,7 @@ void operator() (std::complex<double> *signal, int Nsig, std::complex<double> *o
 %apply (std::complex<double>* IN_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* transformed, int Nrow, int Ncol)};
 %apply (std::complex<double>* INPLACE_ARRAY1, int DIM1) {(std::complex<double>* out, int N)};
 
-class WaveletSynthesis: public WaveletAnalysis
+/*class WaveletSynthesis: public WaveletAnalysis
 {
 public:
   WaveletSynthesis(const Wavelet &wavelet, double *scales, int Nscales);
@@ -174,4 +174,4 @@ void operator() (std::complex<double>* transformed, int Nrow, int Ncol, std::com
   Eigen::Map<CVector> outMap(out, N);
   (*self)(transformedMap, outMap);
 }
-}
+} */

@@ -16,17 +16,42 @@ namespace wt {
  *
  * Using the overlap-add method, the costs are \f$(K+1)\,N\,\log(2\,M)\f$, which results into a
  * benifit if \f$2\,M < N\f$. */
+template <typename Scalar>
 class Convolution
 {
 public:
+  typedef typename Traits<Scalar>::Complex CScalar;
+  typedef typename Traits<Scalar>::CVector CVector;
+  typedef typename Traits<Scalar>::CMatrix CMatrix;
+
+public:
   /** Constructor. The complex matrix @c kernels specifies the convolution filters to be used.
    * Every colum specifies a filter kernel. */
-  Convolution(const CScalar *kernels, int Nrow, int Ncol, size_t subSample = 1);
-  /** Constructor. The complex matrix @c kernels specifies the convolution filters to be used.
-   * Every colum specifies a filter kernel. */
-  Convolution(const CMatrix &kernels, size_t subSample = 1);
-  /** Destructor. */
-  virtual ~Convolution();
+  Convolution(const CMatrix &kernels, size_t subSample = 1)
+    : _K(kernels.cols()), _M(kernels.rows()),
+      _kernelF(2*_M, _K), _part(2*_M), _fwd(_part, FFT<Scalar>::FORWARD),
+      _lastRes(_M, _K), _work(2*_M, _K), _rev(_work, FFT<Scalar>::BACKWARD),
+      _subSampling(subSample)
+  {
+    // Store filter kernels:
+    this->_kernelF.topRows(this->_M).noalias() = kernels;
+    this->_kernelF.bottomRows(this->_M).setConstant(0);
+    // Compute FFT in-place
+    FFT<Scalar>::exec(this->_kernelF, FFT<Scalar>::FORWARD);
+  }
+
+  Convolution(const CScalar *kernels, int Nrow, int Ncol, size_t subSample=1)
+    : _K(Ncol), _M(Nrow),
+      _kernelF(2*_M, _K), _part(2*_M), _fwd(_part, FFT<Scalar>::FORWARD),
+      _lastRes(_M, _K), _work(2*_M, _K), _rev(_work, FFT<Scalar>::BACKWARD),
+      _subSampling(subSample)
+  {
+    // Store filter kernels:
+    _kernelF.topRows(_M).noalias() = Eigen::Map<const CMatrix>(kernels, _M, _K);
+    _kernelF.bottomRows(_M).setConstant(0);
+    // Compute FFT in-place
+    FFT<Scalar>::exec(_kernelF, FFT<Scalar>::FORWARD);
+  }
 
   /** Performs the convolution of the signal passed by @c signal with the kernels passed to the
    * constructor. The results are stored in the columns of the array @c out. Hence, given a
@@ -146,14 +171,14 @@ protected:
   /** Working vector for the forward-transform of an piece of the input signal. */
   CVector _part;
   /** The in-place FFT transform of a (zero-padded) signal part. */
-  FFT _fwd;
+  FFT<Scalar> _fwd;
 
   /** Second halfs of the back-transformed, filtered singals. */
   CMatrix _lastRes;
   /** Working memory for backward transformation of filtered signals. */
   CMatrix _work;
   /** Backward transformation. */
-  FFT _rev;
+  FFT<Scalar> _rev;
 
   /** Possible subsampling for the convolution kernels.
    * This property of the convolution is not computed nor handled by the convolution itself,

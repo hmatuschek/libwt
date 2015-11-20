@@ -2,7 +2,7 @@
 
 using namespace wt;
 
-WaveletAnalysis::WaveletAnalysis(const Wavelet &wavelet, const RVector &scales)
+WaveletAnalysis::WaveletAnalysis(const Wavelet &wavelet, const Eigen::VectorXd &scales)
   : _wavelet(wavelet), _scales(scales)
 {
   // pass...

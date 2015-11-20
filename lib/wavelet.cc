@@ -31,17 +31,17 @@ MorletObj::~MorletObj() {
   // pass...
 }
 
-CScalar
+WaveletObj::CScalar
 MorletObj::evalAnalysis(const Scalar &t) const {
   return std::exp(CScalar(-t*t*_dff, 2*M_PI*t))*std::sqrt(_dff/(2*M_PI));
 }
 
-CScalar
+WaveletObj::CScalar
 MorletObj::evalSynthesis(const Scalar &t) const {
   return this->evalAnalysis(t);
 }
 
-CScalar
+WaveletObj::CScalar
 MorletObj::evalRepKern(const Scalar &b, const Scalar &a) const {
   /// @bug implement
   return 0;
@@ -75,30 +75,30 @@ CauchyObj::~CauchyObj() {
   // pass...
 }
 
-CScalar
+WaveletObj::CScalar
 CauchyObj::evalAnalysis(const Scalar &t) const {
   return std::pow(CScalar(1, -2*M_PI*t/_alpha), -1-_alpha)/_norm;
 }
 
-CScalar
+WaveletObj::CScalar
 CauchyObj::evalSynthesis(const Scalar &t) const {
   return std::pow(CScalar(1, -2*M_PI*t/_alpha), -1-_alpha)/_norm;
 }
 
-CScalar
+WaveletObj::CScalar
 CauchyObj::evalRepKern(const Scalar &b, const Scalar &a) const {
   return std::tgamma(2*_alpha+1) * std::pow(a, _alpha) *
       std::pow(CScalar(1+a, -b/a),-(1+2*_alpha))/(2*M_PI);
 }
 
-Scalar
+double
 CauchyObj::cutOffTime() const {
   // where the envelope reduced to 1% of max.
   double eps = 1e-2;
   return _alpha*std::sqrt(std::pow(eps, -2/(_alpha+1))-1)/(2*M_PI);
 }
 
-Scalar
+double
 CauchyObj::cutOffFreq() const {
   double eps = 1e-2;
   return 1+1./( _alpha*_alpha * ( std::pow(eps, -2. / (_alpha+1)) - 1) / ((2*M_PI)*(2*M_PI)) );

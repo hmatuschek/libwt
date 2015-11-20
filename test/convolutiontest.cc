@@ -5,12 +5,12 @@ using namespace wt;
 
 void
 ConvolutionTest::testSingle() {
-  CVector in(16);
+  Eigen::VectorXcd in(16);
   for (size_t i=0; i<16; i++) { in(i) = std::sin(2*M_PI*i/8); }
-  CVector kernel = CVector::Zero(6); kernel(3) = 1;
+  Eigen::VectorXcd kernel = Eigen::VectorXcd::Zero(6); kernel(3) = 1;
 
-  Convolution conv(kernel);
-  CVector out = CVector::Zero(16);
+  Convolution<double> conv(kernel);
+  Eigen::VectorXcd out = Eigen::VectorXcd::Zero(16);
   conv.apply(in, out);
   for (size_t i=0; i<16; i++) {
     UT_ASSERT_NEAR_EPS(out(i).real(), in(i).real(), 1e-8);
@@ -20,12 +20,12 @@ ConvolutionTest::testSingle() {
 
 void
 ConvolutionTest::testMultiple() {
-  CVector in(16);
+  Eigen::VectorXcd in(16);
   for (size_t i=0; i<16; i++) { in(i) = std::sin(2*M_PI*i/8); }
-  CMatrix kernel = CMatrix::Zero(6,2); kernel.row(3).setConstant(1);
+  Eigen::MatrixXcd kernel = Eigen::MatrixXcd::Zero(6,2); kernel.row(3).setConstant(1);
 
-  Convolution conv(kernel);
-  CMatrix out = CMatrix::Zero(16,2);
+  Convolution<double> conv(kernel);
+  Eigen::MatrixXcd out = Eigen::MatrixXcd::Zero(16,2);
   conv.apply(in, out);
 
   for (size_t i=0; i<16; i++) {
@@ -38,12 +38,13 @@ ConvolutionTest::testMultiple() {
 
 void
 ConvolutionTest::testShortSignal() {
-  CVector in(16);
+  Eigen::VectorXcd in(16);
   for (size_t i=0; i<16; i++) { in(i) = std::sin(2*M_PI*i/8); }
-  CMatrix kernel = CMatrix::Zero(32,1); kernel.row(16).setConstant(1);
+  Eigen::MatrixXcd kernel = Eigen::MatrixXcd::Zero(32,1);
+  kernel.row(16).setConstant(1);
 
-  Convolution conv(kernel);
-  CMatrix out = CMatrix::Zero(16,1);
+  Convolution<double> conv(kernel);
+  Eigen::MatrixXcd out = Eigen::MatrixXcd::Zero(16,1);
   conv.apply(in, out);
 
   for (size_t i=0; i<16; i++) {

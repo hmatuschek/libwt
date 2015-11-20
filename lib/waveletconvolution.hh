@@ -16,7 +16,7 @@ class WaveletConvolution : public WaveletAnalysis
 {
 public:
   /** Constructs the convolution with the reproducting kernel of the specified wavelet pair. */
-  WaveletConvolution(const Wavelet &wavelet, const RVector &Scales);
+  WaveletConvolution(const Wavelet &wavelet, const Eigen::VectorXd &Scales);
   /** Constructs the convolution with the reproducting kernel of the specified wavelet pair. */
   WaveletConvolution(const Wavelet &wavelet, double *scales, size_t Nscales);
   /** Copy constructor. */
@@ -34,7 +34,7 @@ protected:
 
 protected:
   /** The list of convolution filters applied for the convolution with the reproducing kernel. */
-  std::vector<Convolution *> _reprodKernel;
+  std::vector<Convolution<double> *> _reprodKernel;
 };
 
 }

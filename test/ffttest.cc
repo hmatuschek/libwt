@@ -12,7 +12,7 @@ FFTTest::testVector() {
   Eigen::Matrix<std::complex<double>, Eigen::Dynamic, 1> ein(8), eout(8);
   ein << 1,1,0,0,1,1,0,0;
   eout.setZero();
-  FFT::exec(ein, eout, FFT::FORWARD);
+  FFT<double>::exec(ein, eout, FFT<double>::FORWARD);
 
   for (int i=0; i<8; i++) {
     UT_ASSERT_EQUAL(out[i][0], eout[i].real());
@@ -33,7 +33,7 @@ FFTTest::testMatrix() {
   ein.col(2) << 1,1,0,0;
   ein.col(3) << 1,1,0,0;
   eout.setZero();
-  FFT::exec(ein, eout, FFT::FORWARD);
+  FFT<double>::exec(ein, eout, FFT<double>::FORWARD);
 
   for (int j=0; j<4; j++) {
     for (int i=0; i<4; i++) {
