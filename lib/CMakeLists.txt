@@ -4,12 +4,11 @@ SET(UTILS_HEADERS
     utils/cputime.cc utils/unittest.cc utils/option_parser.cc utils/csv.hh)
 
 SET(WT_SOURCES
-    object.cc fft_fftw3.cc wavelet.cc waveletanalysis.cc
-    waveletconvolution.cc api.cc)
+    object.cc fft_fftw3.cc wavelet.cc waveletanalysis.cc api.cc)
 SET(WT_HEADERS
     wt.hh fft.hh types.hh convolution.hh wavelettransform.hh waveletsynthesis.hh
-    object.hh fft_fftw3.hh wavelet.hh waveletanalysis.hh
-    waveletconvolution.hh api.hh)
+    waveletconvolution.hh
+    object.hh fft_fftw3.hh wavelet.hh waveletanalysis.hh api.hh)
 
 add_custom_target(wt_headers SOURCES ${WT_HEADERS} ${UTILS_HEADERS})
 
