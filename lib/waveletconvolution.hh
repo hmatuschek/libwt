@@ -13,32 +13,32 @@ namespace wt {
  * @bug Not implemented yet.
  * @ingroup analysis */
 template <class Scalar>
-class WaveletConvolution : public WaveletAnalysis
+class GenericWaveletConvolution : public WaveletAnalysis
 {
 public:
   /** Constructs the convolution with the reproducting kernel of the specified wavelet pair. */
-  WaveletConvolution(const Wavelet &wavelet, const Eigen::VectorXd &Scales)
+  GenericWaveletConvolution(const Wavelet &wavelet, const Eigen::VectorXd &Scales)
     : WaveletAnalysis(wavelet, scales), _reprodKernel()
   {
     _init_convolution();
   }
 
   /** Constructs the convolution with the reproducting kernel of the specified wavelet pair. */
-  WaveletConvolution(const Wavelet &wavelet, double *scales, size_t Nscales)
+  GenericWaveletConvolution(const Wavelet &wavelet, double *scales, size_t Nscales)
     : WaveletAnalysis(wavelet, scales, Nscales), _reprodKernel()
   {
     _init_convolution();
   }
 
   /** Copy constructor. */
-  WaveletConvolution(const WaveletAnalysis &other)
+  GenericWaveletConvolution(const WaveletAnalysis &other)
     : WaveletAnalysis(other), _reprodKernel()
   {
     _init_convolution();
   }
 
   /** Destructor. */
-  virtual ~WaveletConvolution() {
+  virtual ~GenericWaveletConvolution() {
     for (size_t i=0; i<_reprodKernel.size(); i++) {
       delete _reprodKernel[i];
     }
@@ -67,8 +67,10 @@ protected:
 
 protected:
   /** The list of convolution filters applied for the convolution with the reproducing kernel. */
-  std::vector<Convolution<Scalar> *> _reprodKernel;
+  std::vector<GenericConvolution<Scalar> *> _reprodKernel;
 };
+
+typedef GenericWaveletConvolution<double> WaveletConvolution;
 
 }
 

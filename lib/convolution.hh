@@ -17,7 +17,7 @@ namespace wt {
  * Using the overlap-add method, the costs are \f$(K+1)\,N\,\log(2\,M)\f$, which results into a
  * benifit if \f$2\,M < N\f$. */
 template <typename Scalar>
-class Convolution
+class GenericConvolution
 {
 public:
   typedef typename Traits<Scalar>::Complex Complex;
@@ -27,7 +27,7 @@ public:
 public:
   /** Constructor. The complex matrix @c kernels specifies the convolution filters to be used.
    * Every colum specifies a filter kernel. */
-  Convolution(const CMatrix &kernels, size_t subSample = 1)
+  GenericConvolution(const CMatrix &kernels, size_t subSample = 1)
     : _K(kernels.cols()), _M(kernels.rows()),
       _kernelF(2*_M, _K), _part(2*_M), _fwd(_part, FFT<Scalar>::FORWARD),
       _lastRes(_M, _K), _work(2*_M, _K), _rev(_work, FFT<Scalar>::BACKWARD),
@@ -40,7 +40,7 @@ public:
     FFT<Scalar>::exec(this->_kernelF, FFT<Scalar>::FORWARD);
   }
 
-  Convolution(const Complex *kernels, int Nrow, int Ncol, size_t subSample=1)
+  GenericConvolution(const Complex *kernels, int Nrow, int Ncol, size_t subSample=1)
     : _K(Ncol), _M(Nrow),
       _kernelF(2*_M, _K), _part(2*_M), _fwd(_part, FFT<Scalar>::FORWARD),
       _lastRes(_M, _K), _work(2*_M, _K), _rev(_work, FFT<Scalar>::BACKWARD),
@@ -187,6 +187,8 @@ protected:
   size_t _subSampling;
 };
 
+/// Complex convolution on double precision floats.
+typedef GenericConvolution<double> Convolution;
 }
 
 #endif // __WT_CONVOLUTION_HH__

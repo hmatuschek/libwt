@@ -70,7 +70,7 @@ wtcli_transform(Opt::Parser &parser)
   }
 
   // Create and perform transform
-  WaveletTransform<double> wt(Morlet(2), scales, parser.has_flag("subsample"));
+  GenericWaveletTransform<double> wt(Morlet(2), scales, parser.has_flag("subsample"));
   Eigen::MatrixXcd res(x.size(), scales.size());
   wt(x, res);
 

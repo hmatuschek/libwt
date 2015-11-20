@@ -12,7 +12,7 @@ namespace wt {
 /** Implements a complex, continious wavelet transform (i.e. \cite Holschneider1998).
  * @ingroup analyses */
 template <class Scalar>
-class WaveletTransform: public WaveletAnalysis
+class GenericWaveletTransform: public WaveletAnalysis
 {
 public:
   typedef typename Traits<Scalar>::Complex Complex;
@@ -22,30 +22,30 @@ public:
 
 public:
   /** Constructs a wavelet transform from the given @c wavelet at the specified @c scales. */
-  WaveletTransform(const Wavelet &wavelet, const RVector &scales, bool subSample=false)
+  GenericWaveletTransform(const Wavelet &wavelet, const RVector &scales, bool subSample=false)
     : WaveletAnalysis(wavelet, scales), _subSample(subSample), _filterBank()
   {
     init_trafo();
   }
 
   /** Constructs a wavelet transform from the given @c wavelet at the specified @c scales. */
-  WaveletTransform(const Wavelet &wavelet, double *scales, int Nscales, bool subSample=false)
+  GenericWaveletTransform(const Wavelet &wavelet, double *scales, int Nscales, bool subSample=false)
     : WaveletAnalysis(wavelet, scales, Nscales), _subSample(subSample), _filterBank()
   {
     init_trafo();
   }
 
   /** Constructor from other wavelet analysis. */
-  WaveletTransform(const WaveletAnalysis &other, bool subSample=false)
+  GenericWaveletTransform(const WaveletAnalysis &other, bool subSample=false)
     : WaveletAnalysis(other), _subSample(subSample), _filterBank()
   {
     init_trafo();
   }
 
   /** Destructor. */
-  virtual ~WaveletTransform() {
+  virtual ~GenericWaveletTransform() {
     // Free filter bank
-    typename std::vector<Convolution<Scalar> *>::iterator filter = _filterBank.begin();
+    typename std::vector<GenericConvolution<Scalar> *>::iterator filter = _filterBank.begin();
     for (; filter != _filterBank.end(); filter++) { delete *filter; }
   }
 
@@ -73,7 +73,7 @@ public:
     for (size_t j=0; j<_filterBank.size(); j++)
     {
       // Get convolution filters
-      Convolution<Scalar> *filters = _filterBank[j];
+      GenericConvolution<Scalar> *filters = _filterBank[j];
       // Get subsampling
       int M = filters->subSampling();
       // Get start column in output matrix
@@ -172,7 +172,7 @@ protected:
         }
       }
       // Store filter together with sub-sampling
-      _filterBank.push_back(new Convolution<Scalar>(kernels, M));
+      _filterBank.push_back(new GenericConvolution<Scalar>(kernels, M));
     }
   }
 
@@ -181,8 +181,10 @@ protected:
   /** If @c true, the sub-sampling of the input signal is allowed. */
   bool _subSample;
   /** The list of convolution filters applied for the wavelet transform. */
-  std::vector<Convolution<Scalar> *> _filterBank;
+  std::vector<GenericConvolution<Scalar> *> _filterBank;
 };
+
+typedef GenericWaveletTransform<double> WaveletTransform;
 
 }
 

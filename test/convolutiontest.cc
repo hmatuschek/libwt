@@ -9,7 +9,7 @@ ConvolutionTest::testSingle() {
   for (size_t i=0; i<16; i++) { in(i) = std::sin(2*M_PI*i/8); }
   Eigen::VectorXcd kernel = Eigen::VectorXcd::Zero(6); kernel(3) = 1;
 
-  Convolution<double> conv(kernel);
+  GenericConvolution<double> conv(kernel);
   Eigen::VectorXcd out = Eigen::VectorXcd::Zero(16);
   conv.apply(in, out);
   for (size_t i=0; i<16; i++) {
@@ -24,7 +24,7 @@ ConvolutionTest::testMultiple() {
   for (size_t i=0; i<16; i++) { in(i) = std::sin(2*M_PI*i/8); }
   Eigen::MatrixXcd kernel = Eigen::MatrixXcd::Zero(6,2); kernel.row(3).setConstant(1);
 
-  Convolution<double> conv(kernel);
+  GenericConvolution<double> conv(kernel);
   Eigen::MatrixXcd out = Eigen::MatrixXcd::Zero(16,2);
   conv.apply(in, out);
 
@@ -43,7 +43,7 @@ ConvolutionTest::testShortSignal() {
   Eigen::MatrixXcd kernel = Eigen::MatrixXcd::Zero(32,1);
   kernel.row(16).setConstant(1);
 
-  Convolution<double> conv(kernel);
+  GenericConvolution<double> conv(kernel);
   Eigen::MatrixXcd out = Eigen::MatrixXcd::Zero(16,1);
   conv.apply(in, out);
 

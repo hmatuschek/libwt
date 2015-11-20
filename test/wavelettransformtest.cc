@@ -16,7 +16,7 @@ WaveletTransformTest::testTrafo() {
   Eigen::VectorXd scales(Nscales); scales.setConstant(scale);
   Eigen::MatrixXcd transformed(N, Nscales);
 
-  WaveletTransform<double> wt(Morlet(), scales);
+  GenericWaveletTransform<double> wt(Morlet(), scales);
   wt(signal, transformed);
   for (int i=0; i<N; i++) {
     UT_ASSERT_NEAR_EPS(
@@ -39,7 +39,7 @@ WaveletTransformTest::testSubsample() {
   Eigen::VectorXd scales(Nscales); scales.setConstant(scale);
   Eigen::MatrixXcd transformed(N, Nscales);
 
-  WaveletTransform<double> wt(Morlet(), scales, true);
+  GenericWaveletTransform<double> wt(Morlet(), scales, true);
   wt(signal, transformed);
   for (int i=0; i<N; i++) {
     UT_ASSERT_NEAR_EPS(

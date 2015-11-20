@@ -15,16 +15,16 @@ WaveletSynthesisTest::testSynthesis() {
   //  -> evaluation of wavelet at that scale
   Eigen::VectorXd scales(Nscales); scales[0] = 2.;
   double ds = 100./Nscales;
-  for (size_t i=1; i<Nscales; i++) {
+  for (int i=1; i<Nscales; i++) {
     scales[i] = scales[i-1]+ds;
   }
 
   Eigen::MatrixXcd transformed(N, Nscales);
-  WaveletTransform<double> wt(Cauchy(16), scales);
+  GenericWaveletTransform<double> wt(Cauchy(16), scales);
   wt(signal, transformed);
 
   Eigen::VectorXcd reconst(N);
-  WaveletSynthesis<double> ws(wt);
+  GenericWaveletSynthesis<double> ws(wt);
   ws(transformed, reconst);
 
   // Do not test anything, its bad anyway

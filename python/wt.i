@@ -67,28 +67,24 @@ public:
 %apply (std::complex<double>* INPLACE_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* out, int Nrow, int Ncol)};
 
 namespace wt {
-template <class Scalar>
 class Convolution
 {
 public:
-  Convolution(std::complex<Scalar> *kernels, int Nrow, int Ncol);
+  Convolution(std::complex<double> *kernels, int Nrow, int Ncol);
 
   size_t kernelLength() const;
   size_t numKernels() const;
 };
 }
 
-%rename(_Convolution) wt::Convolution;
-%template(Convolution) wt::Convolution<double>;
-
-%extend wt::Convolution<double> {
+%extend wt::Convolution {
   void apply (std::complex<double> *signal, int Nsig, std::complex<double> *out, int Nrow, int Ncol) {
     if (Nsig != Nrow) {
       PyErr_Format(PyExc_ValueError,
                    "Signal length and output rows do not match!");
       return;
     }
-    if (Ncol != self->numKernels()) {
+    if (Ncol != int(self->numKernels())) {
       PyErr_Format(PyExc_ValueError,
                    "Number of kernels and output columns do not match!");
       return;
@@ -128,7 +124,6 @@ public:
 %apply (std::complex<double>* INPLACE_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* out, int Nrow, int Ncol)};
 
 namespace wt {
-template <class Scalar>
 class WaveletTransform: public WaveletAnalysis
 {
 public:
@@ -137,17 +132,14 @@ public:
 };
 }
 
-%rename(_WaveletTransform) wt::WaveletTransform;
-%template(WaveletTransform) wt::WaveletTransform<double>;
-
-%extend wt::WaveletTransform<double> {
+%extend wt::WaveletTransform {
 void operator() (std::complex<double> *signal, int Nsig, std::complex<double> *out, int Nrow, int Ncol) {
   if (Nsig != Nrow) {
     PyErr_Format(PyExc_ValueError,
                  "Signal length and output rows do not match!");
     return;
   }
-  if (Ncol != self->nScales()) {
+  if (Ncol != int(self->nScales())) {
     PyErr_Format(PyExc_ValueError,
                  "Number of scales and output columns do not match!");
     return;
@@ -166,7 +158,6 @@ void operator() (std::complex<double> *signal, int Nsig, std::complex<double> *o
 %apply (std::complex<double>* INPLACE_ARRAY1, int DIM1) {(std::complex<double>* out, int N)};
 
 namespace wt {
-template <class Scalar>
 class WaveletSynthesis: public WaveletAnalysis
 {
 public:
@@ -176,17 +167,14 @@ public:
 };
 }
 
-%rename(_WaveletSynthesis) wt::WaveletSynthesis;
-%template(WaveletSynthesis) wt::WaveletSynthesis<double>;
-
-%extend wt::WaveletSynthesis<double> {
+%extend wt::WaveletSynthesis {
 void operator() (std::complex<double>* transformed, int Nrow, int Ncol, std::complex<double>* out, int N) {
   if (N != Nrow) {
     PyErr_Format(PyExc_ValueError,
                  "Transformed rows and output length do not match!");
     return;
   }
-  if (Ncol != self->nScales()) {
+  if (Ncol != int(self->nScales())) {
     PyErr_Format(PyExc_ValueError,
                  "Number of scales and transformed columns do not match!");
     return;

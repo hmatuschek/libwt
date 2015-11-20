@@ -12,7 +12,7 @@ namespace wt {
  * a wavelet transformed.
  * @ingroup analyses */
 template <class Scalar>
-class WaveletSynthesis: public WaveletAnalysis
+class GenericWaveletSynthesis: public WaveletAnalysis
 {
 public:
   typedef typename Traits<Scalar>::Complex Complex;
@@ -22,29 +22,29 @@ public:
 
 public:
   /** Constructor. */
-  WaveletSynthesis(const Wavelet &wavelet, const RVector &scales)
+  GenericWaveletSynthesis(const Wavelet &wavelet, const RVector &scales)
     : WaveletAnalysis(wavelet, scales), _filterBank()
   {
     init_synthesis();
   }
 
   /** Constructor using double pointers for the python/numpy interface. */
-  WaveletSynthesis(const Wavelet &wavelet, double *scales, int Nscales)
+  GenericWaveletSynthesis(const Wavelet &wavelet, double *scales, int Nscales)
     : WaveletAnalysis(wavelet, scales, Nscales), _filterBank()
   {
     init_synthesis();
   }
 
   /** Constructor from other wavelet analysis. */
-  WaveletSynthesis(const WaveletAnalysis &other)
+  GenericWaveletSynthesis(const WaveletAnalysis &other)
     : WaveletAnalysis(other), _filterBank()
   {
     init_synthesis();
   }
 
   /** Destructor. */
-  virtual ~WaveletSynthesis() {
-    typename std::vector<Convolution<Scalar> *>::iterator filter = _filterBank.begin();
+  virtual ~GenericWaveletSynthesis() {
+    typename std::vector<GenericConvolution<Scalar> *>::iterator filter = _filterBank.begin();
     for (; filter != _filterBank.end(); filter++) { delete *filter; }
   }
 
@@ -86,14 +86,16 @@ protected:
       for (size_t i=0; i<N; i++) {
         kernel(i) = (_wavelet.evalSynthesis((i-double(N)/2)/_scales[j])/(_scales[j]*_scales[j]));
       }
-      _filterBank.push_back(new Convolution<Scalar>(kernel));
+      _filterBank.push_back(new GenericConvolution<Scalar>(kernel));
     }
   }
 
 protected:
   /** The list of convolution filters applied for the wavelet synthesis. */
-  std::vector<Convolution<Scalar> *> _filterBank;
+  std::vector<GenericConvolution<Scalar> *> _filterBank;
 };
+
+typedef GenericWaveletSynthesis<double> WaveletSynthesis;
 
 }
 
