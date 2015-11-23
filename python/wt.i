@@ -29,6 +29,10 @@ public:
   std::complex<double> evalAnalysis(double t);
   %feature("autodoc", "Evaluates the unscaled synthesis mother wavelet.");
   std::complex<double> evalSynthesis(double t);
+  %feature("autodoc", "Evaluates the reproducing kernel located at scale 1 and time 0.");
+  std::complex<double> evalRepKern(double b, double a);
+  %feature("autodoc", "Retruns the normalization constant.");
+  double normConstant() const;
   %feature("autodoc", "Returns the width of the unscaled (mother) wavelet in the time domain.");
   double cutOffTime() const;
   %feature("autodoc", "Returns the width of the unscaled (mother) wavelet in the frequency domain.");
@@ -67,6 +71,7 @@ public:
 %apply (std::complex<double>* INPLACE_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* out, int Nrow, int Ncol)};
 
 namespace wt {
+%feature("autodoc", "Implements overlap-add convolution.");
 class Convolution
 {
 public:

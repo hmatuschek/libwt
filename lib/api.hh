@@ -49,6 +49,14 @@ public:
     return _wavelet->evalSynthesis(t);
   }
 
+  inline Complex evalRepKern(const Scalar &b, const Scalar &a) const {
+    return _wavelet->evalRepKern(b, a);
+  }
+
+  inline double normConstant() const {
+    return _wavelet->normConstant();
+  }
+
   /** Returns the width of the wavelet in time. */
   inline double cutOffTime() const {
     return _wavelet->cutOffTime();

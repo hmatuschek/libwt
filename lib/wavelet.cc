@@ -17,6 +17,11 @@ WaveletObj::~WaveletObj() {
   // pass...
 }
 
+WaveletObj::Scalar
+WaveletObj::normConstant() const {
+  return 1.0;
+}
+
 
 /* ******************************************************************************************** *
  * Implementation of Morlet wavelet
@@ -67,8 +72,8 @@ CauchyObj::CauchyObj(double alpha)
   : WaveletObj(), _alpha(alpha)
 {
   // Compute normalization constant
-  _norm = std::exp( 2*std::log(2*M_PI) + std::lgamma(2*_alpha+1)/2 - std::lgamma(_alpha+1)
-                    - (2*_alpha+1)*std::log(2)/2 - std::log(_alpha));
+  _norm = std::exp( -2*std::log(2*M_PI) - std::lgamma(2*_alpha+1)/2 + std::lgamma(_alpha+1)
+                    + (2*_alpha+1)*std::log(2)/2 + std::log(_alpha));
 }
 
 CauchyObj::~CauchyObj() {
@@ -77,18 +82,23 @@ CauchyObj::~CauchyObj() {
 
 WaveletObj::CScalar
 CauchyObj::evalAnalysis(const Scalar &t) const {
-  return std::pow(CScalar(1, -2*M_PI*t/_alpha), -1-_alpha)/_norm;
+  return std::pow(CScalar(1, -2*M_PI*t/_alpha), -1-_alpha);
 }
 
 WaveletObj::CScalar
 CauchyObj::evalSynthesis(const Scalar &t) const {
-  return std::pow(CScalar(1, -2*M_PI*t/_alpha), -1-_alpha)/_norm;
+  return CauchyObj::evalAnalysis(t);
 }
 
 WaveletObj::CScalar
 CauchyObj::evalRepKern(const Scalar &b, const Scalar &a) const {
   return std::tgamma(2*_alpha+1) * std::pow(a, _alpha) *
       std::pow(CScalar(1+a, -b/a),-(1+2*_alpha))/(2*M_PI);
+}
+
+WaveletObj::Scalar
+CauchyObj::normConstant() const {
+  return _norm;
 }
 
 double

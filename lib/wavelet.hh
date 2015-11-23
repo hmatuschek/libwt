@@ -28,6 +28,8 @@ public:
   /** Needs to be implemented by any specialization to evaluate the reproducing kernel of the wavelet
    * pair at the specified scale and time. */
   virtual CScalar evalRepKern(const Scalar &b, const Scalar &a) const = 0;
+  /** Returns the normalization constant. */
+  virtual Scalar normConstant() const;
   /** Returns the "width" of the (unscaled) wavelet in time. Needs to be implemented by any
    * wavelet. */
   virtual double cutOffTime() const = 0;
@@ -47,12 +49,14 @@ public:
   explicit MorletObj(double dff=2);
   /** Destructor. */
   virtual ~MorletObj();
+
   /** Evaluates the mother wavelet at the specified time. */
   virtual CScalar evalAnalysis(const Scalar &t) const;
   /** Evaluates the mother wavelet at the specified time. */
   virtual CScalar evalSynthesis(const Scalar &t) const;
   /** Evaluates the reproducing kernel located at (1,1). */
   virtual CScalar evalRepKern(const Scalar &b, const Scalar &a) const;
+
   /** Returns the with of the mother wavelet in the time domain. */
   virtual double cutOffTime() const;
   /** Returns the with of the mother wavelet in the frequency domain. */
@@ -74,12 +78,15 @@ public:
   explicit CauchyObj(double alpha=2);
   /** Destructor. */
   virtual ~CauchyObj();
+
   /** Evaluates the mother wavelet at the given time. */
   virtual CScalar evalAnalysis(const Scalar &t) const;
   /** Evaluates the mother wavelet at the given time. */
   virtual CScalar evalSynthesis(const Scalar &t) const;
   /** Evaluates the reproducing kernel at the given time and scale. */
   virtual CScalar evalRepKern(const Scalar &b, const Scalar &a) const;
+  /** Returns the normalization constant. */
+  virtual Scalar normConstant() const;
 
   /** Returns the width of the mother wavelet in the time domain. */
   virtual double cutOffTime() const;

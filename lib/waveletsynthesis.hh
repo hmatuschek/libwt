@@ -84,7 +84,9 @@ protected:
       size_t N = FFT<Scalar>::roundUp(std::ceil(_scales[j]*2*_wavelet.cutOffTime()));
       CVector kernel(N);
       for (size_t i=0; i<N; i++) {
-        kernel(i) = (_wavelet.evalSynthesis((i-double(N)/2)/_scales[j])/(_scales[j]*_scales[j]));
+        kernel(i) = (_wavelet.normConstant() *
+                     _wavelet.evalSynthesis((i-double(N)/2)/_scales[j]) /
+                     (_scales[j]*_scales[j]));
       }
       _filterBank.push_back(new GenericConvolution<Scalar>(kernel));
     }

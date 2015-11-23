@@ -40,6 +40,8 @@ public:
     FFT<Scalar>::exec(this->_kernelF, FFT<Scalar>::FORWARD);
   }
 
+  /** Constructor. The complex matrix @c kernels specifies the convolution filters to be used.
+   * Every colum specifies a filter kernel. */
   GenericConvolution(const Complex *kernels, int Nrow, int Ncol, size_t subSample=1)
     : _K(Ncol), _M(Nrow),
       _kernelF(2*_M, _K), _part(2*_M), _fwd(_part, FFT<Scalar>::FORWARD),
