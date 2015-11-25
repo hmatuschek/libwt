@@ -19,9 +19,6 @@ namespace wt {
 class Wavelet : public Container
 {
 public:
-  typedef double Scalar;
-  typedef typename Traits<Scalar>::Complex Complex;
-
   /** The object type of the container. */
   typedef WaveletObj ObjectType;
 
@@ -40,16 +37,16 @@ public:
   Wavelet &operator=(const Wavelet &other);
 
   /** Evaluates the (unscaled) analysis wavelet at the specified position. */
-  inline Complex evalAnalysis(const Scalar &t) const {
+  inline std::complex<double> evalAnalysis(const double &t) const {
     return _wavelet->evalAnalysis(t);
   }
 
   /** Evaluates the (unscaled) analysis wavelet at the specified position. */
-  inline Complex evalSynthesis(const Scalar &t) const {
+  inline std::complex<double> evalSynthesis(const double &t) const {
     return _wavelet->evalSynthesis(t);
   }
 
-  inline Complex evalRepKern(const Scalar &b, const Scalar &a) const {
+  inline std::complex<double> evalRepKern(const double &b, const double &a) const {
     return _wavelet->evalRepKern(b, a);
   }
 

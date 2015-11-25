@@ -17,7 +17,7 @@ WaveletObj::~WaveletObj() {
   // pass...
 }
 
-WaveletObj::Scalar
+double
 WaveletObj::normConstant() const {
   return 1.0;
 }
@@ -36,18 +36,18 @@ MorletObj::~MorletObj() {
   // pass...
 }
 
-WaveletObj::CScalar
-MorletObj::evalAnalysis(const Scalar &t) const {
-  return std::exp(CScalar(-t*t*_dff, 2*M_PI*t))*std::sqrt(_dff/(2*M_PI));
+std::complex<double>
+MorletObj::evalAnalysis(const double &t) const {
+  return std::exp(std::complex<double>(-t*t*_dff, 2*M_PI*t))*std::sqrt(_dff/(2*M_PI));
 }
 
-WaveletObj::CScalar
-MorletObj::evalSynthesis(const Scalar &t) const {
+std::complex<double>
+MorletObj::evalSynthesis(const double &t) const {
   return this->evalAnalysis(t);
 }
 
-WaveletObj::CScalar
-MorletObj::evalRepKern(const Scalar &b, const Scalar &a) const {
+std::complex<double>
+MorletObj::evalRepKern(const double &b, const double &a) const {
   /// @bug implement
   return 0;
 }
@@ -71,7 +71,7 @@ MorletObj::cutOffFreq() const {
 CauchyObj::CauchyObj(double alpha)
   : WaveletObj(), _alpha(alpha)
 {
-  // Compute normalization constant
+  // Compute normalization constant, a.k.a. c_gh
   _norm = std::exp( -2*std::log(2*M_PI) - std::lgamma(2*_alpha+1)/2 + std::lgamma(_alpha+1)
                     + (2*_alpha+1)*std::log(2)/2 + std::log(_alpha));
 }
@@ -80,23 +80,23 @@ CauchyObj::~CauchyObj() {
   // pass...
 }
 
-WaveletObj::CScalar
-CauchyObj::evalAnalysis(const Scalar &t) const {
-  return std::pow(CScalar(1, -2*M_PI*t/_alpha), -1-_alpha);
+std::complex<double>
+CauchyObj::evalAnalysis(const double &t) const {
+  return std::pow(std::complex<double>(1, -2*M_PI*t/_alpha), -1-_alpha);
 }
 
-WaveletObj::CScalar
-CauchyObj::evalSynthesis(const Scalar &t) const {
+std::complex<double>
+CauchyObj::evalSynthesis(const double &t) const {
   return CauchyObj::evalAnalysis(t);
 }
 
-WaveletObj::CScalar
-CauchyObj::evalRepKern(const Scalar &b, const Scalar &a) const {
+std::complex<double>
+CauchyObj::evalRepKern(const double &b, const double &a) const {
   return std::tgamma(2*_alpha+1) * std::pow(a, _alpha) *
-      std::pow(CScalar(1+a, -b/a),-(1+2*_alpha))/(2*M_PI);
+      std::pow(std::complex<double>(1+a, -b*_alpha/a), -(1+2*_alpha))/(2*M_PI);
 }
 
-WaveletObj::Scalar
+double
 CauchyObj::normConstant() const {
   return _norm;
 }
