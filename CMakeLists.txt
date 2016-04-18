@@ -8,8 +8,9 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 # Some options to control build
-option(ENABLE_PYTHON "Build python binding" ON)
-option(ENABLE_OPENMP "Build with OpenMP support" ON)
+option(ENABLE_PYTHON "Build python binding." ON)
+option(INSTALL_PYTHON_USERSITE "Install python module into user site." OFF)
+option(ENABLE_OPENMP "Build with OpenMP support." ON)
 
 # Required packages
 FIND_PACKAGE(FFTW3 REQUIRED)
@@ -41,7 +42,7 @@ else(${BUILD_PYTHON_INTERFACE})
 endif(${BUILD_PYTHON_INTERFACE})
 
 # compile & linker flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -Wall -frtti -fexceptions -Wno-unknown-pragmas -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -Wall -fPIC -frtti -fexceptions -Wno-unknown-pragmas -std=c++11")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -ggdb")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_INIT})
