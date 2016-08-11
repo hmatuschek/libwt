@@ -26,7 +26,7 @@ public:
 
 public:
   /** Constructs a wavelet transform from the given @c wavelet at the specified @c scales. */
-  GenericWaveletTransform(const Wavelet &wavelet, const RVector &scales, bool subSample=false);
+  GenericWaveletTransform(const Wavelet &wavelet, const Eigen::Ref<const RVector> &scales, bool subSample=false);
 
   /** Constructs a wavelet transform from the given @c wavelet at the specified @c scales. */
   GenericWaveletTransform(const Wavelet &wavelet, double *scales, int Nscales, bool subSample=false);
@@ -64,7 +64,7 @@ typedef GenericWaveletTransform<double> WaveletTransform;
  * Implementation of GenericWaveletTransform
  * ******************************************************************************************** */
 template <class Scalar>
-wt::GenericWaveletTransform<Scalar>::GenericWaveletTransform(const Wavelet &wavelet, const RVector &scales, bool subSample)
+wt::GenericWaveletTransform<Scalar>::GenericWaveletTransform(const Wavelet &wavelet, const Eigen::Ref<const RVector> &scales, bool subSample)
   : WaveletAnalysis(wavelet, scales), _subSample(subSample), _filterBank()
 {
   this->init_trafo();

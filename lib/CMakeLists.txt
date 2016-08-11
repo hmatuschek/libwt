@@ -7,11 +7,11 @@ SET(WT_SOURCES
     object.cc exception.cc fft_fftw3.cc wavelet.cc waveletanalysis.cc api.cc)
 SET(WT_HEADERS
     wt.hh exception.hh fft.hh types.hh convolution.hh wavelettransform.hh waveletsynthesis.hh
-    waveletconvolution.hh api.hh config.hh
+    waveletconvolution.hh api.hh
     object.hh fft_fftw3.hh wavelet.hh waveletanalysis.hh)
 
 if (${FFTW3_FOUND})
-  message(STATUS "Using FFTW3 for FFT convolution.")
+  message(STATUS "Using FFTW3 for FFT convolution: ${FFTW3_LIBRARIES}")
   set(WT_WITH_FFTW3 ON)
 endif(${FFTW3_FOUND})
 
@@ -22,7 +22,6 @@ add_custom_target(wt_headers SOURCES ${WT_HEADERS} ${UTILS_HEADERS})
 
 add_library(libwt SHARED ${WT_SOURCES} ${UTILS_SOURCES})
 set_target_properties(libwt PROPERTIES OUTPUT_NAME wt)
-set_target_properties(libwt PROPERTIES DEPENDS wt_headers)
 set_target_properties(libwt PROPERTIES VERSION
  "${libwt_VERSION_MAJOR}.${libwt_VERSION_MINOR}.${libwt_VERSION_PATCH}")
 set_target_properties(libwt PROPERTIES SOVERION ${libwt_VERSION_MAJOR})

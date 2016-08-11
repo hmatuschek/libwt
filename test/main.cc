@@ -5,6 +5,8 @@
 #include "convolutiontest.hh"
 #include "wavelettransformtest.hh"
 #include "waveletsynthesistest.hh"
+#include "waveletconvolutiontest.hh"
+
 
 using namespace wt;
 using namespace wt::UnitTest;
@@ -20,6 +22,7 @@ int main(int argc, char *argv[]) {
   runner.addSuite(ConvolutionTest::suite());
   runner.addSuite(WaveletTransformTest::suite());
   runner.addSuite(WaveletSynthesisTest::suite());
+  runner.addSuite(WaveletConvolutionTest::suite());
 
   // Exec tests:
   runner();

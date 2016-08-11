@@ -16,8 +16,14 @@ template <class Scalar>
 class GenericWaveletConvolution : public WaveletAnalysis
 {
 public:
+  typedef typename Traits<Scalar>::Complex Complex;
+  typedef typename Traits<Scalar>::RVector RVector;
+  typedef typename Traits<Scalar>::CVector CVector;
+  typedef typename Traits<Scalar>::CMatrix CMatrix;
+
+public:
   /** Constructs the convolution with the reproducting kernel of the specified wavelet pair. */
-  GenericWaveletConvolution(const Wavelet &wavelet, const Eigen::Ref<const Eigen::VectorXd> &Scales);
+  GenericWaveletConvolution(const Wavelet &wavelet, const Eigen::Ref<const Eigen::VectorXd> &scales);
 
   /** Constructs the convolution with the reproducting kernel of the specified wavelet pair. */
   GenericWaveletConvolution(const Wavelet &wavelet, double *scales, size_t Nscales);
@@ -38,6 +44,8 @@ protected:
 protected:
   /** The list of convolution filters applied for the convolution with the reproducing kernel. */
   std::vector<GenericConvolution<Scalar> *> _reprodKernel;
+  /** The vector of scale differences. */
+  RVector _dScale;
 };
 
 /// Default template instance for double precision.
@@ -51,22 +59,22 @@ typedef GenericWaveletConvolution<double> WaveletConvolution;
  * ********************************************************************************************* */
 template<class Scalar>
 wt::GenericWaveletConvolution<Scalar>::GenericWaveletConvolution(
-    const Wavelet &wavelet, const Eigen::Ref<const Eigen::VectorXd> &Scales)
-  : wt::WaveletAnalysis(wavelet, scales), _reprodKernel()
+    const Wavelet &wavelet, const Eigen::Ref<const Eigen::VectorXd> &scales)
+  : WaveletAnalysis(wavelet, scales), _reprodKernel()
 {
   this->_init_convolution();
 }
 
 template <class Scalar>
 wt::GenericWaveletConvolution<Scalar>::GenericWaveletConvolution(const Wavelet &wavelet, double *scales, size_t Nscales)
-  : wt::WaveletAnalysis(wavelet, scales, Nscales), _reprodKernel()
+  : WaveletAnalysis(wavelet, scales, Nscales), _reprodKernel()
 {
   this->_init_convolution();
 }
 
 template <class Scalar>
 wt::GenericWaveletConvolution<Scalar>::GenericWaveletConvolution(const WaveletAnalysis &other)
-  : wt::WaveletAnalysis(other), _reprodKernel()
+  : WaveletAnalysis(other), _reprodKernel()
 {
   this->_init_convolution();
 }
@@ -81,17 +89,32 @@ wt::GenericWaveletConvolution<Scalar>::~GenericWaveletConvolution() {
 template <class Scalar>
 void wt::GenericWaveletConvolution<Scalar>::_init_convolution() {
   _reprodKernel.reserve(_scales.size());
-  // For every location of the reproducting kernel ...
-  for (int i=0; i<_scales.size(); i++) {
-    // Scale of the rep. kern.
-    double a = _scales[i];
-    // Determine the approx. scale range the rep. kernel is supported on.
+  _dScale.resize(_scales.rows());
+  double maxScale = _scales.maxCoeff();
 
+  for (int i=0; i<_scales.rows(); i++) {
+    if ((i+1) < _scales.rows())
+      _dScale(i) = _scales(i+1)-_scales(i);
+    else
+      _dScale(i) = _dScale(i-1);
+  }
+
+  // For every scale of the input ...
+  for (int i=0; i<_scales.size(); i++) {
+    // Determine the approx. scale range the rep. kernel is supported on.
+    size_t N = FFT<Scalar>::roundUp(std::ceil(maxScale/_scales[i]*2*_wavelet.cutOffTime()));
+    CMatrix kernel(N, _scales.size());
     // ...evaluate the kernel at every scale.
     for (int j=0; j<_scales.size(); j++) {
-     /// @bug Implement.
+      for (size_t l=0; l<N; l++) {
+        kernel(l,j) = (_wavelet.normConstant() *
+                       _wavelet.evalRepKern((l-double(N)/2)/_scales[i], _scales[j]/_scales[i]) /
+                       (_scales[i]*_scales[i]) * _dScale(i));
+      }
     }
+    _reprodKernel.push_back(new GenericConvolution<Scalar>(kernel));
   }
+  // done.
 }
 
 template <class Scalar>
@@ -99,6 +122,16 @@ template <class iDerived, class oDerived>
 void
 wt::GenericWaveletConvolution<Scalar>::operator() (const Eigen::DenseBase<iDerived> &transformed, Eigen::DenseBase<oDerived> &out)
 {
+  assertShapeNM(transformed, out.rows(), _scales.rows());
+  assertShapeNM(out, transformed.rows(), _scales.rows());
+
+  out.setZero();
+  CMatrix tempRes(transformed.rows(), _scales.rows());
+  // for every input scale
+  for (int i=0; i<_scales.rows(); i++) {
+    _reprodKernel[i]->apply(transformed.col(i), tempRes);
+    out.derived() += tempRes;
+  }
 }
 
 

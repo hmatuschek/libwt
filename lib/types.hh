@@ -5,7 +5,7 @@
 #include <cmath>
 #include <cinttypes>
 #include "object.hh"
-#include <Eigen/Eigen>
+#include <Eigen/Dense>
 
 namespace wt {
 
