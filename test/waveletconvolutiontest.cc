@@ -8,7 +8,7 @@ using namespace wt;
 void
 WaveletConvolutionTest::testConvolution() {
   // Delta peak
-  int N=1024;
+  int N=512;
   int Nscales = 64;
   Eigen::VectorXcd signal = Eigen::VectorXcd::Zero(N); signal(N/2) = 1;
   // Perform WT of delta-peak on single scale

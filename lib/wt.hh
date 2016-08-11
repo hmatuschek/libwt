@@ -53,5 +53,6 @@
 #include "api.hh"
 #include "wavelettransform.hh"
 #include "waveletsynthesis.hh"
+#include "waveletconvolution.hh"
 
 #endif // __WT_HH__

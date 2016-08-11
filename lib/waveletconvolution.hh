@@ -102,7 +102,7 @@ void wt::GenericWaveletConvolution<Scalar>::_init_convolution() {
   // For every scale of the input ...
   for (int i=0; i<_scales.size(); i++) {
     // Determine the approx. scale range the rep. kernel is supported on.
-    size_t N = FFT<Scalar>::roundUp(std::ceil(maxScale/_scales[i]*2*_wavelet.cutOffTime()));
+    size_t N = FFT<Scalar>::roundUp(std::ceil(maxScale/_scales[i]*4*_wavelet.cutOffTime()));
     CMatrix kernel(N, _scales.size());
     // ...evaluate the kernel at every scale.
     for (int j=0; j<_scales.size(); j++) {

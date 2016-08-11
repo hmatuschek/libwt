@@ -1,4 +1,4 @@
-%module pywt
+%module wt
 %include "std_complex.i"
 
 %{
@@ -190,4 +190,43 @@ void operator() (std::complex<double>* transformed, int Nrow, int Ncol, std::com
 }
 }
 
+
+/*
+ * Interfacing WaveletConvolution class
+ */
+%apply (std::complex<double>* IN_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* transformed, int Nrow, int Ncol)};
+%apply (std::complex<double>* INPLACE_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* out, int Mrow, int Mcol )};
+
+namespace wt {
+class WaveletConvolution: public WaveletAnalysis
+{
+public:
+  WaveletConvolution(const Wavelet &wavelet, double *scales, int Nscales);
+  WaveletConvolution(const WaveletAnalysis &wt);
+  virtual ~WaveletConvolution();
+};
+}
+
+%extend wt::WaveletConvolution {
+void operator()(std::complex<double>* transformed, int Nrow, int Ncol, std::complex<double>* out, int Mrow, int Mcol) {
+  if (Mrow != Nrow) {
+    PyErr_Format(PyExc_ValueError,
+                 "Transformed rows and output rows do not match!");
+    return;
+  }
+  if (Ncol != int(self->nScales())) {
+    PyErr_Format(PyExc_ValueError,
+                 "Number of scales and transformed columns do not match!");
+    return;
+  }
+  if (Mcol != int(self->nScales())) {
+    PyErr_Format(PyExc_ValueError,
+                 "Number of scales and result columns do not match!");
+    return;
+  }
+  Eigen::Map<Eigen::MatrixXcd> transformedMap(transformed, Nrow, Ncol);
+  Eigen::Map<Eigen::MatrixXcd> outMap(out, Mrow, Mcol);
+  (*self)(transformedMap, outMap);
+}
+}
 
