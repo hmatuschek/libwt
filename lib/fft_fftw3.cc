@@ -5,12 +5,13 @@
 using namespace wt;
 
 
+/* ********************************************************************************************** *
+ * Implementation of FFT plan using FFTW3
+ * ********************************************************************************************** */
 FFT<double>::FFT(CVector &in, CVector &out, Direction dir)
 {
-  if (in.rows() != out.rows()) {
-    std::cerr << __FILE__ << " @" << __LINE__ << "Dimension mismatch"<< std::endl;
-    abort();
-  }
+  assertShapeN(in, out.rows());
+  assertShapeN(out, in.rows());
   _plan = fftw_plan_dft_1d(
         in.rows(),
         reinterpret_cast<fftw_complex *>(in.data()),
@@ -28,14 +29,7 @@ FFT<double>::FFT(CVector &inout, Direction dir)
 }
 
 FFT<double>::FFT(CMatrix &in, CMatrix &out, Direction dir) {
-  if (in.rows() != out.rows()) {
-    std::cerr << __FILE__ << " @" << __LINE__ << "Dimension mismatch" << std::endl;
-    abort();
-  }
-  if (in.cols() != out.cols()) {
-    std::cerr << __FILE__ << " @" << __LINE__ << "Dimension mismatch" << std::endl;
-    abort();
-  }
+  assertShapeNM(in, out.rows(), out.cols());
 
   int iRowStride = in.rowStride(),  iColStride = in.colStride();
   int oRowStride = out.rowStride(), oColStride = out.colStride();
@@ -79,7 +73,7 @@ FFT<double>::exec(CMatrix &in, CMatrix &out, Direction dir) {
 }
 
 void
-FFT<double>::exec(CVector &inout, Direction dir) {
+wt::FFT<double>::exec(CVector &inout, Direction dir) {
   FFT fft(inout, dir);
   fft.exec();
 }
@@ -95,3 +89,4 @@ FFT<double>::roundUp(size_t N) {
   if (0 == N) { return 0; }
   return std::pow(2, std::ceil(std::log2(N)));
 }
+

@@ -17,7 +17,7 @@ class WaveletAnalysis
 {
 protected:
   /** Hidden constructor from the specified wavelet and scales. */
-  WaveletAnalysis(const Wavelet &wavelet, const Eigen::VectorXd &scales);
+  WaveletAnalysis(const Wavelet &wavelet, const Eigen::Ref<const Eigen::VectorXd> &scales);
   /** Hidden constructor from the specified wavelet and scales. */
   WaveletAnalysis(const Wavelet &wavelet, double *scales, int Nscales);
 
