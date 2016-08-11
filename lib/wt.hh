@@ -47,6 +47,8 @@
 #ifndef __WT_HH__
 #define __WT_HH__
 
+#include "config.hh"
+#include "exception.hh"
 #include "types.hh"
 #include "api.hh"
 #include "wavelettransform.hh"

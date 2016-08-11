@@ -1,0 +1,6 @@
+#ifndef __WT_CONFIG_HH__
+#define __WT_CONFIG_HH__
+
+#cmakedefine WT_WITH_FFTW3
+
+#endif // __WT_CONFIG_HH__

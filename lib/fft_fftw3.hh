@@ -3,6 +3,8 @@
 
 #include <fftw3.h>
 #include "types.hh"
+#include "exception.hh"
+
 
 namespace wt {
 
@@ -14,7 +16,9 @@ template <>
 class FFT<double>
 {
 public:
+  /// The complex vector type.
   typedef typename Traits<double>::CVector CVector;
+  /// The complex matrix type.
   typedef typename Traits<double>::CMatrix CMatrix;
 
 public:

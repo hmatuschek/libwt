@@ -4,11 +4,19 @@ SET(UTILS_HEADERS
     utils/cputime.cc utils/unittest.cc utils/option_parser.cc utils/csv.hh)
 
 SET(WT_SOURCES
-    object.cc fft_fftw3.cc wavelet.cc waveletanalysis.cc api.cc)
+    object.cc exception.cc fft_fftw3.cc wavelet.cc waveletanalysis.cc api.cc)
 SET(WT_HEADERS
-    wt.hh fft.hh types.hh convolution.hh wavelettransform.hh waveletsynthesis.hh
-    waveletconvolution.hh
-    object.hh fft_fftw3.hh wavelet.hh waveletanalysis.hh api.hh)
+    wt.hh exception.hh fft.hh types.hh convolution.hh wavelettransform.hh waveletsynthesis.hh
+    waveletconvolution.hh api.hh config.hh
+    object.hh fft_fftw3.hh wavelet.hh waveletanalysis.hh)
+
+if (${FFTW3_FOUND})
+  message(STATUS "Using FFTW3 for FFT convolution.")
+  set(WT_WITH_FFTW3 ON)
+endif(${FFTW3_FOUND})
+
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.hh.in ${CMAKE_CURRENT_BINARY_DIR}/config.hh)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(wt_headers SOURCES ${WT_HEADERS} ${UTILS_HEADERS})
 
@@ -25,6 +33,6 @@ target_link_libraries(libwt ${LIBS})
 
 install(TARGETS libwt DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 INSTALL_HEADERS_WITH_DIRECTORY("${WT_HEADERS}" "${CMAKE_INSTALL_INCLUDEDIR}/libwt")
-#install(FILES "${CMAKE_CURRENT_BINARY_DIR}/config.hh"
-#        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/libwt")
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/config.hh"
+  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/libwt")
 
