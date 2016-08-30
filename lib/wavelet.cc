@@ -48,7 +48,7 @@ MorletObj::evalSynthesis(const double &t) const {
 
 std::complex<double>
 MorletObj::evalRepKern(const double &b, const double &a) const {
-  /// @bug implement
+
   return 0;
 }
 
