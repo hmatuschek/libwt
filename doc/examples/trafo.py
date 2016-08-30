@@ -8,7 +8,7 @@ scales = linspace(2, 100, Nscales)
 t = linspace(-N/2,N/2, N)
 X = sin(2*pi*t/20)/(2*pi*t/20)
 
-T = wt.WaveletTransform(wt.Cauchy(20), scales)
+T = wt.WaveletTransform(wt.Morlet(20), scales)
 wX = empty((N, Nscales), dtype=complex, order="F")
 T(X, wX)
 
