@@ -3,6 +3,7 @@
 
 #include "types.hh"
 #include "fft.hh"
+#include "utils/logger.hh"
 
 namespace wt {
 
@@ -96,6 +97,8 @@ wt::GenericConvolution<Scalar>::GenericConvolution(const Eigen::Ref<const CMatri
     _lastRes(_M, _K), _work(2*_M, _K), _rev(_work, FFT<Scalar>::BACKWARD),
     _subSampling(subSample)
 {
+  logDebug() << "Construct FFT convolution of " << _K << " kernels with length " << _M << " each.";
+
   // Store filter kernels:
   this->_kernelF.topRows(this->_M).noalias() = kernels;
   this->_kernelF.bottomRows(this->_M).setConstant(0);

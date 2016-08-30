@@ -1,4 +1,5 @@
 #include "utils/unittest.hh"
+#include "utils/logger.hh"
 #include <iostream>
 
 #include "ffttest.hh"
@@ -13,6 +14,9 @@ using namespace wt::UnitTest;
 
 
 int main(int argc, char *argv[]) {
+
+  // install log handler
+  Logger::addHandler(IOLogHandler(std::cerr));
 
   // Construct test-runner
   TestRunner runner(std::cout);

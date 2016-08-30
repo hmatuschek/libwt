@@ -99,7 +99,10 @@ wt::GenericWaveletTransform<Scalar>::init_trafo()
   // Sort scales (ascending order)
   std::sort(_scales.derived().data(), _scales.derived().data()+_scales.size());
 
-  // Determine kernel size for every scale and round up to next integer for which the FFT can
+  logDebug() << "Construct wavelet transform for " << _scales.size() << " scales in ["
+             << _scales(0) << "," << _scales(_scales.size()-1) << "].";
+
+                // Determine kernel size for every scale and round up to next integer for which the FFT can
   // be computed fast. Also group the resulting kernels by (rounded) size. This allows to perform
   // the forward FFT of the signal only once for each group
   std::list< std::pair<size_t, std::list<double> > > kernelSizes;

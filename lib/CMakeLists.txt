@@ -1,7 +1,7 @@
 SET(UTILS_SOURCES
-    utils/cputime.cc utils/unittest.cc utils/option_parser.cc utils/csv.cc)
+    utils/cputime.cc utils/unittest.cc utils/option_parser.cc utils/csv.cc utils/logger.cc)
 SET(UTILS_HEADERS
-    utils/cputime.cc utils/unittest.cc utils/option_parser.cc utils/csv.hh)
+    utils/cputime.cc utils/unittest.cc utils/option_parser.cc utils/csv.hh utils/logger.hh)
 
 SET(WT_SOURCES
     object.cc exception.cc fft_fftw3.cc wavelet.cc waveletanalysis.cc api.cc)

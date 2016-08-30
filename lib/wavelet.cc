@@ -93,7 +93,7 @@ CauchyObj::evalSynthesis(const double &t) const {
 std::complex<double>
 CauchyObj::evalRepKern(const double &b, const double &a) const {
   return std::tgamma(2*_alpha+1) * std::pow(a, _alpha) *
-      std::pow(std::complex<double>(1+a, -b*_alpha/a), -(1+2*_alpha))/(2*M_PI);
+      std::pow(std::complex<double>(1+a, -2*M_PI*b/_alpha), -(1+2*_alpha))/(2*M_PI);
 }
 
 double

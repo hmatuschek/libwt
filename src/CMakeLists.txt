@@ -1,4 +1,4 @@
-SET(wtcli_SOURCES wtcli.cc wtcli_gen.cc wtcli_trafo.cc)
+SET(wtool_SOURCES main.cc )
 
-add_executable(wtcli ${wtcli_SOURCES})
-target_link_libraries(wtcli ${LIBS} libwt)
+add_executable(wtool ${wtool_SOURCES})
+target_link_libraries(wtool ${EIGEN3_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} libwt)

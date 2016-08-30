@@ -44,8 +44,6 @@ protected:
 protected:
   /** The list of convolution filters applied for the convolution with the reproducing kernel. */
   std::vector<GenericConvolution<Scalar> *> _reprodKernel;
-  /** The vector of scale differences. */
-  RVector _dScale;
 };
 
 /// Default template instance for double precision.
@@ -88,28 +86,26 @@ wt::GenericWaveletConvolution<Scalar>::~GenericWaveletConvolution() {
 
 template <class Scalar>
 void wt::GenericWaveletConvolution<Scalar>::_init_convolution() {
-  _reprodKernel.reserve(_scales.size());
-  _dScale.resize(_scales.rows());
-  double maxScale = _scales.maxCoeff();
+  // Sort scales (ascending order)
+  std::sort(_scales.derived().data(), _scales.derived().data()+_scales.size());
 
-  for (int i=0; i<_scales.rows(); i++) {
-    if ((i+1) < _scales.rows())
-      _dScale(i) = _scales(i+1)-_scales(i);
-    else
-      _dScale(i) = _dScale(i-1);
-  }
+  logDebug() << "Construct wavelet projection on " << _scales.size() << " scales in ["
+             << _scales(0) << "," << _scales(_scales.size()-1) << "].";
+
+  _reprodKernel.reserve(_scales.size());
 
   // For every scale of the input ...
   for (int i=0; i<_scales.size(); i++) {
-    // Determine the approx. scale range the rep. kernel is supported on.
-    size_t N = FFT<Scalar>::roundUp(std::ceil(maxScale/_scales[i]*4*_wavelet.cutOffTime()));
+    // Determine the approx. time-scale range, the rep. kernel is supported on.
+    size_t N = FFT<Scalar>::roundUp(std::ceil(_scales[i]*2*_wavelet.cutOffTime()));
     CMatrix kernel(N, _scales.size());
+
     // ...evaluate the kernel at every scale.
     for (int j=0; j<_scales.size(); j++) {
       for (size_t l=0; l<N; l++) {
-        kernel(l,j) = (_wavelet.normConstant() *
-                       _wavelet.evalRepKern((l-double(N)/2)/_scales[i], _scales[j]/_scales[i]) /
-                       (_scales[i]*_scales[i]) * _dScale(i));
+        kernel(l,j) = _wavelet.normConstant() *
+            _wavelet.evalRepKern((l-double(N)/2)/_scales[i], _scales[j]/_scales[i])
+            / _scales[i] / _scales[i];
       }
     }
     _reprodKernel.push_back(new GenericConvolution<Scalar>(kernel));
@@ -122,15 +118,21 @@ template <class iDerived, class oDerived>
 void
 wt::GenericWaveletConvolution<Scalar>::operator() (const Eigen::DenseBase<iDerived> &transformed, Eigen::DenseBase<oDerived> &out)
 {
-  assertShapeNM(transformed, out.rows(), _scales.rows());
-  assertShapeNM(out, transformed.rows(), _scales.rows());
+  assertShapeNM(transformed, out.rows(), this->_scales.rows());
+  assertShapeNM(out, transformed.rows(), this->_scales.rows());
 
+  CMatrix tempRes1(transformed.rows(), this->_scales.rows());
+  CMatrix tempRes2(transformed.rows(), this->_scales.rows());
   out.setZero();
-  CMatrix tempRes(transformed.rows(), _scales.rows());
+
   // for every input scale
-  for (int i=0; i<_scales.rows(); i++) {
-    _reprodKernel[i]->apply(transformed.col(i), tempRes);
-    out.derived() += tempRes;
+  this->_reprodKernel[0]->apply(transformed.col(0), tempRes1);
+  for (int i=1; i<this->_scales.rows(); i++) {
+    if (i & 1) // odd
+      this->_reprodKernel[i]->apply(transformed.col(i), tempRes2);
+    else // even
+      this->_reprodKernel[i]->apply(transformed.col(i), tempRes1);
+    out.derived() += ( (this->_scales(i)-this->_scales(i-1))/2 * (tempRes1+tempRes2) );
   }
 }
 

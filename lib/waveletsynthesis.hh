@@ -92,6 +92,15 @@ wt::GenericWaveletSynthesis<Scalar>::init_synthesis() {
   // Sort scales (ascending order)
   std::sort(_scales.derived().data(), _scales.derived().data()+_scales.size());
 
+  logDebug() << "Construct wavelet synthesis over " << _scales.size() << " scales in ["
+             << _scales(0) << "," << _scales(_scales.size()-1) << "].";
+
+  Eigen::VectorXd dScale(_scales.size());
+  for (size_t i=1; i<_scales.size(); i++) {
+    dScale(i) = _scales(i)-_scales(i-1);
+  }
+  dScale(0) = dScale(1);
+
   _filterBank.clear();
   _filterBank.reserve(_scales.size());
   // Determine kernel size for every scale and round up to next integer for which the FFT can
@@ -102,7 +111,7 @@ wt::GenericWaveletSynthesis<Scalar>::init_synthesis() {
     for (size_t i=0; i<N; i++) {
       kernel(i) = _wavelet.normConstant() *
           _wavelet.evalSynthesis((i-double(N)/2)/_scales[j]) /
-          _scales[j];
+          _scales[j]/_scales[j];
     }
     _filterBank.push_back(new GenericConvolution<Scalar>(kernel));
   }
@@ -123,7 +132,10 @@ wt::GenericWaveletSynthesis<Scalar>::operator() (const Eigen::DenseBase<iDerived
   // Iterate over all scales and integrate over scales (mid-point method)
   for (size_t j=1; j<this->_filterBank.size(); j++) {
     // Perform FFT convolution
-    this->_filterBank[j]->apply(transformed.col(j), current);
+    if (j & 1)
+      this->_filterBank[j]->apply(transformed.col(j), current);
+    else
+      this->_filterBank[j]->apply(transformed.col(j), current);
     out.head(transformed.rows()) += ((this->_scales[j]-this->_scales[j-1])/2)*(current+last);
     // store current into last
     last.swap(current);
