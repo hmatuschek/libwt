@@ -48,12 +48,12 @@ MorletObj::evalSynthesis(const double &t) const {
 
 std::complex<double>
 MorletObj::evalRepKern(const double &b, const double &a) const {
-  double a2p1  = (a*a+1);
-  double ap1   = (a+1);
-  double ap1a  = ap1/a;
-  double c = std::exp(2*M_PI*M_PI*ap1a*ap1a)/sqrt(2*M_PI*a2p1/_dff);
-  double tmp   = 2*M_PI*ap1a+b;
-  return  c * std::exp(std::complex<double>(-tmp*tmp*_dff/(2*a2p1), -2*M_PI*b/a));
+  double a2p1 = (a*a+1.), am1 = (a-1.);
+  double d = _dff, d2 = d*d;
+  double c = d2/std::sqrt(2*M_PI*d*a2p1);
+  double re = -(d2*b*b + 4*M_PI*M_PI*am1*am1)/(2*d*a2p1);
+  double im = 2*M_PI*b*(1. + am1/a2p1)/a;
+  return  c * std::exp(std::complex<double>(re, im));
 }
 
 double

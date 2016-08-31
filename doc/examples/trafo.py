@@ -3,12 +3,12 @@ import wt
 from matplotlib import pylab
 
 N       = 1024
-Nscales = 64
+Nscales = 32
 scales = linspace(2, 100, Nscales)
 t = linspace(-N/2,N/2, N)
 X = sin(2*pi*t/20)/(2*pi*t/20)
 
-T = wt.WaveletTransform(wt.Morlet(20), scales)
+T = wt.WaveletTransform(wt.Morlet(0.2), scales)
 wX = empty((N, Nscales), dtype=complex, order="F")
 T(X, wX)
 
