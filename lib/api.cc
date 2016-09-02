@@ -101,3 +101,34 @@ Cauchy::operator=(const Cauchy &other) {
 }
 
 
+/* ******************************************************************************************** *
+ * Implementation of linear, dyadic etc.
+ * ******************************************************************************************** */
+void
+linear_range(double a, double b, Eigen::Ref<Eigen::VectorXd> &out) {
+  size_t N = out.size();
+  double dx = (b-a)/N;
+  for (size_t i=0; i<N; i++, a+=dx) {
+    out(i) = a;
+  }
+}
+
+void
+dyadic_range(double a, double b, Eigen::Ref<Eigen::VectorXd> &out) {
+  a = std::log2(a); b = std::log2(b);
+  size_t N = out.size();
+  double dx = (b-a)/N;
+  for (size_t i=0; i<N; i++, a+=dx) {
+    out(i) = std::pow(2, a);
+  }
+}
+
+void
+decadic_range(double a, double b, Eigen::Ref<Eigen::VectorXd> &out) {
+  a = std::log10(a); b = std::log10(b);
+  size_t N = out.size();
+  double dx = (b-a)/N;
+  for (size_t i=0; i<N; i++, a+=dx) {
+    out(i) = std::pow(10, a);
+  }
+}
