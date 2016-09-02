@@ -6,7 +6,7 @@ N       = 1024
 Nscales = 64
 scales = linspace(2, 100, Nscales)
 t = linspace(-N/2,N/2, N)
-W = wt.Cauchy(20)
+W = wt.Morlet(0.5)
 X = array(map(W.evalAnalysis,t/20))
 
 T = wt.WaveletTransform(W, scales)

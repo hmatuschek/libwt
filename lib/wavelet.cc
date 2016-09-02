@@ -38,7 +38,7 @@ MorletObj::~MorletObj() {
 
 std::complex<double>
 MorletObj::evalAnalysis(const double &t) const {
-  return std::exp(std::complex<double>(-t*t*_dff, 2*M_PI*t)) * std::sqrt(_dff/(2*M_PI));
+  return std::exp(std::complex<double>(-t*t*_dff/2, 2*M_PI*t)) * std::sqrt(_dff/(2*M_PI));
 }
 
 std::complex<double>
