@@ -135,11 +135,11 @@ protected:
 };
 
 /** Samples a regular grid in the range \f$[a,b)\f$ into @c out. */
-void linear_range(double a, double b, Eigen::Ref<Eigen::VectorXd> &out);
+void linear_range(double a, double b, Eigen::Ref<Eigen::VectorXd> out);
 /** Samples a dyadic grid in the range \f$[a,b)\f$ into @c out. */
-void dyadic_range(double a, double b, Eigen::Ref<Eigen::VectorXd> &out);
+void dyadic_range(double a, double b, Eigen::Ref<Eigen::VectorXd> out);
 /** Samples a decadic grid in the range \f$[a,b)\f$ into @c out. */
-void decadic_range(double a, double b, Eigen::Ref<Eigen::VectorXd> &out);
+void decadic_range(double a, double b, Eigen::Ref<Eigen::VectorXd> out);
 
 } // namespace wt
 

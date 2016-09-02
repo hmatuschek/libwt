@@ -1,6 +1,28 @@
 #include "itemview.hh"
 
-ItemView::ItemView(Application &app, QWidget *parent)
+
+/* ********************************************************************************************* *
+ * Implementation of TimeseriesItemView
+ * ********************************************************************************************* */
+TimeseriesItemView::TimeseriesItemView(TimeseriesItem *item, QWidget *parent)
+  : QCustomPlot(parent), _item(item)
+{
+  addGraph();
+  double t=0, dt = 1/_item->Fs();
+  for (int i=0; i<_item->data().size(); i++, t+=dt) {
+    graph(0)->addData(t, _item->data()(i));
+  }
+  xAxis->setLabel(tr("Time [s]"));
+  yAxis->setLabel(tr("Value [a.u.]"));
+  graph(0)->rescaleAxes();
+}
+
+
+
+/* ********************************************************************************************* *
+ * Implementation of ItemListView
+ * ********************************************************************************************* */
+ItemListView::ItemListView(Application &app, QWidget *parent)
   : QListView(parent), _application(app)
 {
   setModel(_application.items());
@@ -16,13 +38,13 @@ ItemView::ItemView(Application &app, QWidget *parent)
 }
 
 void
-ItemView::resizeEvent(QResizeEvent *e) {
+ItemListView::resizeEvent(QResizeEvent *e) {
   QListView::resizeEvent(e);
   layoutImportButton();
 }
 
 void
-ItemView::layoutImportButton() {
+ItemListView::layoutImportButton() {
   int w = width(), h = height();
   int bw = _importButton->width(), bh = _importButton->height();
   int x = (w-bw)/2, y = (h-bh)/2;
@@ -30,12 +52,12 @@ ItemView::layoutImportButton() {
 }
 
 void
-ItemView::_onItemAdded() {
+ItemListView::_onItemAdded() {
   _importButton->setVisible(false);
 }
 
 void
-ItemView::_onItemRemoved() {
+ItemListView::_onItemRemoved() {
   if (0 == model()->rowCount())
     _importButton->setVisible(true);
 }

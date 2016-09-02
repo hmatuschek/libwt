@@ -15,7 +15,11 @@ public:
   inline ItemModel *items() { return _items; }
 
 public slots:
-  void importTimeseries();
+  bool importTimeseries();
+  bool startTransform(TimeseriesItem *item);
+
+protected slots:
+  void onTransformItemFinished(TransformItem *item);
 
 protected:
   ItemModel *_items;
