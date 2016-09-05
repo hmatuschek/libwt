@@ -6,17 +6,6 @@
 #include "application.hh"
 #include "qcustomplot.hh"
 
-class TimeseriesItemView: public QCustomPlot
-{
-  Q_OBJECT
-
-public:
-  TimeseriesItemView(TimeseriesItem *item, QWidget *parent=0);
-
-protected:
-  TimeseriesItem *_item;
-};
-
 
 class ItemListView: public QListView
 {

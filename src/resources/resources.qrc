@@ -1,0 +1,47 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/icon16.png</file>
+        <file>icons/icon32.png</file>
+        <file>icons/timeseries32.png</file>
+        <file>icons/timeseries16.png</file>
+        <file>icons/wavelet16.png</file>
+        <file>icons/wavelet32.png</file>
+        <file>icons/synthesis16.png</file>
+        <file>icons/synthesis32.png</file>
+        <file>icons/modulus16.png</file>
+        <file>icons/modulus32.png</file>
+        <file>icons/task16.png</file>
+        <file>icons/task32.png</file>
+        <file>icons/crop16.png</file>
+        <file>icons/crop24.png</file>
+        <file>icons/crop32.png</file>
+        <file>icons/graph16.png</file>
+        <file>icons/graph24.png</file>
+        <file>icons/graph32.png</file>
+        <file>icons/pencil16.png</file>
+        <file>icons/pencil24.png</file>
+        <file>icons/pencil32.png</file>
+        <file>icons/trash16.png</file>
+        <file>icons/trash24.png</file>
+        <file>icons/trash32.png</file>
+        <file>icons/wrench16.png</file>
+        <file>icons/wrench24.png</file>
+        <file>icons/wrench32.png</file>
+        <file>icons/data-transfer-download16.png</file>
+        <file>icons/data-transfer-download24.png</file>
+        <file>icons/data-transfer-download32.png</file>
+        <file>icons/wavelet24.png</file>
+        <file>icons/data-transfer-upload16.png</file>
+        <file>icons/data-transfer-upload24.png</file>
+        <file>icons/data-transfer-upload32.png</file>
+        <file>icons/power-standby16.png</file>
+        <file>icons/power-standby24.png</file>
+        <file>icons/power-standby32.png</file>
+        <file>icons/folder16.png</file>
+        <file>icons/folder24.png</file>
+        <file>icons/folder32.png</file>
+        <file>icons/cog16.png</file>
+        <file>icons/cog24.png</file>
+        <file>icons/cog32.png</file>
+    </qresource>
+</RCC>

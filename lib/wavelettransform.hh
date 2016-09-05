@@ -42,7 +42,8 @@ public:
    * of the matrix, hence the matrix must have N rows and K colmums where K is the number of scales
    * and N is the number of samples in signal. */
   template <class iDerived, class oDerived>
-  void operator() (const Eigen::DenseBase<iDerived> &signal, Eigen::DenseBase<oDerived> &out);
+  void operator() (const Eigen::DenseBase<iDerived> &signal, Eigen::DenseBase<oDerived> &out,
+                   ProgressDelegateInterface *progress=0);
 
 protected:
   /** Actually initializes the transformation. */
@@ -147,7 +148,8 @@ wt::GenericWaveletTransform<Scalar>::init_trafo()
     std::list<double>::iterator scale = group->second.begin();
     for (size_t j=0; scale != group->second.end(); scale++, j++) {
       for (size_t i=0; i<N/M; i++) {
-        kernels(i,j) = _wavelet.evalAnalysis( M*(i-double(N/M)/2)/(*scale) )/( *scale );
+        kernels(i,j) = _wavelet.evalAnalysis( M*(i-double(N/M)/2)/(*scale) ) /
+            ( *scale );
       }
     }
     // Store filter together with sub-sampling
@@ -159,7 +161,9 @@ wt::GenericWaveletTransform<Scalar>::init_trafo()
 template <class Scalar>
 template <class iDerived, class oDerived>
 void
-wt::GenericWaveletTransform<Scalar>::operator() (const Eigen::DenseBase<iDerived> &signal, Eigen::DenseBase<oDerived> &out)
+wt::GenericWaveletTransform<Scalar>::operator() (
+    const Eigen::DenseBase<iDerived> &signal, Eigen::DenseBase<oDerived> &out,
+    ProgressDelegateInterface *progress)
 {
   // signal length
   int N = signal.size();
@@ -174,7 +178,8 @@ wt::GenericWaveletTransform<Scalar>::operator() (const Eigen::DenseBase<iDerived
   }
 
   // Iterate over all convolution filters grouping wavelets with the same size
-  #pragma omp parallel for
+  size_t prog = 0;
+  #pragma omp parallel for shared prog
   for (size_t j=0; j<_filterBank.size(); j++)
   {
     // Get convolution filters
@@ -185,6 +190,10 @@ wt::GenericWaveletTransform<Scalar>::operator() (const Eigen::DenseBase<iDerived
     size_t outCol = blockIdxs[j];
     // Get number of kernels in group / # columns in out
     int K = filters->numKernels();
+
+    if (progress)
+      (*progress)(double(prog)/_filterBank.size());
+    prog++;
 
     if (1 == M) {
       // w/o sub-sampling -> direct overlap-add convolution

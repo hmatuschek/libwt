@@ -1,23 +1,8 @@
 #include "itemview.hh"
-
-
-/* ********************************************************************************************* *
- * Implementation of TimeseriesItemView
- * ********************************************************************************************* */
-TimeseriesItemView::TimeseriesItemView(TimeseriesItem *item, QWidget *parent)
-  : QCustomPlot(parent), _item(item)
-{
-  addGraph();
-  double t=0, dt = 1/_item->Fs();
-  for (int i=0; i<_item->data().size(); i++, t+=dt) {
-    graph(0)->addData(t, _item->data()(i));
-  }
-  xAxis->setLabel(tr("Time [s]"));
-  yAxis->setLabel(tr("Value [a.u.]"));
-  graph(0)->rescaleAxes();
-}
-
-
+#include "fmtutil.hh"
+#include <QVBoxLayout>
+#include <QToolBar>
+#include "item.hh"
 
 /* ********************************************************************************************* *
  * Implementation of ItemListView
@@ -54,6 +39,8 @@ ItemListView::layoutImportButton() {
 void
 ItemListView::_onItemAdded() {
   _importButton->setVisible(false);
+  selectionModel()->select(model()->index(model()->rowCount()-1, 0, QModelIndex()),
+                           QItemSelectionModel::ClearAndSelect);
 }
 
 void

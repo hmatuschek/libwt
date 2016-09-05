@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="256"
+   height="256"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="icon.svg"
+   inkscape:export-filename="/home/hannes/workspace/WaveTool/resources/icons/icon32.png"
+   inkscape:export-xdpi="11.25"
+   inkscape:export-ydpi="11.25">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.1903737"
+     inkscape:cx="227.78995"
+     inkscape:cy="139.75495"
+     inkscape:document-units="px"
+     inkscape:current-layer="g4519"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1680"
+     inkscape:window-height="995"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1">
+    <sodipodi:guide
+       orientation="0,1"
+       position="136.88282,41.356086"
+       id="guide4532" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="136.30034,206.19795"
+       id="guide4547" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="240.85552,222.21615"
+       id="guide4549" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="16.309443,219.88623"
+       id="guide4601" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="35.240046,15.435722"
+       id="guide4605" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="129.77554,-198.21438"
+       id="guide3792" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="125.90164,-244.37831"
+       id="guide3794" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="150.75914,-257.2913"
+       id="guide3796" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="62.95082,-233.40227"
+       id="guide3798" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="16.309443,61.633317"
+       id="guide3806" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-796.36218)">
+    <g
+       id="g4519">
+      <rect
+         y="796.36218"
+         x="0"
+         height="256"
+         width="256"
+         id="rect3753"
+         style="fill:#a00000;fill-opacity:1;stroke:none"
+         ry="18.639362" />
+      <g
+         transform="matrix(0.97818786,0,0,1.0222985,0,6)"
+         style="font-size:66.45423126px;font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:jsMath-cmmib10;-inkscape-font-specification:jsMath-cmmib10 Bold Italic"
+         id="text4607" />
+      <text
+         xml:space="preserve"
+         style="font-size:123.40628815px;font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;font-family:URW Chancery L;-inkscape-font-specification:URW Chancery L Bold Italic"
+         x="123.5238"
+         y="860.76373"
+         id="text3014"
+         sodipodi:linespacing="125%"
+         transform="scale(0.95742714,1.0444659)"><tspan
+           sodipodi:role="line"
+           id="tspan3016"
+           x="123.5238"
+           y="860.76373"
+           style="font-style:normal;font-weight:bold;-inkscape-font-specification:URW Chancery L Bold Italic">W</tspan></text>
+      <g
+         id="g3802"
+         transform="matrix(3.2101365,0,0,3.2101365,-241.11535,-3171.9096)"
+         style="stroke:#ffffff;stroke-opacity:1">
+        <path
+           sodipodi:nodetypes="csccc"
+           transform="translate(0,796.36218)"
+           inkscape:connector-curvature="0"
+           id="path3790"
+           d="m 45.051342,500.35479 c 1.475932,-0.0834 20.23782,0.0235 20.23782,0.0235 6.738803,0 2.853605,-10.97604 9.928996,-10.97604 7.220013,0 3.765128,23.88903 11.944515,23.88903 11.677478,0 5.570237,-59.07692 14.204287,-59.07692"
+           style="fill:none;stroke:#ffffff;stroke-width:7.47631741;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+        <use
+           height="256"
+           width="256"
+           transform="matrix(-1,0,0,1,202.73392,0)"
+           id="use3800"
+           xlink:href="#path3790"
+           y="0"
+           x="0"
+           style="stroke:#ffffff;stroke-opacity:1" />
+      </g>
+    </g>
+  </g>
+</svg>

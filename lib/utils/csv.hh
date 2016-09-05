@@ -27,12 +27,18 @@ public:
       // Read line
       std::getline(stream, buffer);
       if (buffer.empty()) { continue; }
-      // Find first occurence of delimiter
+      // split the line
       size_t offset = 0;
       values.push_back(std::list<Scalar>());
       while (offset != std::string::npos) {
-        values.back().push_back(std::stof(buffer, &offset));
+        // Read a number
+        size_t n;
+        values.back().push_back(std::stod(buffer.substr(offset), &n));
+        // adjust offset
+        offset += n;
+        // find del.
         size_t idx = buffer.find(del, offset);
+        // If found -> adjust offset, other wise end
         if (idx != std::string::npos) { offset = idx+1; }
         else { offset = idx; }
       }

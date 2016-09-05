@@ -8,14 +8,11 @@
 TransformDialog::TransformDialog(size_t Ns, double Fs, QWidget *parent) :
   QDialog(parent)
 {
-  _wavelet = new QComboBox();
-  _wavelet->addItem(tr("Morlet"), int(MORLET_WAVELET));
-  _wavelet->addItem(tr("Cauchy"), int(CAUCHY_WAVELET));
-
   _scaling = new QComboBox();
-  _scaling->addItem(tr("Linear"), int(LINEAR));
-  _scaling->addItem(tr("Dyadic"), int(DYADIC));
-  _scaling->addItem(tr("Decadic"), int(DECADIC));
+  _scaling->addItem(tr("Linear"), int(TransformedItem::LINEAR));
+  _scaling->addItem(tr("Dyadic"), int(TransformedItem::DYADIC));
+  _scaling->addItem(tr("Decadic"), int(TransformedItem::DECADIC));
+  _scaling->setCurrentIndex(2);
 
   _minScale = new QLineEdit(QString::number(2./Fs));
   QDoubleValidator *val = new QDoubleValidator();
@@ -30,13 +27,26 @@ TransformDialog::TransformDialog(size_t Ns, double Fs, QWidget *parent) :
   _numScales = new QSpinBox();
   _numScales->setValue(32);
   _numScales->setMinimum(1);
+  _numScales->setMaximum(Ns/2);
+
+  _wavelet = new QComboBox();
+  _wavelet->addItem(tr("Morlet"), int(MORLET_WAVELET));
+  _wavelet->addItem(tr("Cauchy"), int(CAUCHY_WAVELET));
+  _wavelet->setCurrentIndex(1);
+
+  _param1 = new QLineEdit("20");
+  val = new QDoubleValidator();
+  val->setBottom(0);
+  _param1->setValidator(val);
 
   QFormLayout *form = new QFormLayout();
-  form->addRow(tr("Wavelet"), _wavelet);
   form->addRow(tr("Scaling"), _scaling);
   form->addRow(tr("Min. scale"), _minScale);
   form->addRow(tr("Max. scale"), _maxScale);
   form->addRow(tr("Num. scales"), _numScales);
+  form->addRow(tr("Wavelet"), _wavelet);
+  _param1Label = new QLabel(tr("alpha"));
+  form->addRow(_param1Label, _param1);
 
   QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
 
@@ -48,6 +58,8 @@ TransformDialog::TransformDialog(size_t Ns, double Fs, QWidget *parent) :
 
   connect(bb, SIGNAL(accepted()), this, SLOT(accept()));
   connect(bb, SIGNAL(rejected()), this, SLOT(reject()));
+  connect(_wavelet, SIGNAL(currentIndexChanged(int)),
+          this, SLOT(waveletSelected(int)));
 }
 
 TransformDialog::Wavelet
@@ -55,9 +67,9 @@ TransformDialog::wavelet() const {
   return Wavelet(_wavelet->currentData().toInt());
 }
 
-TransformDialog::Scaling
+TransformedItem::Scaling
 TransformDialog::scaling() const {
-  return Scaling(_scaling->currentData().toInt());
+  return TransformedItem::Scaling(_scaling->currentData().toUInt());
 }
 
 double
@@ -75,3 +87,18 @@ TransformDialog::numScales() const {
   return _numScales->text().toUInt();
 }
 
+double
+TransformDialog::param1() const {
+  return _param1->text().toDouble();
+}
+
+void
+TransformDialog::waveletSelected(int idx) {
+  if (0 == idx) { // Morlet
+    _param1Label->setText(tr("df/f"));
+    _param1->setText("0.5");
+  } else if (1 == idx) { // Cauchy
+    _param1Label->setText(tr("alpha"));
+    _param1->setText("20");
+  }
+}

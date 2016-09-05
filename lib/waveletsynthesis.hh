@@ -39,7 +39,8 @@ public:
 
   /** Performs the wavelet synthesis. */
   template <class iDerived, class oDerived>
-  void operator() (const Eigen::DenseBase<iDerived> &transformed, Eigen::DenseBase<oDerived> &out);
+  void operator() (const Eigen::DenseBase<iDerived> &transformed, Eigen::DenseBase<oDerived> &out,
+                   ProgressDelegateInterface *progress=0);
 
 protected:
   /** Initializes the filter bank for the synthesis operation. */
@@ -120,7 +121,9 @@ wt::GenericWaveletSynthesis<Scalar>::init_synthesis() {
 template <class Scalar>
 template <class iDerived, class oDerived>
 void
-wt::GenericWaveletSynthesis<Scalar>::operator() (const Eigen::DenseBase<iDerived> &transformed, Eigen::DenseBase<oDerived> &out)
+wt::GenericWaveletSynthesis<Scalar>::operator() (
+    const Eigen::DenseBase<iDerived> &transformed, Eigen::DenseBase<oDerived> &out,
+    ProgressDelegateInterface *progress)
 {
   CVector last(transformed.rows()), current(transformed.rows());
   // Clear output vector
@@ -139,6 +142,8 @@ wt::GenericWaveletSynthesis<Scalar>::operator() (const Eigen::DenseBase<iDerived
     out.head(transformed.rows()) += ((this->_scales[j]-this->_scales[j-1])/2)*(current+last);
     // store current into last
     last.swap(current);
+    if (progress)
+      (*progress)(double(j)/this->_filterBank.size());
   }
 }
 

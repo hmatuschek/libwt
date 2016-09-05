@@ -12,6 +12,34 @@
 
 namespace wt {
 
+class ProgressDelegateInterface
+{
+public:
+  ProgressDelegateInterface();
+  virtual ~ProgressDelegateInterface();
+
+  virtual void operator() (double frac)  = 0;
+};
+
+
+template <class T>
+class ProgressDelegate: public ProgressDelegateInterface
+{
+public:
+  ProgressDelegate(T &instance, void (T::*method)(double))
+    : ProgressDelegateInterface(), _instance(instance), _method(method) { }
+  virtual ~ProgressDelegate() { }
+
+  void operator() (double frac) {
+    (this->_instance.*this->_method)(frac);
+  }
+
+protected:
+  T &_instance;
+  void (T::*_method)(double);
+};
+
+
 /** Base class of all wavelet object containers.
  * This container can hold any wavelet object and provides access to the generic methods of these
  * objects.

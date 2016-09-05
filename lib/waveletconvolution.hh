@@ -35,7 +35,8 @@ public:
   virtual ~GenericWaveletConvolution();
 
   template <class iDerived, class oDerived>
-  void operator() (const Eigen::DenseBase<iDerived> &transformed, Eigen::DenseBase<oDerived> &out);
+  void operator() (const Eigen::DenseBase<iDerived> &transformed, Eigen::DenseBase<oDerived> &out,
+                   ProgressDelegateInterface *progress=0);
 
 protected:
   /** Performs the initialization of the time-scale convolution operation. */
@@ -116,7 +117,9 @@ void wt::GenericWaveletConvolution<Scalar>::_init_convolution() {
 template <class Scalar>
 template <class iDerived, class oDerived>
 void
-wt::GenericWaveletConvolution<Scalar>::operator() (const Eigen::DenseBase<iDerived> &transformed, Eigen::DenseBase<oDerived> &out)
+wt::GenericWaveletConvolution<Scalar>::operator() (
+    const Eigen::DenseBase<iDerived> &transformed, Eigen::DenseBase<oDerived> &out,
+    ProgressDelegateInterface *progress)
 {
   assertShapeNM(transformed, out.rows(), this->_scales.rows());
   assertShapeNM(out, transformed.rows(), this->_scales.rows());
@@ -127,12 +130,14 @@ wt::GenericWaveletConvolution<Scalar>::operator() (const Eigen::DenseBase<iDeriv
 
   // for every input scale
   this->_reprodKernel[0]->apply(transformed.col(0), tempRes1);
-  for (int i=1; i<this->_scales.rows(); i++) {
+  for (int i=1; i<this->_scales.size(); i++) {
     if (i & 1) // odd
       this->_reprodKernel[i]->apply(transformed.col(i), tempRes2);
     else // even
       this->_reprodKernel[i]->apply(transformed.col(i), tempRes1);
     out.derived() += ( (this->_scales(i)-this->_scales(i-1))/2 * (tempRes1+tempRes2) );
+    if (progress)
+      (*progress)(double(i+1)/this->scales().size());
   }
 }
 

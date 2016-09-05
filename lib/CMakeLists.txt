@@ -7,8 +7,8 @@ SET(WT_SOURCES
     object.cc exception.cc fft_fftw3.cc wavelet.cc waveletanalysis.cc api.cc)
 SET(WT_HEADERS
     wt.hh exception.hh fft.hh types.hh convolution.hh wavelettransform.hh waveletsynthesis.hh
-    waveletconvolution.hh api.hh
-    object.hh fft_fftw3.hh wavelet.hh waveletanalysis.hh)
+    waveletconvolution.hh detrend.hh
+    object.hh fft_fftw3.hh wavelet.hh waveletanalysis.hh api.hh)
 
 if (${FFTW3_FOUND})
   message(STATUS "Using FFTW3 for FFT convolution: ${FFTW3_LIBRARIES}")

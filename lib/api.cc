@@ -3,6 +3,20 @@
 using namespace wt;
 
 /* ******************************************************************************************** *
+ * Implementation of ProgressDelegate
+ * ******************************************************************************************** */
+ProgressDelegateInterface::ProgressDelegateInterface()
+{
+  // pass...
+}
+
+ProgressDelegateInterface::~ProgressDelegateInterface() {
+  // pass...
+}
+
+
+
+/* ******************************************************************************************** *
  * Implementation of Wavelet container
  * ******************************************************************************************** */
 Wavelet::Wavelet()
@@ -105,7 +119,7 @@ Cauchy::operator=(const Cauchy &other) {
  * Implementation of linear, dyadic etc.
  * ******************************************************************************************** */
 void
-linear_range(double a, double b, Eigen::Ref<Eigen::VectorXd> out) {
+wt::linear_range(double a, double b, Eigen::Ref<Eigen::VectorXd> out) {
   size_t N = out.size();
   double dx = (b-a)/N;
   for (size_t i=0; i<N; i++, a+=dx) {
@@ -114,7 +128,7 @@ linear_range(double a, double b, Eigen::Ref<Eigen::VectorXd> out) {
 }
 
 void
-dyadic_range(double a, double b, Eigen::Ref<Eigen::VectorXd> out) {
+wt::dyadic_range(double a, double b, Eigen::Ref<Eigen::VectorXd> out) {
   a = std::log2(a); b = std::log2(b);
   size_t N = out.size();
   double dx = (b-a)/N;
@@ -124,7 +138,7 @@ dyadic_range(double a, double b, Eigen::Ref<Eigen::VectorXd> out) {
 }
 
 void
-decadic_range(double a, double b, Eigen::Ref<Eigen::VectorXd> out) {
+wt::decadic_range(double a, double b, Eigen::Ref<Eigen::VectorXd> out) {
   a = std::log10(a); b = std::log10(b);
   size_t N = out.size();
   double dx = (b-a)/N;

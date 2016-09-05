@@ -2,7 +2,18 @@
 #define APPLICATION_HH
 
 #include <QApplication>
-#include "item.hh"
+#include <Eigen/Eigen>
+#include <QTimer>
+#include "procinfo.hh"
+
+
+class ItemModel;
+class TimeseriesItem;
+class TransformedItem;
+class TransformItem;
+class SynthesisItem;
+class ProjectionItem;
+
 
 class Application: public QApplication
 {
@@ -16,13 +27,25 @@ public:
 
 public slots:
   bool importTimeseries();
+  bool importTimeseries(const QString &filename);
+  bool addTimeseries(const QString &label, const Eigen::Ref<const Eigen::VectorXd> &data,
+                     double Fs);
   bool startTransform(TimeseriesItem *item);
+  bool startSynthesis(TransformedItem *item);
+  bool startProjection(TransformedItem *item);
+
+signals:
+  void procStats(double mem, double cpu);
 
 protected slots:
-  void onTransformItemFinished(TransformItem *item);
+  void onTransformFinished(TransformItem *item);
+  void onSynthesisFinished(SynthesisItem *item);
+  void onProjectionFinished(ProjectionItem *item);
 
 protected:
   ItemModel *_items;
+  QTimer _procStatTimer;
+  ProcInfo _procStat;
 };
 
 #endif // APPLICATION_HH
