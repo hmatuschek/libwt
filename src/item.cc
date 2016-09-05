@@ -1,6 +1,11 @@
 #include "item.hh"
 #include <QWidget>
 #include "itemview.hh"
+#include "timeseriesitem.hh"
+#include "transformeditem.hh"
+#include "transformitem.hh"
+#include "synthesisitem.hh"
+#include "projectionitem.hh"
 
 
 /* ******************************************************************************************** *
@@ -105,6 +110,17 @@ ItemModel::data(const QModelIndex &index, int role) const {
     return _items[index.row()]->label();
   } else if (Qt::DecorationRole == role) {
     return _items[index.row()]->icon();
+  } else if (Qt::UserRole == role) {
+    if (dynamic_cast<TimeseriesItem *>(_items[index.row()]))
+      return 0;
+    if (dynamic_cast<TransformedItem *>(_items[index.row()]))
+      return 1;
+    if (dynamic_cast<TransformItem *>(_items[index.row()]))
+      return 2;
+    if (dynamic_cast<SynthesisItem *>(_items[index.row()]))
+      return 2;
+    if (dynamic_cast<ProjectionItem *>(_items[index.row()]))
+      return 2;
   }
   return QVariant();
 }

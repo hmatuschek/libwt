@@ -11,13 +11,6 @@
 
 #include "loghandler.hh"
 
-typedef enum {
-  FilterAll,
-  FilterTimeseries,
-  FilterTransformed,
-  FilterTasks
-} ItemFilter;
-
 
 MainWindow::MainWindow(Application &app, QWidget *parent)
   : QMainWindow(parent), _application(app)
@@ -39,12 +32,8 @@ MainWindow::MainWindow(Application &app, QWidget *parent)
   toolbar->setIconSize(QSize(16,16));
   paneLayout->addWidget(toolbar);
 
-  QComboBox *filter = new QComboBox();
+  ItemFilterSelectionWidget *filter = new ItemFilterSelectionWidget();
   filter->setToolTip(tr("Filter items."));
-  filter->addItem(tr("All"), FilterAll);
-  filter->addItem(tr("Time series"), FilterTimeseries);
-  filter->addItem(tr("Transformed"), FilterTransformed);
-  filter->addItem(tr("Tasks"), FilterTasks);
   toolbar->addWidget(filter);
 
   QAction *a = new QAction(QIcon("://icons/data-transfer-upload16.png"), "", 0);
@@ -61,6 +50,7 @@ MainWindow::MainWindow(Application &app, QWidget *parent)
 
   ItemListView *itemview = new ItemListView(_application, leftPane);
   paneLayout->addWidget(itemview);
+  connect(filter, SIGNAL(filterSelected(ItemFilter)), itemview, SLOT(filter(ItemFilter)));
 
   _viewstack = new QStackedWidget();
   QLabel *label = new QLabel(tr("Select an item from the list on the left..."));
@@ -79,24 +69,20 @@ MainWindow::MainWindow(Application &app, QWidget *parent)
   _statusBar = new QStatusBar();
   setStatusBar(_statusBar);
 
-  connect(itemview->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
-          this, SLOT(selectedItemChanged(QItemSelection,QItemSelection)));
   connect(&_application, SIGNAL(procStats(double,double)), this, SLOT(procStatUpdate(double,double)));
   connect(logHandler, SIGNAL(message(QString)), _statusBar, SLOT(showMessage(QString)));
+  connect(itemview, SIGNAL(itemSelected(size_t)), this, SLOT(selectedItemChanged(size_t)));
 }
 
 void
-MainWindow::selectedItemChanged(const QItemSelection &current, const QItemSelection &previous) {
+MainWindow::selectedItemChanged(size_t idx) {
   if (_viewstack->currentIndex()) {
     QWidget *view = _viewstack->currentWidget();
     _viewstack->removeWidget(view);
     view->deleteLater();
   }
 
-  if (0 == current.count())
-    return;
-
-  Item *item = _application.items()->item(current.indexes().first().row());
+  Item *item = _application.items()->item(idx);
   QWidget *view = item->view();
   if (view)
     _viewstack->insertWidget(0, view);

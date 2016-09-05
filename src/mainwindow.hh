@@ -7,7 +7,6 @@
 #include <QStatusBar>
 #include "application.hh"
 
-
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
@@ -16,7 +15,7 @@ public:
   explicit MainWindow(Application &app, QWidget *parent = 0);
 
 protected slots:
-  void selectedItemChanged(const QItemSelection &current, const QItemSelection &previous);
+  void selectedItemChanged(size_t idx);
   void procStatUpdate(double mem, double cpu);
 
 protected:

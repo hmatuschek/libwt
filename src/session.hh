@@ -25,12 +25,10 @@ protected:
   static bool setAttribute(H5::DataSet &dataset, const std::string &name, unsigned int value);
   static bool getAttribute(H5::DataSet &dataset, const std::string &name, double &value);
   static bool setAttribute(H5::DataSet &dataset, const std::string &name, double value);
-  static bool getAttribute(H5::DataSet &dataset, const std::string &name, Eigen::Ref<Eigen::VectorXd> value);
+  static bool getAttribute(H5::DataSet &dataset, const std::string &name, Eigen::VectorXd &value);
   static bool setAttribute(H5::DataSet &dataset, const std::string &name, const Eigen::Ref<const Eigen::VectorXd> &value);
-  static bool readArray(H5::DataSet &dataset, Eigen::Ref<Eigen::VectorXd> value);
-  static bool writeArray(H5::H5File &file, const std::string &name, const Eigen::Ref<const Eigen::VectorXd> &value);
-  static bool readArray(H5::DataSet &dataset, Eigen::Ref<Eigen::MatrixXcd> value);
-  static bool writeArray(H5::H5File &file, const std::string &name, const Eigen::Ref<const Eigen::MatrixXcd> &value);
+  static bool readArray(H5::DataSet &dataset, Eigen::VectorXd &value);
+  static bool readArray(H5::DataSet &dataset, Eigen::MatrixXcd &value);
 };
 
 #endif // SESSION_HH

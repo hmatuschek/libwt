@@ -48,20 +48,20 @@ Session::load(const QString &filename, Application *app) {
 
 bool
 Session::save(const QString &filename, Application *app) {
-  H5::H5File file;
-  try { file.openFile(filename.toUtf8().constData(), H5F_ACC_CREAT); }
-  catch (H5::FileIException error) {
+  try {
+    H5::H5File file(filename.toUtf8().constData(), H5F_ACC_TRUNC);
+    bool success = false;
+    for (int i=0; i<app->items()->rowCount(QModelIndex()); i++) {
+      success = saveItem(file, app->items()->item(i)) || success;
+    }
+    file.flush(H5F_SCOPE_GLOBAL);
+    file.close();
+    return success;
+  } catch (H5::FileIException error) {
     logError() << "Cannot save session to " << filename.toUtf8().constData()
                << ": " << error.getCDetailMsg();
     return false;
   }
-
-  bool success = false;
-  for (int i=0; i<app->items()->rowCount(QModelIndex()); i++)
-    success = success || saveItem(file, app->items()->item(i));
-  file.flush(H5F_SCOPE_GLOBAL);
-  file.close();
-  return success;
 }
 
 Item *
@@ -86,46 +86,34 @@ Session::saveItem(H5::H5File &file, Item *item) {
     return saveTimeseriesItem(file, titem);
   if (TransformedItem *titem = dynamic_cast<TransformedItem *>(item))
     return saveTransformedItem(file, titem);
+  logDebug() << "Item " << item->label().toUtf8().constData() << " not serialized.";
   return false;
 }
 
 Item *
 Session::loadTimeseriesItem(H5::DataSet &dataset) {
   // Check if dataset has Fs attribute
-  if (! dataset.attrExists("Fs")) {
+  double Fs;
+  if (! getAttribute(dataset, "Fs", Fs)) {
     logError() << "Cannot load timeseries " << dataset.getObjName()
                << ": No sample rate attribute set.";
     return 0;
   }
-  H5::Attribute attrFs = dataset.openAttribute("Fs");
-  if (H5T_FLOAT != attrFs.getTypeClass())
-    return 0;
-  double Fs = 1.0;
-  attrFs.read(H5::PredType::NATIVE_DOUBLE, &Fs);
 
-  // Check if dataset is double array
-  if (H5T_ARRAY == dataset.getTypeClass()) {
-    logError() << "Cannot load timeseries " << dataset.getObjName()
-               << ": Unexpected type. Expected double array.";
+  // Get data
+  Eigen::VectorXd data;
+  if (! readArray(dataset, data)) {
+    logError() << "Cannot load timeseries " << dataset.getObjName() << ".";
     return 0;
   }
-  // Get array dimensions
-  H5::ArrayType datasetType = dataset.getArrayType();
-  if (1 != datasetType.getArrayNDims()) {
-    logError() << "Cannot load timeseries " << dataset.getObjName()
-               << ": Unexpected rank-" << datasetType.getArrayNDims() << ", Expected rank-1.";
-    return 0;
-  }
-  hsize_t Nsam=0;
-  datasetType.getArrayDims(&Nsam);
-  Eigen::VectorXd data(Nsam);
-  dataset.read(data.data(), H5::PredType::NATIVE_DOUBLE);
-
-  return new TimeseriesItem(data, Fs, QString::fromStdString(dataset.getObjName()));
+  QString label = QString::fromStdString(dataset.getObjName());
+  if (label.startsWith("/")) label.remove("/");
+  return new TimeseriesItem(data, Fs, label);
 }
 
 bool
 Session::saveTimeseriesItem(H5::H5File &file, TimeseriesItem *item) {
+  logDebug() << "Save timeseries " << item->label().toStdString() << "...";
   hsize_t dims[1] = { hsize_t(item->data().size()) };
   H5::DataSpace fspace(1, dims);
   H5::DataSet dataset = file.createDataSet(
@@ -133,6 +121,8 @@ Session::saveTimeseriesItem(H5::H5File &file, TimeseriesItem *item) {
   dataset.write(item->data().data(), H5::PredType::NATIVE_DOUBLE);
   setAttribute(dataset, "type", uint(ITEM_TIMESERIES));
   setAttribute(dataset, "Fs", item->Fs());
+  fspace.close(); dataset.close();
+  file.flush(H5F_SCOPE_GLOBAL);
   return true;
 }
 
@@ -195,12 +185,15 @@ Session::loadTransformedItem(H5::DataSet &dataset) {
     return 0;
   }
 
-  return new TransformedItem(wavelet, Fs, scales, TransformedItem::Scaling(scalingId), data);
+  QString label = QString::fromStdString(dataset.getObjName());
+  if (label.startsWith("/")) label.remove("/");
+  return new TransformedItem(wavelet, Fs, scales, TransformedItem::Scaling(scalingId), data, label);
 }
 
 bool
 Session::saveTransformedItem(H5::H5File &file, TransformedItem *item) {
-  H5::CompType ctype;
+  logDebug() << "Save transformed " << item->label().toStdString() << "...";
+  H5::CompType ctype(sizeof(std::complex<double>));
   ctype.insertMember("re", 0, H5::PredType::NATIVE_DOUBLE);
   ctype.insertMember("im", sizeof(double), H5::PredType::NATIVE_DOUBLE);
 
@@ -218,8 +211,10 @@ Session::saveTransformedItem(H5::H5File &file, TransformedItem *item) {
     setAttribute(dataset, "dff", item->wavelet().as<wt::Morlet>().dff());
   } else if (item->wavelet().is<wt::Cauchy>()) {
     setAttribute(dataset, "wavelet", uint(WAVELET_CAUCHY));
-    setAttribute(dataset, "dff", item->wavelet().as<wt::Cauchy>().alpha());
+    setAttribute(dataset, "alpha", item->wavelet().as<wt::Cauchy>().alpha());
   }
+  fspace.close(); dataset.close();
+  file.flush(H5F_SCOPE_GLOBAL);
   return true;
 }
 
@@ -249,7 +244,7 @@ Session::setAttribute(H5::DataSet &dataset, const std::string &name, unsigned in
   H5::DataSpace fspace(H5S_SCALAR);
   H5::Attribute attr = dataset.createAttribute(name, H5::PredType::NATIVE_UINT, fspace);
   attr.write(H5::PredType::NATIVE_UINT, &value);
-  attr.close();
+  fspace.close(); attr.close();
   return true;
 }
 
@@ -279,31 +274,31 @@ Session::setAttribute(H5::DataSet &dataset, const std::string &name, double valu
   H5::DataSpace fspace(H5S_SCALAR);
   H5::Attribute attr = dataset.createAttribute(name, H5::PredType::NATIVE_DOUBLE, fspace);
   attr.write(H5::PredType::NATIVE_DOUBLE, &value);
-  attr.close();
+  fspace.close(); attr.close();
   return true;
 }
 
 bool
-Session::getAttribute(H5::DataSet &dataset, const std::string &name, Eigen::Ref<Eigen::VectorXd> value) {
+Session::getAttribute(H5::DataSet &dataset, const std::string &name, Eigen::VectorXd &value) {
   if (! dataset.attrExists(name))
     return false;
 
   H5::Attribute attr = dataset.openAttribute(name);
-  if (H5T_ARRAY != attr.getTypeClass())
+  if (H5T_FLOAT != attr.getTypeClass())
     return false;
 
   // Get scales dimensions
-  H5::ArrayType type = attr.getArrayType();
-  if (1 != type.getArrayNDims()) {
+  H5::DataSpace space = attr.getSpace();
+  if (1 != space.getSimpleExtentNdims()) {
     logError() << "Cannot load attribute " << name
-               << ": Unexpected rank-" << type.getArrayNDims() << ", Expected rank-1.";
+               << ": Unexpected rank-" << space.getSimpleExtentNdims() << ", Expected rank-1.";
     return 0;
   }
 
   hsize_t N=0;
-  type.getArrayDims(&N);
+  space.getSimpleExtentDims(&N);
   value.resize(N);
-  dataset.read(value.data(), H5::PredType::NATIVE_DOUBLE);
+  attr.read(H5::PredType::NATIVE_DOUBLE, value.data());
 
   return true;
 }
@@ -314,24 +309,28 @@ Session::setAttribute(H5::DataSet &dataset, const std::string &name, const Eigen
   H5::DataSpace fspace(1, dims);
   H5::Attribute attr = dataset.createAttribute(name, H5::PredType::NATIVE_DOUBLE, fspace);
   attr.write(H5::PredType::NATIVE_DOUBLE, value.data());
-  attr.close();
+  fspace.close(); attr.close();
   return true;
 }
 
 bool
-Session::readArray(H5::DataSet &dataset, Eigen::Ref<Eigen::VectorXd> value) {
-  if (H5T_ARRAY != dataset.getTypeClass())
-    return false;
-
-  H5::ArrayType type = dataset.getArrayType();
-  if (1 != type.getArrayNDims()) {
+Session::readArray(H5::DataSet &dataset, Eigen::VectorXd &value) {
+  if (H5T_FLOAT != dataset.getTypeClass()) {
     logError() << "Cannot read vector " << dataset.getObjName()
-               << ": Unexpected rank-" << type.getArrayNDims() << ", Expected rank-1.";
+               << ": Unexpected data type: " << dataset.getTypeClass()
+               << ", expected " << H5T_FLOAT << ".";
     return 0;
   }
 
-  hsize_t N=0;
-  type.getArrayDims(&N);
+  H5::DataSpace dataspace = dataset.getSpace();
+  if (1 != dataspace.getSimpleExtentNdims()) {
+    logError() << "Cannot read vector " << dataset.getObjName()
+               << ": Unexpected rank-" << dataspace.getSimpleExtentNdims() << ", Expected rank-1.";
+    return 0;
+  }
+  hsize_t N;
+  dataspace.getSimpleExtentDims(&N, 0);
+
   value.resize(N);
   dataset.read(value.data(), H5::PredType::NATIVE_DOUBLE);
 
@@ -339,22 +338,28 @@ Session::readArray(H5::DataSet &dataset, Eigen::Ref<Eigen::VectorXd> value) {
 }
 
 bool
-Session::readArray(H5::DataSet &dataset, Eigen::Ref<Eigen::MatrixXcd> value) {
-  if (H5T_ARRAY != dataset.getTypeClass())
-    return false;
-  H5::ArrayType type = dataset.getArrayType();
-  if (2 != type.getArrayNDims()) {
+Session::readArray(H5::DataSet &dataset, Eigen::MatrixXcd &value) {
+  H5::CompType ctype(sizeof(std::complex<double>));
+  ctype.insertMember("re", 0, H5::PredType::NATIVE_DOUBLE);
+  ctype.insertMember("im", sizeof(double), H5::PredType::NATIVE_DOUBLE);
+
+  H5::DataSpace dataspace = dataset.getSpace();
+  if (2 != dataspace.getSimpleExtentNdims()) {
     logError() << "Cannot read matrix " << dataset.getObjName()
-               << ": Unexpected rank-" << type.getArrayNDims() << ", Expected rank-2.";
-    return 0;
+               << ": Unexpected rank-" << dataspace.getSimpleExtentNdims() << ", Expected rank-2.";
+    return false;
   }
+
   hsize_t N[2];
-  type.getArrayDims(N);
-  value.resize(N[1],N[0]);
-  H5::CompType complexType;
-  complexType.insertMember("re", 0, H5::PredType::NATIVE_DOUBLE);
-  complexType.insertMember("im", sizeof(double), H5::PredType::NATIVE_DOUBLE);
-  dataset.read(value.data(), complexType);
+  dataspace.getSimpleExtentDims(N, 0);
+
+  value.resize(N[1], N[0]);
+  try { dataset.read(value.data(), ctype); }
+  catch (H5::DataSetIException error) {
+    logError() << "Cannot read matrix "  << dataset.getObjName()
+               << ": " << error.getCDetailMsg();
+    return false;
+  }
 
   return true;
 }
