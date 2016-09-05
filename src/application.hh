@@ -34,6 +34,11 @@ public slots:
   bool startSynthesis(TransformedItem *item);
   bool startProjection(TransformedItem *item);
 
+  bool saveSession();
+  bool loadSession();
+  bool addSession();
+  bool addSession(const QString &filename);
+
 signals:
   void procStats(double mem, double cpu);
 

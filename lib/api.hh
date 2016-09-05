@@ -15,9 +15,6 @@ namespace wt {
 class ProgressDelegateInterface
 {
 public:
-  ProgressDelegateInterface();
-  virtual ~ProgressDelegateInterface();
-
   virtual void operator() (double frac)  = 0;
 };
 
@@ -28,9 +25,9 @@ class ProgressDelegate: public ProgressDelegateInterface
 public:
   ProgressDelegate(T &instance, void (T::*method)(double))
     : ProgressDelegateInterface(), _instance(instance), _method(method) { }
-  virtual ~ProgressDelegate() { }
+  virtual ~ProgressDelegate() {  }
 
-  void operator() (double frac) {
+  virtual void operator() (double frac) {
     (this->_instance.*this->_method)(frac);
   }
 
@@ -115,6 +112,9 @@ protected:
 class Cauchy: public Wavelet
 {
 public:
+  typedef CauchyObj ObjectType;
+
+public:
   /** Constructor.
    * @param alpha Specifies the time resolution. */
   explicit Cauchy(double alpha=2.0);
@@ -126,6 +126,9 @@ public:
   virtual ~Cauchy();
   /** Assignment operator, manages references. */
   Cauchy &operator=(const Cauchy &other);
+
+  /** Returns the frequency resolution parameter. */
+  double alpha() const;
 
 protected:
   /** Holds a reference to the @c CauchyObj instance. */
@@ -144,18 +147,24 @@ protected:
 class Morlet: public Wavelet
 {
 public:
+  typedef MorletObj ObjectType;
+
+public:
   /** Constructor.
    * @param dff Specifies the frequency resolution. */
   Morlet(double dff=2.0);
   /** Packs the given @c MorletObj instance into a container, the constructor takes the
    * ownership of the instance. */
-  explicit Morlet(MorletObj *obj);
+  Morlet(MorletObj *obj);
   /** Copy constructor, manages references. */
   Morlet(const Morlet &other);
   /** Destructor. */
   virtual ~Morlet();
   /** Assignment operator, manages references. */
   Morlet &operator=(const Morlet &other);
+
+  /** Returns the frequency resolution parameter. */
+  double dff() const;
 
 protected:
   /** Holds a reference to the actual instance @c MorletObj instance. */

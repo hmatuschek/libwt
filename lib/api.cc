@@ -2,19 +2,6 @@
 
 using namespace wt;
 
-/* ******************************************************************************************** *
- * Implementation of ProgressDelegate
- * ******************************************************************************************** */
-ProgressDelegateInterface::ProgressDelegateInterface()
-{
-  // pass...
-}
-
-ProgressDelegateInterface::~ProgressDelegateInterface() {
-  // pass...
-}
-
-
 
 /* ******************************************************************************************** *
  * Implementation of Wavelet container
@@ -81,6 +68,11 @@ Morlet::operator =(const Morlet &other) {
   return *this;
 }
 
+double
+Morlet::dff() const {
+  return _morlet->dff();
+}
+
 
 /* ******************************************************************************************** *
  * Implementation of Cauchy container
@@ -112,6 +104,11 @@ Cauchy::operator=(const Cauchy &other) {
   Wavelet::operator =(other);
   _cauchy = other._cauchy;
   return *this;
+}
+
+double
+Cauchy::alpha() const {
+  return _cauchy->alpha();
 }
 
 

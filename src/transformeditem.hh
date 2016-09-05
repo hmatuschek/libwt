@@ -23,7 +23,7 @@ public:
                   const QString &label="transformed", QObject *parent=0);
   virtual ~TransformedItem();
 
-  inline const wt::Wavelet &wavelet() const { return _wavelet; }
+  inline wt::Wavelet wavelet() const { return _wavelet; }
   inline double Fs() const { return _Fs; }
   inline const Eigen::VectorXd &scales() const { return _scales; }
   inline Scaling scaling() const { return _scaling; }

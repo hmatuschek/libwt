@@ -1,4 +1,4 @@
-SET(wtool_SOURCES main.cc fmtutil.cc polygon.cc
+SET(wtool_SOURCES main.cc fmtutil.cc polygon.cc session.cc
     item.cc timeseriesitem.cc transformeditem.cc transformitem.cc synthesisitem.cc projectionitem.cc
     itemview.cc mainwindow.cc application.cc transformdialog.cc qcustomplot.cc timeseriesplot.cc
     transformedplot.cc procinfo.cc loghandler.cc)
@@ -7,7 +7,7 @@ SET(wtool_MOC_HEADERS
     itemview.hh mainwindow.hh application.hh transformdialog.hh qcustomplot.hh timeseriesplot.hh
     transformedplot.hh procinfo.hh loghandler.hh)
 SET(wtool_HEADERS ${wtool_MOC_HEADERS}
-    fmtutil.hh polygon.hh)
+    fmtutil.hh polygon.hh session.hh)
 
 qt5_wrap_cpp(wtool_MOC_SOURCES ${wtool_MOC_HEADERS})
 qt5_add_resources(wtool_RCC_SOURCES resources/resources.qrc)

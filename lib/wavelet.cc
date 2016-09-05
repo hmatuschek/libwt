@@ -36,6 +36,11 @@ MorletObj::~MorletObj() {
   // pass...
 }
 
+double
+MorletObj::dff() const {
+  return _dff;
+}
+
 std::complex<double>
 MorletObj::evalAnalysis(const double &t) const {
   return std::exp(std::complex<double>(-t*t*_dff/2, 2*M_PI*t)) * std::sqrt(_dff/(2*M_PI));
@@ -82,6 +87,11 @@ CauchyObj::CauchyObj(double alpha)
 
 CauchyObj::~CauchyObj() {
   // pass...
+}
+
+double
+CauchyObj::alpha() const {
+  return _alpha;
 }
 
 std::complex<double>

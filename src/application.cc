@@ -1,6 +1,7 @@
 #include "application.hh"
 #include <QFileDialog>
 #include <QInputDialog>
+#include <QMessageBox>
 #include "api.hh"
 #include "utils/csv.hh"
 #include "utils/logger.hh"
@@ -12,6 +13,7 @@
 #include "transformitem.hh"
 #include "synthesisitem.hh"
 #include "projectionitem.hh"
+#include "session.hh"
 
 
 Application::Application(int &argc, char **argv)
@@ -169,4 +171,56 @@ Application::onProjectionFinished(ProjectionItem *item) {
                                                item->scaling(), item->result(), item->label());
   _items->addItem(pitem);
   _items->remItem(item);
+}
+
+bool
+Application::saveSession() {
+  QString filename = QFileDialog::getSaveFileName(
+        0, tr("Save session"), "", "HDF5 files (*.h5)");
+
+  if (filename.isEmpty())
+    return false;
+
+  bool success = Session::save(filename, this);
+
+  if (! success) {
+    QMessageBox::critical(
+          0, tr("Cannot save session."),
+          tr("Cannot save session as %0.").arg(filename));
+  }
+
+  return success;
+}
+
+bool
+Application::loadSession() {
+  QString filename = QFileDialog::getOpenFileName(
+        0, tr("Save session"), "", "HDF5 files (*.h5)");
+
+  if (filename.isEmpty())
+    return false;
+
+  return addSession(filename);
+}
+
+bool
+Application::addSession() {
+  QString filename = QFileDialog::getOpenFileName(
+        0, tr("Save session"), "", "HDF5 files (*.h5)");
+
+  if (filename.isEmpty())
+    return false;
+
+  return addSession(filename);
+}
+
+bool
+Application::addSession(const QString &filename) {
+  bool success = Session::load(filename, this);
+  if (! success) {
+    QMessageBox::critical(
+          0, tr("Cannot load session."),
+          tr("Cannot load session from %0.").arg(filename));
+  }
+  return success;
 }

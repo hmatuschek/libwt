@@ -47,6 +47,9 @@ public:
   /** Destructor. */
   virtual ~MorletObj();
 
+  /** Returns the frequency resolution parameter. */
+  double dff() const;
+
   /** Evaluates the mother wavelet at the specified time. */
   virtual std::complex<double> evalAnalysis(const double &t) const;
   /** Evaluates the mother wavelet at the specified time. */
@@ -75,6 +78,9 @@ public:
   explicit CauchyObj(double alpha=2);
   /** Destructor. */
   virtual ~CauchyObj();
+
+  /** Returns the frequency resolution parameter. */
+  double alpha() const;
 
   /** Evaluates the mother wavelet at the given time. */
   virtual std::complex<double> evalAnalysis(const double &t) const;

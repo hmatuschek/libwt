@@ -179,7 +179,7 @@ wt::GenericWaveletTransform<Scalar>::operator() (
 
   // Iterate over all convolution filters grouping wavelets with the same size
   size_t prog = 0;
-  #pragma omp parallel for shared prog
+  #pragma omp parallel for shared (prog)
   for (size_t j=0; j<_filterBank.size(); j++)
   {
     // Get convolution filters

@@ -51,11 +51,12 @@ MainWindow::MainWindow(Application &app, QWidget *parent)
   a->setMenu(new QMenu());
   a->menu()->addAction(QIcon("://icons/data-transfer-upload16.png"), tr("Import time series ..."),
                   &app, SLOT(importTimeseries()));
-  a->menu()->addAction(QIcon("://icons/folder16.png"), tr("Open session ..."));
+  a->menu()->addAction(QIcon("://icons/folder16.png"), tr("Open session ..."),
+                       &app, SLOT(loadSession()));
   toolbar->addAction(a);
 
   a = toolbar->addAction(
-        QIcon("://icons/data-transfer-download16.png"), "");
+        QIcon("://icons/data-transfer-download16.png"), "", &app, SLOT(saveSession()));
   a->setToolTip(tr("Save session ..."));
 
   ItemListView *itemview = new ItemListView(_application, leftPane);

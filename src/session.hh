@@ -10,14 +10,27 @@ class Item;
 class Session
 {
 public:
-  static bool save(const QString &filename);
-  static load(const QString &filename, Application *app);
+  static bool save(const QString &filename, Application *app);
+  static bool load(const QString &filename, Application *app);
 
 protected:
-  Item *loadItem(H5::DataSet &dataset);
-  Item *loadTimeseriesItem(H5::DataSet &dataset);
-  Item *loadTransformedItem(H5::DataSet &dataset);
+  static Item *loadItem(H5::DataSet &dataset);
+  static bool saveItem(H5::H5File &file, Item *item);
+  static Item *loadTimeseriesItem(H5::DataSet &dataset);
+  static bool saveTimeseriesItem(H5::H5File &file, TimeseriesItem *item);
+   static Item *loadTransformedItem(H5::DataSet &dataset);
+  static bool saveTransformedItem(H5::H5File &file, TransformedItem *item);
 
+  static bool getAttribute(H5::DataSet &dataset, const std::string &name, unsigned int &value);
+  static bool setAttribute(H5::DataSet &dataset, const std::string &name, unsigned int value);
+  static bool getAttribute(H5::DataSet &dataset, const std::string &name, double &value);
+  static bool setAttribute(H5::DataSet &dataset, const std::string &name, double value);
+  static bool getAttribute(H5::DataSet &dataset, const std::string &name, Eigen::Ref<Eigen::VectorXd> value);
+  static bool setAttribute(H5::DataSet &dataset, const std::string &name, const Eigen::Ref<const Eigen::VectorXd> &value);
+  static bool readArray(H5::DataSet &dataset, Eigen::Ref<Eigen::VectorXd> value);
+  static bool writeArray(H5::H5File &file, const std::string &name, const Eigen::Ref<const Eigen::VectorXd> &value);
+  static bool readArray(H5::DataSet &dataset, Eigen::Ref<Eigen::MatrixXcd> value);
+  static bool writeArray(H5::H5File &file, const std::string &name, const Eigen::Ref<const Eigen::MatrixXcd> &value);
 };
 
 #endif // SESSION_HH
