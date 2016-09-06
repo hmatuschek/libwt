@@ -57,6 +57,15 @@ ItemModel::~ItemModel() {
   // pass...
 }
 
+bool
+ItemModel::contains(const QString &label) const {
+  for (size_t i=0; i<_items.size(); i++) {
+    if (label == _items[i]->label())
+      return true;
+  }
+  return false;
+}
+
 void
 ItemModel::addItem(Item *item) {
   beginInsertRows(QModelIndex(), _items.size(),_items.size());

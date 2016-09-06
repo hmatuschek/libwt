@@ -128,7 +128,8 @@ TransformedItemView::truncate() {
 
 void
 TransformedItemView::config() {
-  TransformedItemViewConfigDialog dialog(_item->label(), _plot->settings());
+  Application *app = qobject_cast<Application *>(QApplication::instance());
+  TransformedItemViewConfigDialog dialog(app, _item->label(), _plot->settings());
   if (QDialog::Rejected == dialog.exec())
     return;
   _item->setLabel(dialog.label());
@@ -208,8 +209,8 @@ TransformedItemView::cropped(const Polygon &poly) {
  * Implementation of TransformedItemViewConfigDialog
  * ********************************************************************************************* */
 TransformedItemViewConfigDialog::TransformedItemViewConfigDialog(
-    const QString &label, const TransformedPlot::Settings &plotSettings, QWidget *parent)
-  : QDialog(parent)
+    Application *app, const QString &label, const TransformedPlot::Settings &plotSettings, QWidget *parent)
+  : QDialog(parent), _application(app), _oldLabel(label)
 {
   _showTitle = new QCheckBox();
   _showTitle->setChecked(plotSettings.showTitle());
@@ -241,4 +242,16 @@ TransformedItemViewConfigDialog::plotSettings() const {
   TransformedPlot::Settings settings;
   settings.setShowTitle(_showTitle->isChecked());
   return settings;
+}
+
+void
+TransformedItemViewConfigDialog::accept() {
+  QString label = _label->text();
+  if ((_oldLabel != label) && _application->items()->contains(label)) {
+    QMessageBox::information(
+          0, tr("Choose a different label."),
+          tr("There is already an item labeled '%0', chosse a different one.").arg(label));
+    return;
+  }
+  QDialog::accept();
 }

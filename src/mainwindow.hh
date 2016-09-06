@@ -16,7 +16,7 @@ public:
 
 protected slots:
   void selectedItemChanged(size_t idx);
-  void procStatUpdate(double mem, double cpu);
+  void procStatUpdate(double mem, double cpu, double time);
 
 protected:
   Application &_application;

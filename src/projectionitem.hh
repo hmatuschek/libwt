@@ -44,7 +44,7 @@ class ProjectionItem: public Item
   Q_OBJECT
 
 public:
-  ProjectionItem(TransformedItem *transformed, QObject *parent=0);
+  ProjectionItem(TransformedItem *transformed, const QString &label="projected", QObject *parent=0);
 
   double Fs() const;
   const Eigen::MatrixXcd &result() const;

@@ -40,7 +40,7 @@ public slots:
   bool addSession(const QString &filename);
 
 signals:
-  void procStats(double mem, double cpu);
+  void procStats(double mem, double cpu, double t);
 
 protected slots:
   void onTransformFinished(TransformItem *item);

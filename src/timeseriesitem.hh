@@ -7,7 +7,7 @@
 #include <QLineEdit>
 
 #include "timeseriesplot.hh"
-
+#include "application.hh"
 
 class TimeseriesItem: public Item
 {
@@ -57,13 +57,19 @@ class TimeseriesItemViewConfigDialog: public QDialog
   Q_OBJECT
 
 public:
-  TimeseriesItemViewConfigDialog(const QString &label, const TimeseriesPlot::Settings &plotSettings, QWidget *parent=0);
+  TimeseriesItemViewConfigDialog(Application *app, const QString &label,
+                                 const TimeseriesPlot::Settings &plotSettings, QWidget *parent=0);
 
   QString label() const;
   TimeseriesPlot::Settings plotSettings() const;
 
+public slots:
+  virtual void accept();
+
 protected:
+  Application *_application;
   QLineEdit *_label;
+  QString _oldLabel;
 };
 
 

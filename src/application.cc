@@ -24,7 +24,8 @@ Application::Application(int &argc, char **argv)
   _procStatTimer.setInterval(10000);
   _procStatTimer.setSingleShot(false);
   connect(&_procStatTimer, SIGNAL(timeout()), &_procStat, SLOT(update()));
-  connect(&_procStat, SIGNAL(updated(double,double)), this, SIGNAL(procStats(double,double)));
+  connect(&_procStat, SIGNAL(updated(double,double,double)),
+          this, SIGNAL(procStats(double,double,double)));
   _procStatTimer.start();
 }
 
@@ -82,6 +83,15 @@ Application::importTimeseries(const QString &filename) {
 
   QFileInfo finfo(filename);
   QString name = finfo.baseName();
+  while (_items->contains(name) || name.isEmpty()) {
+    bool ok;
+    name = QInputDialog::getText(
+          0, tr("Choose a label"), tr("There is already an item labeled '%0', choose a different label.").arg(name),
+          QLineEdit::Normal, name, &ok);
+    if (! ok)
+      return false;
+  }
+
   return addTimeseries(name, data.col(column), Fs);
 }
 
@@ -123,7 +133,18 @@ Application::startTransform(TimeseriesItem *item) {
     break;
   }
 
-  TransformItem *titem = new TransformItem(item, wavelet, scales, dialog.scaling(), this);
+  QString label = tr("W:%0").arg(item->label());
+  while (_items->contains(label) || label.isEmpty()) {
+    bool ok;
+    label = QInputDialog::getText(
+          0, tr("Choose a label"),
+          tr("There is already an item labeled '%0', choose a different label.").arg(label),
+          QLineEdit::Normal, label, &ok);
+    if (! ok)
+      return false;
+  }
+
+  TransformItem *titem = new TransformItem(item, wavelet, scales, dialog.scaling(), label, this);
   _items->addItem(titem);
   connect(titem, SIGNAL(finished(TransformItem*)), this, SLOT(onTransformFinished(TransformItem*)));
   titem->start();
@@ -133,8 +154,20 @@ Application::startTransform(TimeseriesItem *item) {
 
 
 bool
-Application::startSynthesis(TransformedItem *item) {
-  SynthesisItem *sitem = new SynthesisItem(item, this);
+Application::startSynthesis(TransformedItem *item)
+{
+  QString label = tr("M:%0").arg(item->label());
+  while (_items->contains(label) || label.isEmpty()) {
+    bool ok;
+    label = QInputDialog::getText(
+          0, tr("Choose a label"),
+          tr("There is already an item labeled '%0', choose a different label.").arg(label),
+          QLineEdit::Normal, label, &ok);
+    if (! ok)
+      return false;
+  }
+
+  SynthesisItem *sitem = new SynthesisItem(item, label, this);
   _items->addItem(sitem);
   connect(sitem, SIGNAL(finished(SynthesisItem*)), this, SLOT(onSynthesisFinished(SynthesisItem*)));
   sitem->start();
@@ -142,8 +175,20 @@ Application::startSynthesis(TransformedItem *item) {
 }
 
 bool
-Application::startProjection(TransformedItem *item) {
-  ProjectionItem *pitem = new ProjectionItem(item, this);
+Application::startProjection(TransformedItem *item)
+{
+  QString label = tr("P:%0").arg(item->label());
+  while (_items->contains(label) || label.isEmpty()) {
+    bool ok;
+    label = QInputDialog::getText(
+          0, tr("Choose a label"),
+          tr("There is already an item labeled '%0', choose a different label.").arg(label),
+          QLineEdit::Normal, label, &ok);
+    if (! ok)
+      return false;
+  }
+
+  ProjectionItem *pitem = new ProjectionItem(item, label, this);
   _items->addItem(pitem);
   connect(pitem, SIGNAL(finished(ProjectionItem*)), this, SLOT(onProjectionFinished(ProjectionItem*)));
   pitem->start();
@@ -176,7 +221,7 @@ Application::onProjectionFinished(ProjectionItem *item) {
 bool
 Application::saveSession() {
   QString filename = QFileDialog::getSaveFileName(
-        0, tr("Save session"), "", "HDF5 files (*.h5)");
+        0, tr("Save session"), "", tr("HDF5 files (*.h5 *.hdf5)"), 0);
 
   if (filename.isEmpty())
     return false;
@@ -195,7 +240,7 @@ Application::saveSession() {
 bool
 Application::loadSession() {
   QString filename = QFileDialog::getOpenFileName(
-        0, tr("Save session"), "", "HDF5 files (*.h5)");
+        0, tr("Save session"), "", tr("HDF5 files (*.h5 *.hdf5)"));
 
   if (filename.isEmpty())
     return false;
@@ -206,7 +251,7 @@ Application::loadSession() {
 bool
 Application::addSession() {
   QString filename = QFileDialog::getOpenFileName(
-        0, tr("Save session"), "", "HDF5 files (*.h5)");
+        0, tr("Save session"), "", tr("HDF5 files (*.h5 *.hdf5)"));
 
   if (filename.isEmpty())
     return false;

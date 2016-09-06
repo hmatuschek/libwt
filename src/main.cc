@@ -13,7 +13,11 @@ int main(int argc, char *argv[])
   win->show();
 
   if (argc>1) {
-    app.importTimeseries(argv[1]);
+    QString arg = argv[1];
+    if (arg.endsWith(".h5"))
+      app.addSession(arg);
+    else
+      app.importTimeseries(arg);
   }
 
   app.exec();

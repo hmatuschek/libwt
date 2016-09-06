@@ -45,7 +45,7 @@ class SynthesisItem: public Item
   Q_OBJECT
 
 public:
-  SynthesisItem(TransformedItem *transformed, QObject *parent=0);
+  SynthesisItem(TransformedItem *transformed, const QString &label="synthesized", QObject *parent=0);
 
   double Fs() const;
   const Eigen::VectorXcd &result() const;

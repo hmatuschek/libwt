@@ -43,6 +43,7 @@ public:
   ItemModel(QObject *parent=0);
   virtual ~ItemModel();
 
+  bool contains(const QString &label) const;
   void addItem(Item *item);
   void remItem(size_t i);
   void remItem(Item *item);

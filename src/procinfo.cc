@@ -6,7 +6,7 @@
 
 
 ProcInfo::ProcInfo(QObject *parent)
-  : QObject(parent), _process()
+  : QObject(parent), _process(), _startTime(clock())
 {
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
   _process.setProgram("/bin/ps");
@@ -37,5 +37,7 @@ ProcInfo::_onReadyRead() {
   mem = values.at(0).toInt()*1024.;
   cpu = values.at(1).toDouble()/100.;
 #endif
-  emit updated(mem, cpu);
+  clock_t now = clock();
+  double dt = now-_startTime;
+  emit updated(mem, cpu, dt/CLOCKS_PER_SEC);
 }

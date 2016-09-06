@@ -39,13 +39,13 @@ SynthesisTask::progresscb(double frac) {
 /* ******************************************************************************************** *
  * Implementation of SynthesisItem
  * ******************************************************************************************** */
-SynthesisItem::SynthesisItem(TransformedItem *transformed, QObject *parent)
+SynthesisItem::SynthesisItem(TransformedItem *transformed, const QString &label, QObject *parent)
   : Item(parent), _transformed(transformed->data()), _scales(transformed->scales()),
     _result(_transformed.rows()), _wavelet(transformed->wavelet()),
     _task(_wavelet, _transformed, _scales, _result),
     _Fs(transformed->Fs())
 {
-  _label = transformed->label();
+  _label = label;
   _icon  = QIcon("://icons/task16.png");
 
   connect(&_task, SIGNAL(started()), this, SLOT(onTaskStarted()));

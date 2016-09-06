@@ -2,6 +2,8 @@
 #define PROCINFO_HH
 
 #include <QProcess>
+#include <time.h>
+#include <sys/time.h>
 
 class ProcInfo: public QObject
 {
@@ -14,13 +16,14 @@ public slots:
   void update();
 
 signals:
-  void updated(double mem, double cpu);
+  void updated(double mem, double cpu, double time);
 
 protected slots:
   void _onReadyRead();
 
 protected:
   QProcess _process;
+  clock_t _startTime;
 };
 
 #endif // PROCINFO_HH

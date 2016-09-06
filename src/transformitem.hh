@@ -48,6 +48,7 @@ public:
   TransformItem(TimeseriesItem *timeseries, wt::Wavelet &wavelet,
                 const Eigen::Ref<const Eigen::VectorXd> &scales,
                 TransformedItem::Scaling scaling,
+                const QString &label="transformed",
                 QObject *parent=0);
 
   double Fs() const;

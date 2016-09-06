@@ -125,7 +125,8 @@ TimeseriesItemView::detrend() {
 
 void
 TimeseriesItemView::config() {
-  TimeseriesItemViewConfigDialog dialog(_item->label(), _plot->settings());
+  Application *app = qobject_cast<Application *>(QApplication::instance());
+  TimeseriesItemViewConfigDialog dialog(app, _item->label(), _plot->settings());
   if (QDialog::Rejected == dialog.exec())
     return;
   _item->setLabel(dialog.label());
@@ -185,10 +186,11 @@ TimeseriesItemView::delItem() {
 /* ********************************************************************************************* *
  * Implementation of TimeseriesItemViewConfigDialog
  * ********************************************************************************************* */
-TimeseriesItemViewConfigDialog::TimeseriesItemViewConfigDialog(
+TimeseriesItemViewConfigDialog::TimeseriesItemViewConfigDialog(Application *app,
     const QString &label, const TimeseriesPlot::Settings &settings, QWidget *parent)
-  : QDialog(parent)
+  : QDialog(parent), _application(app)
 {
+  _oldLabel = label;
   _label = new QLineEdit(label);
 
   QFormLayout *form = new QFormLayout();
@@ -213,4 +215,16 @@ TimeseriesPlot::Settings
 TimeseriesItemViewConfigDialog::plotSettings() const {
   TimeseriesPlot::Settings settings;
   return settings;
+}
+
+void
+TimeseriesItemViewConfigDialog::accept() {
+  QString label = _label->text();
+  if ((_oldLabel != label) && _application->items()->contains(label)) {
+    QMessageBox::information(
+          0, tr("Choose a different label."),
+          tr("There is already an item labeled '%0', chosse a different one.").arg(label));
+    return;
+  }
+  QDialog::accept();
 }

@@ -41,13 +41,13 @@ TransformTask::progresscb(double frac) {
  * ******************************************************************************************** */
 TransformItem::TransformItem(TimeseriesItem *timeseries, wt::Wavelet &wavelet,
                              const Eigen::Ref<const Eigen::VectorXd> &scales,
-                             TransformedItem::Scaling scaling, QObject *parent)
+                             TransformedItem::Scaling scaling, const QString &label, QObject *parent)
   : Item(parent), _timeseries(timeseries->data().size()), _scales(scales), _scaling(scaling),
     _result(_timeseries.size(), scales.size()), _wavelet(wavelet),
     _task(_wavelet, _timeseries, _scales, _result),
     _Fs(timeseries->Fs())
 {
-  _label = timeseries->label();
+  _label = label;
   _icon  = QIcon("://icons/task16.png");
 
   // copy TS values

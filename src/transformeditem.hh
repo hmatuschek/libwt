@@ -6,6 +6,7 @@
 #include <Eigen/Eigen>
 #include <QWidget>
 #include "transformedplot.hh"
+#include "application.hh"
 
 
 class TransformedItem: public Item
@@ -68,14 +69,20 @@ class TransformedItemViewConfigDialog: public QDialog
   Q_OBJECT
 
 public:
-  TransformedItemViewConfigDialog(const QString &label, const TransformedPlot::Settings &plotSettings, QWidget *parent=0);
+  TransformedItemViewConfigDialog(Application *app, const QString &label,
+                                  const TransformedPlot::Settings &plotSettings, QWidget *parent=0);
 
   QString label() const;
   TransformedPlot::Settings plotSettings() const;
 
+public slots:
+  virtual void accept();
+
 protected:
+  Application *_application;
   QCheckBox *_showTitle;
   QLineEdit *_label;
+  QString _oldLabel;
 };
 
 

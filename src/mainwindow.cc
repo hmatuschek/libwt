@@ -69,7 +69,8 @@ MainWindow::MainWindow(Application &app, QWidget *parent)
   _statusBar = new QStatusBar();
   setStatusBar(_statusBar);
 
-  connect(&_application, SIGNAL(procStats(double,double)), this, SLOT(procStatUpdate(double,double)));
+  connect(&_application, SIGNAL(procStats(double,double,double)),
+          this, SLOT(procStatUpdate(double,double,double)));
   connect(logHandler, SIGNAL(message(QString)), _statusBar, SLOT(showMessage(QString)));
   connect(itemview, SIGNAL(itemSelected(size_t)), this, SLOT(selectedItemChanged(size_t)));
 }
@@ -90,6 +91,7 @@ MainWindow::selectedItemChanged(size_t idx) {
 }
 
 void
-MainWindow::procStatUpdate(double mem, double cpu) {
-  _statusBar->showMessage(tr("CPU: %0 / MEM: %1").arg(fmt_cpu(cpu), fmt_mem(mem)), 0);
+MainWindow::procStatUpdate(double mem, double cpu, double time) {
+  _statusBar->showMessage(
+        tr("CPU: %0 / MEM: %1 / TIME: %2").arg(fmt_cpu(cpu), fmt_mem(mem), fmt_time(time)), 0);
 }
