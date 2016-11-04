@@ -230,3 +230,23 @@ void operator()(std::complex<double>* transformed, int Nrow, int Ncol, std::comp
 }
 }
 
+
+%apply (double* INPLACE_ARRAY1, int DIM1) {(double* out, int N)};
+%inline %{
+namespace wt {
+  void linear_range(double a, double b, double* out, int N) {
+    Eigen::Map<Eigen::VectorXd> outMap(out, N);
+    wt::linear_range(a,b,outMap);
+  }
+
+  void dyadic_range(double a, double b, double* out, int N) {
+    Eigen::Map<Eigen::VectorXd> outMap(out, N);
+    wt::dyadic_range(a,b,outMap);
+  }
+
+  void decadic_range(double a, double b, double* out, int N) {
+    Eigen::Map<Eigen::VectorXd> outMap(out, N);
+    wt::decadic_range(a,b,outMap);
+  }
+  }
+%}

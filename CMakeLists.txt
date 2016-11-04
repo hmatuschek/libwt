@@ -13,9 +13,9 @@ option(INSTALL_PYTHON_USERSITE "Install python module into user site." OFF)
 option(ENABLE_OPENMP "Build with OpenMP support." ON)
 
 # Required packages
-find_package(FFTW3)
+find_package(FFTW3 REQUIRED)
 find_package(Eigen3 REQUIRED)
-find_package(HDF5)
+find_package(HDF5 COMPONENTS C CXX REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5PrintSupport REQUIRED)
