@@ -128,17 +128,17 @@ wt::GenericWaveletSynthesis<Scalar>::operator() (
   CVector last(transformed.rows()), current(transformed.rows());
   // Clear output vector
   out.setZero();
+
   // If there is no filter bank -> done.
-  if (0 == this->_filterBank.size()) { return; }
+  if (0 == this->_filterBank.size())
+    return;
+
   // Apply first scale
   this->_filterBank[0]->apply(transformed.col(0), last);
   // Iterate over all scales and integrate over scales (mid-point method)
   for (size_t j=1; j<this->_filterBank.size(); j++) {
     // Perform FFT convolution
-    if (j & 1)
-      this->_filterBank[j]->apply(transformed.col(j), current);
-    else
-      this->_filterBank[j]->apply(transformed.col(j), current);
+    this->_filterBank[j]->apply(transformed.col(j), current);
     out.head(transformed.rows()) += ((this->_scales[j]-this->_scales[j-1])/2)*(current+last);
     // store current into last
     last.swap(current);
