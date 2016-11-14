@@ -15,3 +15,5 @@ qt5_add_resources(wtool_RCC_SOURCES resources/resources.qrc)
 add_executable(wtool ${wtool_SOURCES} ${wtool_MOC_SOURCES} ${wtool_RCC_SOURCES})
 set(Qt_LIBRARIES ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5PrintSupport_LIBRARIES})
 target_link_libraries(wtool ${EIGEN3_LIBRARIES} ${Qt_LIBRARIES} ${HDF_LIBRARIES} libwt)
+
+install(TARGETS wtool DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
