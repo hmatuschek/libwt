@@ -9,7 +9,8 @@ SET(wtool_MOC_HEADERS
 SET(wtool_HEADERS ${wtool_MOC_HEADERS}
     fmtutil.hh polygon.hh session.hh)
 
-qt5_wrap_cpp(wtool_MOC_SOURCES ${wtool_MOC_HEADERS})
+#qt5_wrap_cpp(wtool_MOC_SOURCES ${wtool_MOC_HEADERS})
+set(CMAKE_AUTOMOC ON)
 qt5_add_resources(wtool_RCC_SOURCES resources/resources.qrc)
 
 add_executable(wtool ${wtool_SOURCES} ${wtool_MOC_SOURCES} ${wtool_RCC_SOURCES})

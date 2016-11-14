@@ -145,8 +145,6 @@ TransformedPlot::crop(bool crop) {
 void
 TransformedPlot::mouseReleaseEvent(QMouseEvent *event) {
   QCustomPlot::mouseReleaseEvent(event);
-  if (! _cropping)
-    return;
 
   double x = xAxis->pixelToCoord(event->x());
   x = std::max(xAxis->range().lower, x);
@@ -155,21 +153,26 @@ TransformedPlot::mouseReleaseEvent(QMouseEvent *event) {
   y = std::max(yAxis->range().lower, y);
   y = std::min(yAxis->range().upper, y);
 
-  if (0 == _polygon.size()) {
-    _start = event->pos();
-    _curve->addData(x,y);
-    _polygon.add(x,y);
-  } else if ((_start-event->pos()).manhattanLength()<10) {
-    std::cerr << "Done." << std::endl;
-    _curve->addData(_polygon(0)(0), _polygon(0)(1));
-    _polygon.add(_polygon(0)(0), _polygon(0)(1));
-    emit cropped(_polygon);
-    _cropping = false;
+  if (_cropping) {
+    // Handle polygon cropping
+    if (0 == _polygon.size()) {
+      _start = event->pos();
+      _curve->addData(x,y);
+      _polygon.add(x,y);
+    } else if ((_start-event->pos()).manhattanLength()<10) {
+      std::cerr << "Done." << std::endl;
+      _curve->addData(_polygon(0)(0), _polygon(0)(1));
+      _polygon.add(_polygon(0)(0), _polygon(0)(1));
+      emit cropped(_polygon);
+      _cropping = false;
+    } else {
+      _curve->addData(x,y);
+      _polygon.add(x,y);
+    }
   } else {
-    _curve->addData(x,y);
-    _polygon.add(x,y);
-  }
+    // Plot modulus of rep. kern. at x,y
 
+  }
   replot();
 }
 
