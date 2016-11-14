@@ -34,7 +34,7 @@ Session::load(const QString &filename, Application *app) {
   size_t nObj = file.getNumObjs();
   for (size_t i=0; i<nObj; i++) {
     // Skip non-datasets
-    if (H5O_TYPE_DATASET != file.getObjTypeByIdx(i))
+    if (H5G_DATASET != file.getObjTypeByIdx(i))
       continue;
     std::string objname = file.getObjnameByIdx(i);
     // open dataset
@@ -221,7 +221,7 @@ Session::saveTransformedItem(H5::H5File &file, TransformedItem *item) {
 
 bool
 Session::getAttribute(H5::DataSet &dataset, const std::string &name, unsigned int &value) {
-  if (! dataset.attrExists(name))
+  if (0 == H5Aexists(dataset.getId(), name.c_str()))
     return false;
 
   H5::Attribute attr = dataset.openAttribute(name);
