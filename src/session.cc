@@ -231,7 +231,6 @@ Session::getAttribute(H5::DataSet &dataset, const std::string &name, unsigned in
   try { attr.read(H5::PredType::NATIVE_UINT, &value); }
   catch (H5::AttributeIException error) {
     logError() << "Cannot read attribue " << name
-               << " from " << dataset.getObjName()
                << ": " << error.getCDetailMsg();
     return false;
   }
@@ -251,7 +250,7 @@ Session::setAttribute(H5::DataSet &dataset, const std::string &name, unsigned in
 
 bool
 Session::getAttribute(H5::DataSet &dataset, const std::string &name, double &value) {
-  if (! dataset.attrExists(name))
+  if (0 == H5Aexists(dataset.getId(), name.c_str()))
     return false;
 
   H5::Attribute attr = dataset.openAttribute(name);
@@ -261,7 +260,6 @@ Session::getAttribute(H5::DataSet &dataset, const std::string &name, double &val
   try { attr.read(H5::PredType::NATIVE_DOUBLE, &value); }
   catch (H5::AttributeIException error) {
     logError() << "Cannot read attribue " << name
-               << " from " << dataset.getObjName()
                << ": " << error.getCDetailMsg();
     return false;
   }
@@ -281,7 +279,7 @@ Session::setAttribute(H5::DataSet &dataset, const std::string &name, double valu
 
 bool
 Session::getAttribute(H5::DataSet &dataset, const std::string &name, Eigen::VectorXd &value) {
-  if (! dataset.attrExists(name))
+  if (0 == H5Aexists(dataset.getId(), name.c_str()))
     return false;
 
   H5::Attribute attr = dataset.openAttribute(name);
@@ -317,16 +315,15 @@ Session::setAttribute(H5::DataSet &dataset, const std::string &name, const Eigen
 bool
 Session::readArray(H5::DataSet &dataset, Eigen::VectorXd &value) {
   if (H5T_FLOAT != dataset.getTypeClass()) {
-    logError() << "Cannot read vector " << dataset.getObjName()
-               << ": Unexpected data type: " << dataset.getTypeClass()
+    logError() << "Cannot read vector: Unexpected data type: " << dataset.getTypeClass()
                << ", expected " << H5T_FLOAT << ".";
     return 0;
   }
 
   H5::DataSpace dataspace = dataset.getSpace();
   if (1 != dataspace.getSimpleExtentNdims()) {
-    logError() << "Cannot read vector " << dataset.getObjName()
-               << ": Unexpected rank-" << dataspace.getSimpleExtentNdims() << ", Expected rank-1.";
+    logError() << "Cannot read vector: Unexpected rank-"
+               << dataspace.getSimpleExtentNdims() << ", Expected rank-1.";
     return 0;
   }
   hsize_t N;
@@ -346,8 +343,8 @@ Session::readArray(H5::DataSet &dataset, Eigen::MatrixXcd &value) {
 
   H5::DataSpace dataspace = dataset.getSpace();
   if (2 != dataspace.getSimpleExtentNdims()) {
-    logError() << "Cannot read matrix " << dataset.getObjName()
-               << ": Unexpected rank-" << dataspace.getSimpleExtentNdims() << ", Expected rank-2.";
+    logError() << "Cannot read matrix: Unexpected rank-"
+               << dataspace.getSimpleExtentNdims() << ", Expected rank-2.";
     return false;
   }
 
@@ -357,8 +354,7 @@ Session::readArray(H5::DataSet &dataset, Eigen::MatrixXcd &value) {
   value.resize(N[1], N[0]);
   try { dataset.read(value.data(), ctype); }
   catch (H5::DataSetIException error) {
-    logError() << "Cannot read matrix "  << dataset.getObjName()
-               << ": " << error.getCDetailMsg();
+    logError() << "Cannot read matrix: " << error.getCDetailMsg();
     return false;
   }
 
