@@ -18,15 +18,19 @@ void wilson_step(std::vector< Matrix > &S, int niter=5);
  * ********************************************************************************************* */
 template <>
 void wilson<Matrix>(std::vector< Matrix > &S, int niter=5) {
-  // Get inital guess for the factor phi from S
+  // Get inital guess for the factor phi from S. That is,
+  //  the cholesky factor of S[0]
   std::vector<Matrix> phi; phi.reserve(S.size());
+  Matrix U = S[0].llt().MatrixU();
   for (size_t i=0; i<S.size(); i++) {
-    phi.push_back(S[i].LLT());
+    phi.push_back(U);
   }
-  // Update phi iteratively
+
+  // Update phi iteratively (in-place)
   for (int i=0; i<niter; i++) {
-    wilson_step<Matrix>(S, phi);
+    double eps = wilson_step<Matrix>(S, phi);
   }
+
   // Store phi in S
   for (size_t i=0; i<S.size(); i++) {
     S[i] = phi[i];

@@ -14,11 +14,11 @@ public:
   static bool load(const QString &filename, Application *app);
 
 protected:
-  static Item *loadItem(H5::DataSet &dataset);
+  static Item *loadItem(const std::string &objname, H5::DataSet &dataset);
   static bool saveItem(H5::H5File &file, Item *item);
-  static Item *loadTimeseriesItem(H5::DataSet &dataset);
+  static Item *loadTimeseriesItem(const std::string &objname, H5::DataSet &dataset);
   static bool saveTimeseriesItem(H5::H5File &file, TimeseriesItem *item);
-   static Item *loadTransformedItem(H5::DataSet &dataset);
+   static Item *loadTransformedItem(const std::string &objname, H5::DataSet &dataset);
   static bool saveTransformedItem(H5::H5File &file, TransformedItem *item);
 
   static bool getAttribute(H5::DataSet &dataset, const std::string &name, unsigned int &value);

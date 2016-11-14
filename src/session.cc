@@ -34,11 +34,12 @@ Session::load(const QString &filename, Application *app) {
   size_t nObj = file.getNumObjs();
   for (size_t i=0; i<nObj; i++) {
     // Skip non-datasets
-    if (H5O_TYPE_DATASET != file.childObjType(i))
+    if (H5O_TYPE_DATASET != file.getObjTypeByIdx(i))
       continue;
+    std::string objname = file.getObjnameByIdx(i);
     // open dataset
-    H5::DataSet dataset = file.openDataSet(file.getObjnameByIdx(i));
-    Item *item = loadItem(dataset);
+    H5::DataSet dataset = file.openDataSet(objname);
+    Item *item = loadItem(objname, dataset);
     if (item)
       app->items()->addItem(item);
   }
@@ -65,17 +66,17 @@ Session::save(const QString &filename, Application *app) {
 }
 
 Item *
-Session::loadItem(H5::DataSet &dataset) {
+Session::loadItem(const std::string &objname, H5::DataSet &dataset) {
   // Check if dataset has type attribute
   uint type;
   if (! getAttribute(dataset, "type", type))
     return 0;
   if (ITEM_TIMESERIES == type)
-    return loadTimeseriesItem(dataset);
+    return loadTimeseriesItem(objname, dataset);
   if (ITEM_TRANSFORMED == type)
-    return loadTransformedItem(dataset);
+    return loadTransformedItem(objname, dataset);
 
-  logError() << "Cannot load item " << dataset.getObjName()
+  logError() << "Cannot load item " << objname
              << ": Unknown type " << type;
   return 0;
 }
@@ -91,11 +92,11 @@ Session::saveItem(H5::H5File &file, Item *item) {
 }
 
 Item *
-Session::loadTimeseriesItem(H5::DataSet &dataset) {
+Session::loadTimeseriesItem(const std::string &objname, H5::DataSet &dataset) {
   // Check if dataset has Fs attribute
   double Fs;
   if (! getAttribute(dataset, "Fs", Fs)) {
-    logError() << "Cannot load timeseries " << dataset.getObjName()
+    logError() << "Cannot load timeseries " << objname
                << ": No sample rate attribute set.";
     return 0;
   }
@@ -103,10 +104,10 @@ Session::loadTimeseriesItem(H5::DataSet &dataset) {
   // Get data
   Eigen::VectorXd data;
   if (! readArray(dataset, data)) {
-    logError() << "Cannot load timeseries " << dataset.getObjName() << ".";
+    logError() << "Cannot load timeseries " << objname << ".";
     return 0;
   }
-  QString label = QString::fromStdString(dataset.getObjName());
+  QString label = QString::fromStdString(objname);
   if (label.startsWith("/")) label.remove("/");
   return new TimeseriesItem(data, Fs, label);
 }
@@ -127,31 +128,31 @@ Session::saveTimeseriesItem(H5::H5File &file, TimeseriesItem *item) {
 }
 
 Item *
-Session::loadTransformedItem(H5::DataSet &dataset) {
+Session::loadTransformedItem(const std::string &objname, H5::DataSet &dataset) {
   double Fs = 1;
   uint waveletId;
   uint scalingId;
   Eigen::VectorXd scales;
 
   if (! getAttribute(dataset, "Fs", Fs)) {
-    logError() << "Cannot load transformed " << dataset.getObjName()
+    logError() << "Cannot load transformed " << objname
                << ": No valid sample rate attribute set.";
     return 0;
   }
   if (! getAttribute(dataset, "scaling", scalingId)) {
-    logError() << "Cannot load transformed " << dataset.getObjName()
+    logError() << "Cannot load transformed " << objname
                << ": No valid scaling attribute set.";
     return 0;
   }
   if (! getAttribute(dataset, "scales", scales)) {
-    logError() << "Cannot load transformed " << dataset.getObjName()
+    logError() << "Cannot load transformed " << objname
                << ": No valid scales attribute set.";
     return 0;
   }
 
   // Dispatch by type
   if (! getAttribute(dataset, "wavelet", waveletId)) {
-    logError() << "Cannot load transformed " << dataset.getObjName()
+    logError() << "Cannot load transformed " << objname
                << ": No valid wavelet attribute set.";
     return 0;
   }
@@ -159,7 +160,7 @@ Session::loadTransformedItem(H5::DataSet &dataset) {
   if (WAVELET_MORLET == waveletId) {
     double dff;
     if (! getAttribute(dataset, "dff", dff)) {
-      logError() << "Cannot load transformed " << dataset.getObjName()
+      logError() << "Cannot load transformed " << objname
                  << ": No valid wavelet parameter set.";
       return 0;
     }
@@ -167,25 +168,25 @@ Session::loadTransformedItem(H5::DataSet &dataset) {
   } else if (WAVELET_CAUCHY == waveletId) {
     double alpha;
     if (! getAttribute(dataset, "alpha", alpha)) {
-      logError() << "Cannot load transformed " << dataset.getObjName()
+      logError() << "Cannot load transformed " << objname
                  << ": No valid wavelet parameter set.";
       return 0;
     }
     wavelet = wt::Cauchy(alpha);
   } else {
-    logError() << "Cannot load transformed " << dataset.getObjName()
+    logError() << "Cannot load transformed " << objname
                << ": Unknown wavelet type ID " << uint(waveletId) << ".";
     return 0;
   }
 
   Eigen::MatrixXcd data;
   if (! readArray(dataset, data)) {
-    logError() << "Cannot load transformed " << dataset.getObjName()
+    logError() << "Cannot load transformed " << objname
                << ": Invalid data.";
     return 0;
   }
 
-  QString label = QString::fromStdString(dataset.getObjName());
+  QString label = QString::fromStdString(objname);
   if (label.startsWith("/")) label.remove("/");
   return new TransformedItem(wavelet, Fs, scales, TransformedItem::Scaling(scalingId), data, label);
 }
