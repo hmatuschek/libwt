@@ -59,7 +59,7 @@ ItemModel::~ItemModel() {
 
 bool
 ItemModel::contains(const QString &label) const {
-  for (size_t i=0; i<_items.size(); i++) {
+  for (int i=0; i<_items.size(); i++) {
     if (label == _items[i]->label())
       return true;
   }

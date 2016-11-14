@@ -29,7 +29,7 @@ ProcInfo::update() {
 
 void
 ProcInfo::_onReadyRead() {
-  double mem = qQNaN(), cpu = qQNaN();
+  double mem = 0, cpu = 0;
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
   QString line = _process.readLine();
   line = _process.readLine();
