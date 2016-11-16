@@ -21,9 +21,12 @@ public:
 
     bool showTitle() const;
     void setShowTitle(bool show);
+    bool showModulus() const;
+    void setShowModulus(bool show);
 
   protected:
     bool _showTitle;
+    bool _showModulus;
   };
 
 public:
@@ -43,6 +46,7 @@ protected:
 
 protected:
   TransformedItem *_item;
+  QCPColorMap *_colorMap;
   Settings _settings;
   QCPTextElement *_title;
   QCPCurve *_valid;

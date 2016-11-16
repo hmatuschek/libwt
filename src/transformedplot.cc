@@ -4,17 +4,22 @@
 #include <iostream>
 
 
+inline double angle(const std::complex<double> &val) {
+  return std::atan2(val.imag(), val.real());
+}
+
+
 /* ********************************************************************************************* *
  * Implementation of TransformedPlot::Settings
  * ********************************************************************************************* */
 TransformedPlot::Settings::Settings()
-  : _showTitle(true)
+  : _showTitle(true), _showModulus(true)
 {
   // pass...
 }
 
 TransformedPlot::Settings::Settings(const Settings &other)
-  : _showTitle(other._showTitle)
+  : _showTitle(other._showTitle), _showModulus(other._showModulus)
 {
   // pass...
 }
@@ -22,6 +27,7 @@ TransformedPlot::Settings::Settings(const Settings &other)
 TransformedPlot::Settings &
 TransformedPlot::Settings::operator =(const Settings &other) {
   _showTitle = other._showTitle;
+  _showModulus = other._showModulus;
   return *this;
 }
 
@@ -33,6 +39,16 @@ TransformedPlot::Settings::showTitle() const {
 void
 TransformedPlot::Settings::setShowTitle(bool show) {
   _showTitle = show;
+}
+
+bool
+TransformedPlot::Settings::showModulus() const {
+  return _showModulus;
+}
+
+void
+TransformedPlot::Settings::setShowModulus(bool show) {
+  _showModulus = show;
 }
 
 
@@ -48,34 +64,22 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   QString title = tr("Wavelet transformed '%0' [Fs=%1]")
       .arg(_item->label(), fmt_freq(_item->Fs()));
   _title = new QCPTextElement(this, title);
-  QFont font = _title->font(); font.setPointSize(16);
+  QFont font = _title->font(); font.setPointSize(18);
   _title->setFont(font);
   plotLayout()->addElement(0, 0, _title);
   _title->setVisible(_settings.showTitle());
   xAxis->setLabel("Time [s]");
   yAxis->setLabel("Scale [s]");
 
-  QCPColorMap *colorMap = new QCPColorMap(xAxis, yAxis);
-  colorMap->data()->setSize(item->data().rows(), item->data().cols());
-  colorMap->data()->setRange(QCPRange(0, item->data().rows()/item->Fs()),
-                             QCPRange(item->scales()(0), item->scales()(item->scales().size()-1)));
-  for (int i=0; i<item->data().rows(); i++) {
-    for (int j=0; j<item->data().cols(); j++)
-      colorMap->data()->setCell(i, j, std::abs(item->data()(i,j)));
-  }
+  _colorMap = new QCPColorMap(xAxis, yAxis);
+  _colorMap->data()->setSize(item->data().rows(), item->data().cols());
+  _colorMap->data()->setRange(QCPRange(0, item->data().rows()/item->Fs()),
+                              QCPRange(item->scales()(0), item->scales()(item->scales().size()-1)));
 
-  _rkOverlay = new QCPColorMap(xAxis, yAxis);
-  _rkOverlay->data()->setSize(item->data().rows(), item->data().cols());
-  _rkOverlay->data()->setRange(QCPRange(0, item->data().rows()/item->Fs()),
-                               QCPRange(item->scales()(0), item->scales()(item->scales().size()-1)));
-  QCPColorGradient cmap;
-  for (int i=0; i<cmap.levelCount(); i++) {
-    double a = double(i)/(cmap.levelCount()-1);
-    cmap.setColorStopAt(a, QColor(0,0,255,a*255));
-  }
-  _rkOverlay->setGradient(cmap);
-  _rkOverlay->setInterpolate(false);
-  _rkOverlay->setVisible(false);
+  QCPColorScale *colorScale = new QCPColorScale(this);
+  plotLayout()->addElement(1, 1, colorScale);
+  colorScale->setType(QCPAxis::atRight);
+  _colorMap->setColorScale(colorScale);
 
   QSharedPointer<QCPAxisTickerLog> ticker;
   switch (_item->scaling()) {
@@ -95,14 +99,18 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
       break;
   }
 
-  QCPColorScale *colorScale = new QCPColorScale(this);
-  plotLayout()->addElement(1, 1, colorScale);
-  colorScale->setType(QCPAxis::atRight);
-  colorMap->setColorScale(colorScale);
-  colorScale->axis()->setLabel("Modulus [a.u.]");
-
-  colorMap->setGradient(QCPColorGradient::gpHot);
-  colorMap->rescaleDataRange();
+  _rkOverlay = new QCPColorMap(xAxis, yAxis);
+  _rkOverlay->data()->setSize(item->data().rows(), item->data().cols());
+  _rkOverlay->data()->setRange(QCPRange(0, item->data().rows()/item->Fs()),
+                               QCPRange(item->scales()(0), item->scales()(item->scales().size()-1)));
+  QCPColorGradient cmap;
+  for (int i=0; i<cmap.levelCount(); i++) {
+    double a = double(i)/(cmap.levelCount()-1);
+    cmap.setColorStopAt(a, QColor(0,0,255,a*255));
+  }
+  _rkOverlay->setGradient(cmap);
+  _rkOverlay->setInterpolate(false);
+  _rkOverlay->setVisible(false);
 
   QCPMarginGroup *marginGroup = new QCPMarginGroup(this);
   axisRect()->setMarginGroup(QCP::msBottom|QCP::msTop, marginGroup);
@@ -138,10 +146,30 @@ TransformedPlot::settings() const {
 void
 TransformedPlot::applySettings(const Settings &settings) {
   _settings = settings;
+
   QString title = tr("Wavelet transformed '%0' [Fs=%1]")
       .arg(_item->label(), fmt_freq(_item->Fs()));
   _title->setText(title);
   _title->setVisible(_settings.showTitle());
+
+  for (int i=0; i<_item->data().rows(); i++) {
+    for (int j=0; j<_item->data().cols(); j++) {
+      if (_settings.showModulus())
+        _colorMap->data()->setCell(i, j, std::abs(_item->data()(i,j)));
+      else
+        _colorMap->data()->setCell(i, j, angle(_item->data()(i,j)));
+    }
+  }
+
+  if (_settings.showModulus()) {
+    _colorMap->colorScale()->axis()->setLabel("Modulus [a.u.]");
+    _colorMap->setGradient(QCPColorGradient::gpHot);
+  } else {
+    _colorMap->colorScale()->axis()->setLabel("Phase [rad]");
+    _colorMap->setGradient(QCPColorGradient::gpHues);
+  }
+  _colorMap->rescaleDataRange(true);
+  rescaleAxes();
   replot();
 }
 
@@ -192,18 +220,21 @@ TransformedPlot::mouseReleaseEvent(QMouseEvent *event) {
     double a = yAxis->pixelToCoord(event->y());
     if ((b<xAxis->range().lower) || (b>xAxis->range().upper) || (a<yAxis->range().lower) || (a>yAxis->range().upper)) {
       _rkOverlay->setVisible(false);
-    }
-    double rval = std::abs(_item->wavelet().evalRepKern(0,1));
-    // Plot modulus of rep. kern. at x,y
-    for (int i=0; i<_item->data().rows(); i++) {
-      for (int j=0; j<_item->data().cols(); j++) {
-        double value = std::abs(_item->wavelet().evalRepKern((b-i*dt)/a, _item->scales()(j)/a));
-        _rkOverlay->data()->setCell(i, j, value/rval);
+    } else {
+      double rval = std::abs(_item->wavelet().evalRepKern(0,1));
+      // Plot modulus of rep. kern. at x,y
+      for (int i=0; i<_item->data().rows(); i++) {
+        for (int j=0; j<_item->data().cols(); j++) {
+          double value = std::abs(_item->wavelet().evalRepKern((b-i*dt)/a, _item->scales()(j)/a));
+          _rkOverlay->data()->setCell(i, j, value/rval);
+        }
       }
+      _rkOverlay->rescaleDataRange();
+      _rkOverlay->setVisible(true);
     }
-    _rkOverlay->rescaleDataRange();
-    _rkOverlay->setVisible(true);
   }
+
+  // Replot anyway...
   replot();
 }
 

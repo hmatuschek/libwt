@@ -81,6 +81,7 @@ public slots:
 protected:
   Application *_application;
   QCheckBox *_showTitle;
+  QCheckBox *_showModulus;
   QLineEdit *_label;
   QString _oldLabel;
 };
