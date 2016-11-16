@@ -214,13 +214,15 @@ TransformedItemViewConfigDialog::TransformedItemViewConfigDialog(
 {
   _showTitle = new QCheckBox();
   _showTitle->setChecked(plotSettings.showTitle());
-  _showModulus = new QCheckBox();
-  _showModulus->setChecked(plotSettings.showModulus());
+  _showModulus = new QComboBox();
+  _showModulus->addItem(tr("Modulus"));
+  _showModulus->addItem(tr("Phase"));
+  _showModulus->setCurrentIndex(plotSettings.showModulus() ? 0 : 1);
   _label = new QLineEdit(label);
 
   QFormLayout *form = new QFormLayout();
   form->addRow(tr("Show title"), _showTitle);
-  form->addRow(tr("Show modulus/phase"), _showModulus);
+  form->addRow(tr("Plot"), _showModulus);
   form->addRow(tr("Label"), _label);
 
   QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
@@ -243,7 +245,7 @@ TransformedPlot::Settings
 TransformedItemViewConfigDialog::plotSettings() const {
   TransformedPlot::Settings settings;
   settings.setShowTitle(_showTitle->isChecked());
-  settings.setShowModulus(_showModulus->isChecked());
+  settings.setShowModulus(0 == _showModulus->currentIndex());
   return settings;
 }
 

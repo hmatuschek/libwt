@@ -163,9 +163,11 @@ TransformedPlot::applySettings(const Settings &settings) {
 
   if (_settings.showModulus()) {
     _colorMap->colorScale()->axis()->setLabel("Modulus [a.u.]");
+    _colorMap->colorScale()->axis()->setTicker(QSharedPointer<QCPAxisTicker>(new QCPAxisTicker()));
     _colorMap->setGradient(QCPColorGradient::gpHot);
   } else {
     _colorMap->colorScale()->axis()->setLabel("Phase [rad]");
+    _colorMap->colorScale()->axis()->setTicker(QSharedPointer<QCPAxisTicker>(new QCPAxisTickerPi()));
     _colorMap->setGradient(QCPColorGradient::gpHues);
   }
   _colorMap->rescaleDataRange(true);

@@ -5,6 +5,7 @@
 #include "api.hh"
 #include <Eigen/Eigen>
 #include <QWidget>
+#include <QComboBox>
 #include "transformedplot.hh"
 #include "application.hh"
 
@@ -81,7 +82,7 @@ public slots:
 protected:
   Application *_application;
   QCheckBox *_showTitle;
-  QCheckBox *_showModulus;
+  QComboBox *_showModulus;
   QLineEdit *_label;
   QString _oldLabel;
 };
