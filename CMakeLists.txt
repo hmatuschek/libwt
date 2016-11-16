@@ -73,7 +73,7 @@ MESSAGE(STATUS "Using HDF5 libraries: ${HDF_LIBRARIES}")
 
 SET(libwt_VERSION_MAJOR "1")
 SET(libwt_VERSION_MINOR "0")
-SET(libwt_VERSION_PATCH "0")
+SET(libwt_VERSION_PATCH "1")
 
 #
 # Get default install directories under Linux

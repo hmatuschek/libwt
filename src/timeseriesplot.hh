@@ -43,7 +43,7 @@ protected:
 
 protected:
   TimeseriesItem *_item;
-  QCPPlotTitle *_title;
+  QCPTextElement *_title;
   Settings _settings;
   bool _cropping;
   bool _dragging;

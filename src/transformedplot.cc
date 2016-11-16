@@ -47,14 +47,15 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   plotLayout()->insertRow(0);
   QString title = tr("Wavelet transformed '%0' [Fs=%1]")
       .arg(_item->label(), fmt_freq(_item->Fs()));
-  _title = new QCPPlotTitle(this, title);
+  _title = new QCPTextElement(this, title);
+  QFont font = _title->font(); font.setPointSize(16);
+  _title->setFont(font);
   plotLayout()->addElement(0, 0, _title);
   _title->setVisible(_settings.showTitle());
   xAxis->setLabel("Time [s]");
   yAxis->setLabel("Scale [s]");
 
   QCPColorMap *colorMap = new QCPColorMap(xAxis, yAxis);
-  addPlottable(colorMap);
   colorMap->data()->setSize(item->data().rows(), item->data().cols());
   colorMap->data()->setRange(QCPRange(0, item->data().rows()/item->Fs()),
                              QCPRange(item->scales()(0), item->scales()(item->scales().size()-1)));
@@ -63,16 +64,34 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
       colorMap->data()->setCell(i, j, std::abs(item->data()(i,j)));
   }
 
+  _rkOverlay = new QCPColorMap(xAxis, yAxis);
+  _rkOverlay->data()->setSize(item->data().rows(), item->data().cols());
+  _rkOverlay->data()->setRange(QCPRange(0, item->data().rows()/item->Fs()),
+                               QCPRange(item->scales()(0), item->scales()(item->scales().size()-1)));
+  QCPColorGradient cmap;
+  for (int i=0; i<cmap.levelCount(); i++) {
+    double a = double(i)/(cmap.levelCount()-1);
+    cmap.setColorStopAt(a, QColor(0,0,255,a*255));
+  }
+  _rkOverlay->setGradient(cmap);
+  _rkOverlay->setInterpolate(false);
+  _rkOverlay->setVisible(false);
+
+  QSharedPointer<QCPAxisTickerLog> ticker;
   switch (_item->scaling()) {
     case TransformedItem::LINEAR:
       break;
     case TransformedItem::DYADIC:
+      ticker = QSharedPointer<QCPAxisTickerLog>(new QCPAxisTickerLog());
+      ticker->setLogBase(2);
+      yAxis->setTicker(ticker);
       yAxis->setScaleType(QCPAxis::stLogarithmic);
-      yAxis->setScaleLogBase(2);
       break;
     case TransformedItem::DECADIC:
+      ticker = QSharedPointer<QCPAxisTickerLog>(new QCPAxisTickerLog());
+      ticker->setLogBase(10);
+      yAxis->setTicker(ticker);
       yAxis->setScaleType(QCPAxis::stLogarithmic);
-      yAxis->setScaleLogBase(10);
       break;
   }
 
@@ -91,7 +110,6 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   rescaleAxes();
 
   _valid = new QCPCurve(xAxis, yAxis);
-  addPlottable(_valid);
   QPen pen = _valid->pen(); pen.setColor(Qt::black); _valid->setPen(pen);
   _valid->setVisible(true);
   for (int j=0; j<_item->scales().size(); j++) {
@@ -106,7 +124,6 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   }
 
   _curve = new QCPCurve(xAxis, yAxis);
-  addPlottable(_curve);
   pen = _curve->pen(); pen.setWidth(2); _curve->setPen(pen);
   _curve->setVisible(false);
 
@@ -133,7 +150,7 @@ TransformedPlot::crop(bool crop) {
   _cropping = crop;
   if (_cropping) {
     _start = QPoint(-1,-1);
-    _curve->clearData();
+    _curve->setData(QVector<double>(), QVector<double>());
     _curve->setVisible(true);
     _polygon.clear();
   } else {
@@ -170,8 +187,22 @@ TransformedPlot::mouseReleaseEvent(QMouseEvent *event) {
       _polygon.add(x,y);
     }
   } else {
+    double dt = 1./_item->Fs();
+    double b = xAxis->pixelToCoord(event->x());
+    double a = yAxis->pixelToCoord(event->y());
+    if ((b<xAxis->range().lower) || (b>xAxis->range().upper) || (a<yAxis->range().lower) || (a>yAxis->range().upper)) {
+      _rkOverlay->setVisible(false);
+    }
+    double rval = std::abs(_item->wavelet().evalRepKern(0,1));
     // Plot modulus of rep. kern. at x,y
-
+    for (int i=0; i<_item->data().rows(); i++) {
+      for (int j=0; j<_item->data().cols(); j++) {
+        double value = std::abs(_item->wavelet().evalRepKern((b-i*dt)/a, _item->scales()(j)/a));
+        _rkOverlay->data()->setCell(i, j, value/rval);
+      }
+    }
+    _rkOverlay->rescaleDataRange();
+    _rkOverlay->setVisible(true);
   }
   replot();
 }

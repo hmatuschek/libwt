@@ -45,7 +45,6 @@ TimeseriesPlot::TimeseriesPlot(TimeseriesItem *item, const Settings &settings, Q
   addGraph();
 
   _selection = new QCPItemRect(this);
-  addItem(_selection);
   _selection->setVisible(false);
   _selection->setPen(QPen(Qt::transparent));
   _selection->setBrush(QColor(0, 0, 255, 32));
@@ -56,7 +55,9 @@ TimeseriesPlot::TimeseriesPlot(TimeseriesItem *item, const Settings &settings, Q
   }
   plotLayout()->insertRow(0);
   QString title = tr("Timeseries '%0' [Fs=%1]").arg(_item->label(), fmt_freq(_item->Fs()));
-  _title = new QCPPlotTitle(this, title);
+  _title = new QCPTextElement(this, title);
+  QFont font = _title->font(); font.setPointSize(16);
+  _title->setFont(font);
   plotLayout()->addElement(0, 0, _title);
   _title->setVisible(settings.showTitle());
   xAxis->setLabel(tr("Time [s]"));

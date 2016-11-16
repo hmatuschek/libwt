@@ -44,12 +44,13 @@ protected:
 protected:
   TransformedItem *_item;
   Settings _settings;
-  QCPPlotTitle *_title;
+  QCPTextElement *_title;
   QCPCurve *_valid;
   bool _cropping;
   QPoint _start;
   QCPCurve *_curve;
   Polygon _polygon;
+  QCPColorMap *_rkOverlay;
 };
 
 
