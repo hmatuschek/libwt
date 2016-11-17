@@ -4,6 +4,7 @@
 #include <ostream>
 #include <istream>
 #include <list>
+#include <locale>
 #include "types.hh"
 
 namespace wt {
@@ -16,6 +17,8 @@ public:
                    const std::string &del="\t", size_t skipRows=0)
   {
     typedef typename ArrayClass::Scalar Scalar;
+    std::locale defaultLocale;
+    std::locale::global(std::locale::classic());
 
     std::string buffer;
     std::list< std::list<Scalar> > values;
@@ -54,7 +57,8 @@ public:
         result(i,j) = *value;
       }
     }
-    // done.
+    // done. Restore defalut locale.
+    std::locale::global(defaultLocale);
   }
 
   template <class Derived>
