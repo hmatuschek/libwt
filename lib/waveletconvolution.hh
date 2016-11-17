@@ -16,9 +16,13 @@ template <class Scalar>
 class GenericWaveletConvolution : public WaveletAnalysis
 {
 public:
+  /** Complex scalar type. */
   typedef typename Traits<Scalar>::Complex Complex;
+  /** Real vector type. */
   typedef typename Traits<Scalar>::RVector RVector;
+  /** Complex vector type. */
   typedef typename Traits<Scalar>::CVector CVector;
+  /** Complex matrix type. */
   typedef typename Traits<Scalar>::CMatrix CMatrix;
 
 public:
@@ -34,6 +38,9 @@ public:
   /** Destructor. */
   virtual ~GenericWaveletConvolution();
 
+  /** Performs the convolution of the @c transformed with the reproducing kernel and stores
+   * the result into @c out. The optional @c progress allows to pass an instance implementing
+   * the @c ProgressDelegateInterface. */
   template <class iDerived, class oDerived>
   void operator() (const Eigen::DenseBase<iDerived> &transformed, Eigen::DenseBase<oDerived> &out,
                    ProgressDelegateInterface *progress=0);

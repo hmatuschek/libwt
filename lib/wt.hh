@@ -5,7 +5,7 @@
  *
  * \f[m(b,a) = \int_{-\infty}^{\infty}\bar{s}(t)\,\frac{1}{a}g\left(\frac{t-b}{a}\right)\,dt\,,\f]
  *
- * see @ref wavelets for a list of all implemented wavelets. For each proper
+ * see @ref api for a list of all implemented wavelets. For each proper
  * (analysis) wavelet\cite Holschneider1998 \f$g\f$, there exists a second (synthesis) wavelet
  * \f$h(t)\f$ that reconstructs the signal as
  *

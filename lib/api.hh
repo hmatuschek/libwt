@@ -12,27 +12,38 @@
 
 namespace wt {
 
+/** Interface for a progress delegate. You may also use the @c ProgressDelegate template class
+ * to pass callback methods as delegates.
+ * @ingroup api */
 class ProgressDelegateInterface
 {
 public:
+  /** Needs to be implemented by all progress delegates. */
   virtual void operator() (double frac)  = 0;
 };
 
 
+/** Implements a generic progress delegate that calls a method of some object passed to the
+ * constructor.
+ * @ingroup api */
 template <class T>
 class ProgressDelegate: public ProgressDelegateInterface
 {
 public:
+  /** Constructs a progress delegate for the given @c instance calling its specified @c method. */
   ProgressDelegate(T &instance, void (T::*method)(double))
     : ProgressDelegateInterface(), _instance(instance), _method(method) { }
   virtual ~ProgressDelegate() {  }
 
+  /** Implements the @c ProgressDelegateInterface. */
   virtual void operator() (double frac) {
     (this->_instance.*this->_method)(frac);
   }
 
 protected:
+  /** A weak reference to the instance. */
   T &_instance;
+  /** A reference to the method being called on progress. */
   void (T::*_method)(double);
 };
 
@@ -40,7 +51,7 @@ protected:
 /** Base class of all wavelet object containers.
  * This container can hold any wavelet object and provides access to the generic methods of these
  * objects.
- * @ingroup wavelets */
+ * @ingroup api */
 class Wavelet : public Container
 {
 public:
@@ -71,10 +82,13 @@ public:
     return _wavelet->evalSynthesis(t);
   }
 
+  /** Revaluates the reproducing kernel located at \f$(0,1)\f$ at the given time \f$b\f$ and
+   * scale \f$a\f$. */
   inline std::complex<double> evalRepKern(const double &b, const double &a) const {
     return _wavelet->evalRepKern(b, a);
   }
 
+  /** Returns the normalization constant for the wavelet synthesis (inverse transform). */
   inline double normConstant() const {
     return _wavelet->normConstant();
   }
@@ -112,6 +126,7 @@ protected:
 class Cauchy: public Wavelet
 {
 public:
+  /** Object type of the container. */
   typedef CauchyObj ObjectType;
 
 public:
@@ -143,10 +158,11 @@ protected:
  * \f]
  * where \f$\delta\f$ specifies the time-frequency resolution of the wavelet. Default
  * \f$\delta=2\f$.
- * @ingroup wavelets */
+ * @ingroup api */
 class Morlet: public Wavelet
 {
 public:
+  /** Object type of the container. */
   typedef MorletObj ObjectType;
 
 public:
@@ -171,11 +187,14 @@ protected:
   MorletObj *_morlet;
 };
 
-/** Samples a regular grid in the range \f$[a,b)\f$ into @c out. */
+/** Samples a regular grid in the range \f$[a,b)\f$ into @c out.
+ * @ingroup api */
 void linear_range(double a, double b, Eigen::Ref<Eigen::VectorXd> out);
-/** Samples a dyadic grid in the range \f$[a,b)\f$ into @c out. */
+/** Samples a dyadic grid in the range \f$[a,b)\f$ into @c out.
+ * @ingroup api */
 void dyadic_range(double a, double b, Eigen::Ref<Eigen::VectorXd> out);
-/** Samples a decadic grid in the range \f$[a,b)\f$ into @c out. */
+/** Samples a decadic grid in the range \f$[a,b)\f$ into @c out.
+ * @ingroup api */
 void decadic_range(double a, double b, Eigen::Ref<Eigen::VectorXd> out);
 
 } // namespace wt

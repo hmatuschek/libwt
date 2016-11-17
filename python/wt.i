@@ -109,6 +109,7 @@ public:
 
 
 namespace wt {
+%feature("autodoc", "Base class of all wavelet analyses.");
 class WaveletAnalysis
 {
 protected:
@@ -129,6 +130,7 @@ public:
 %apply (std::complex<double>* INPLACE_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* out, int Nrow, int Ncol)};
 
 namespace wt {
+%feature("autodoc", "Implements the continous wavelet transform.");
 class WaveletTransform: public WaveletAnalysis
 {
 public:
@@ -163,6 +165,7 @@ void operator() (std::complex<double> *signal, int Nsig, std::complex<double> *o
 %apply (std::complex<double>* INPLACE_ARRAY1, int DIM1) {(std::complex<double>* out, int N)};
 
 namespace wt {
+%feature("autodoc", "Implements the wavelet synthesis (inverse transform).");
 class WaveletSynthesis: public WaveletAnalysis
 {
 public:
@@ -198,6 +201,7 @@ void operator() (std::complex<double>* transformed, int Nrow, int Ncol, std::com
 %apply (std::complex<double>* INPLACE_FARRAY2, int DIM1, int DIM2) {(std::complex<double>* out, int Mrow, int Mcol )};
 
 namespace wt {
+%feature("autodoc", "Implements the convolution of a complex function in the time-scale plane with the reproducing kernel.");
 class WaveletConvolution: public WaveletAnalysis
 {
 public:
