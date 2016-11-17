@@ -24,9 +24,25 @@ public:
     bool showModulus() const;
     void setShowModulus(bool show);
 
+    bool showRepKern() const;
+    void setShowRepKern(bool show);
+    bool showVoice() const;
+    void setShowVoice(bool show);
+    bool showZoom() const;
+    void setShowZoom(bool show);
+    bool showWavelet() const;
+    void setShowWavelet(bool show);
+
+    bool showLeftPane() const;
+    bool showBottomPane() const;
+
   protected:
     bool _showTitle;
     bool _showModulus;
+    bool _showRepKern;
+    bool _showVoice;
+    bool _showZoom;
+    bool _showWavelet;
   };
 
 public:
@@ -55,6 +71,8 @@ protected:
   QCPCurve *_curve;
   Polygon _polygon;
   QCPColorMap *_rkOverlay;
+  QCPAxisRect *_leftPaneAxis;
+  QCPAxisRect *_bottomPaneAxis;
 };
 
 

@@ -13,13 +13,15 @@ inline double angle(const std::complex<double> &val) {
  * Implementation of TransformedPlot::Settings
  * ********************************************************************************************* */
 TransformedPlot::Settings::Settings()
-  : _showTitle(true), _showModulus(true)
+  : _showTitle(true), _showModulus(true), _showRepKern(true), _showVoice(false), _showZoom(false),
+    _showWavelet(false)
 {
   // pass...
 }
 
 TransformedPlot::Settings::Settings(const Settings &other)
-  : _showTitle(other._showTitle), _showModulus(other._showModulus)
+  : _showTitle(other._showTitle), _showModulus(other._showModulus), _showRepKern(other._showRepKern),
+    _showVoice(other._showVoice), _showZoom(other._showZoom), _showWavelet(other._showWavelet)
 {
   // pass...
 }
@@ -28,6 +30,10 @@ TransformedPlot::Settings &
 TransformedPlot::Settings::operator =(const Settings &other) {
   _showTitle = other._showTitle;
   _showModulus = other._showModulus;
+  _showRepKern = other._showRepKern;
+  _showVoice = other._showVoice;
+  _showZoom = other._showZoom;
+  _showWavelet = other._showWavelet;
   return *this;
 }
 
@@ -51,6 +57,46 @@ TransformedPlot::Settings::setShowModulus(bool show) {
   _showModulus = show;
 }
 
+bool
+TransformedPlot::Settings::showRepKern() const {
+  return _showRepKern;
+}
+
+void
+TransformedPlot::Settings::setShowRepKern(bool show) {
+  _showRepKern = show;
+}
+
+bool
+TransformedPlot::Settings::showVoice() const {
+  return _showVoice;
+}
+
+void
+TransformedPlot::Settings::setShowVoice(bool show) {
+  _showVoice = show;
+}
+
+bool
+TransformedPlot::Settings::showZoom() const {
+  return _showZoom;
+}
+
+void
+TransformedPlot::Settings::setShowZoom(bool show) {
+  _showZoom = show;
+}
+
+bool
+TransformedPlot::Settings::showWavelet() const {
+  return _showWavelet;
+}
+
+void
+TransformedPlot::Settings::setShowWavelet(bool show) {
+  _showWavelet = show;
+}
+
 
 /* ********************************************************************************************* *
  * Implementation of TransformedPlot
@@ -61,12 +107,13 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
 {
   axisRect()->setupFullAxesBox(true);
   plotLayout()->insertRow(0);
+  plotLayout()->insertColumn(0);
   QString title = tr("Wavelet transformed '%0' [Fs=%1]")
       .arg(_item->label(), fmt_freq(_item->Fs()));
   _title = new QCPTextElement(this, title);
   QFont font = _title->font(); font.setPointSize(18);
   _title->setFont(font);
-  plotLayout()->addElement(0, 0, _title);
+  plotLayout()->addElement(0, 1, _title);
   _title->setVisible(_settings.showTitle());
   xAxis->setLabel("Time [s]");
   yAxis->setLabel("Scale [s]");
@@ -77,7 +124,7 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
                               QCPRange(item->scales()(0), item->scales()(item->scales().size()-1)));
 
   QCPColorScale *colorScale = new QCPColorScale(this);
-  plotLayout()->addElement(1, 1, colorScale);
+  plotLayout()->addElement(1, 2, colorScale);
   colorScale->setType(QCPAxis::atRight);
   _colorMap->setColorScale(colorScale);
 
@@ -135,6 +182,13 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   pen = _curve->pen(); pen.setWidth(2); _curve->setPen(pen);
   _curve->setVisible(false);
 
+  _leftPaneAxis = new QCPAxisRect(this);
+  plotLayout()->addElement(1,0, _leftPaneAxis);
+  _bottomPaneAxis = new QCPAxisRect(this);
+  plotLayout()->addElement(2,1, _bottomPaneAxis);
+
+  plotLayout()->setColumnStretchFactor(1,7);
+  plotLayout()->setRowStretchFactor(1,5);
   applySettings(settings);
 }
 
