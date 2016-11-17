@@ -2,6 +2,7 @@
 #include "utils/logger.hh"
 #include <iostream>
 
+#include "utilstest.hh"
 #include "ffttest.hh"
 #include "convolutiontest.hh"
 #include "wavelettransformtest.hh"
@@ -22,6 +23,7 @@ int main(int argc, char *argv[]) {
   TestRunner runner(std::cout);
 
   // Add suites
+  runner.addSuite(UtilsTest::suite());
   runner.addSuite(FFTTest::suite());
   runner.addSuite(ConvolutionTest::suite());
   runner.addSuite(WaveletTransformTest::suite());
