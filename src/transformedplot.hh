@@ -36,6 +36,10 @@ public:
     bool showLeftPane() const;
     bool showBottomPane() const;
 
+  public:
+    static const Settings &defaultSettings();
+    static void setDefaultSettings(const Settings &settings);
+
   protected:
     bool _showTitle;
     bool _showModulus;
@@ -43,6 +47,8 @@ public:
     bool _showVoice;
     bool _showZoom;
     bool _showWavelet;
+
+    static Settings _default;
   };
 
 public:
@@ -62,17 +68,27 @@ protected:
 
 protected:
   TransformedItem *_item;
-  QCPColorMap *_colorMap;
   Settings _settings;
+
+  QCPAxisRect *_mainAxes;
+  QCPColorMap *_colorMap;
+  QCPColorMap *_rkOverlay;
   QCPTextElement *_title;
   QCPCurve *_valid;
+
   bool _cropping;
   QPoint _start;
   QCPCurve *_curve;
   Polygon _polygon;
-  QCPColorMap *_rkOverlay;
-  QCPAxisRect *_leftPaneAxis;
-  QCPAxisRect *_bottomPaneAxis;
+
+  QCPAxisRect *_leftPaneAxes;
+  QCPGraph *_zoomGraph;
+
+  QCPAxisRect *_bottomPaneAxes;
+  QCPGraph *_voiceGraph;
+  QCPGraph *_realWaveletGraph;
+  QCPGraph *_imagWaveletGraph;
+
 };
 
 

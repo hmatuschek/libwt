@@ -36,7 +36,7 @@ TransformedItem::view() {
 TransformedItemView::TransformedItemView(TransformedItem *item, QWidget *parent)
   : QWidget(parent), _item(item)
 {
-  _plot = new TransformedPlot(_item, TransformedPlot::Settings(), this);
+  _plot = new TransformedPlot(_item, TransformedPlot::Settings::defaultSettings(), this);
   connect(_plot, SIGNAL(cropped(Polygon)), this, SLOT(cropped(Polygon)));
 
   QToolBar *toolbar = new QToolBar();
@@ -218,11 +218,20 @@ TransformedItemViewConfigDialog::TransformedItemViewConfigDialog(
   _showModulus->addItem(tr("Modulus"));
   _showModulus->addItem(tr("Phase"));
   _showModulus->setCurrentIndex(plotSettings.showModulus() ? 0 : 1);
+  _showVoice = new QCheckBox();
+  _showVoice->setChecked(plotSettings.showVoice());
+  _showZoom = new QCheckBox();
+  _showZoom->setChecked(plotSettings.showZoom());
+  _showWavelet = new QCheckBox();
+  _showWavelet->setChecked(plotSettings.showWavelet());
   _label = new QLineEdit(label);
 
   QFormLayout *form = new QFormLayout();
   form->addRow(tr("Show title"), _showTitle);
   form->addRow(tr("Plot"), _showModulus);
+  form->addRow(tr("Show voice on click"), _showVoice);
+  form->addRow(tr("Show zoom on click"), _showZoom);
+  form->addRow(tr("Show wavelet on click"), _showWavelet);
   form->addRow(tr("Label"), _label);
 
   QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
@@ -246,6 +255,9 @@ TransformedItemViewConfigDialog::plotSettings() const {
   TransformedPlot::Settings settings;
   settings.setShowTitle(_showTitle->isChecked());
   settings.setShowModulus(0 == _showModulus->currentIndex());
+  settings.setShowVoice(_showVoice->isChecked());
+  settings.setShowZoom(_showZoom->isChecked());
+  settings.setShowWavelet(_showWavelet->isChecked());
   return settings;
 }
 
@@ -258,5 +270,6 @@ TransformedItemViewConfigDialog::accept() {
           tr("There is already an item labeled '%0', chosse a different one.").arg(label));
     return;
   }
+  TransformedPlot::Settings::setDefaultSettings(plotSettings());
   QDialog::accept();
 }

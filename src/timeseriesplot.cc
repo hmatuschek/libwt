@@ -56,7 +56,7 @@ TimeseriesPlot::TimeseriesPlot(TimeseriesItem *item, const Settings &settings, Q
   plotLayout()->insertRow(0);
   QString title = tr("Timeseries '%0' [Fs=%1]").arg(_item->label(), fmt_freq(_item->Fs()));
   _title = new QCPTextElement(this, title);
-  QFont font = _title->font(); font.setPointSize(18);
+  QFont font = _title->font(); font.setPointSize(20);
   _title->setFont(font);
   plotLayout()->addElement(0, 0, _title);
   _title->setVisible(settings.showTitle());

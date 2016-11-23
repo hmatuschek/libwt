@@ -8,12 +8,22 @@ inline double angle(const std::complex<double> &val) {
   return std::atan2(val.imag(), val.real());
 }
 
+inline int find_index(const Eigen::Ref<const Eigen::VectorXd> &x, double val) {
+  for (int i=0; i<x.size(); i++) {
+    if (val<x(i))
+      return i;
+  }
+  return x.size();
+}
+
 
 /* ********************************************************************************************* *
  * Implementation of TransformedPlot::Settings
  * ********************************************************************************************* */
+TransformedPlot::Settings TransformedPlot::Settings::_default = TransformedPlot::Settings();
+
 TransformedPlot::Settings::Settings()
-  : _showTitle(true), _showModulus(true), _showRepKern(true), _showVoice(false), _showZoom(false),
+  : _showTitle(true), _showModulus(true), _showRepKern(true), _showVoice(true), _showZoom(true),
     _showWavelet(false)
 {
   // pass...
@@ -97,6 +107,26 @@ TransformedPlot::Settings::setShowWavelet(bool show) {
   _showWavelet = show;
 }
 
+bool
+TransformedPlot::Settings::showLeftPane() const {
+  return showZoom() || showWavelet();
+}
+
+bool
+TransformedPlot::Settings::showBottomPane() const {
+  return showVoice() || showWavelet();
+}
+
+const TransformedPlot::Settings &
+TransformedPlot::Settings::defaultSettings() {
+  return _default;
+}
+
+void
+TransformedPlot::Settings::setDefaultSettings(const TransformedPlot::Settings &settings) {
+  _default = settings;
+}
+
 
 /* ********************************************************************************************* *
  * Implementation of TransformedPlot
@@ -105,18 +135,17 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   : QCustomPlot(parent), _item(item), _settings(settings), _title(0),
     _cropping(false), _curve(0), _polygon()
 {
-  axisRect()->setupFullAxesBox(true);
-  plotLayout()->insertRow(0);
-  plotLayout()->insertColumn(0);
+  _mainAxes = axisRect();
+  _mainAxes->setupFullAxesBox(true);
+
+  plotLayout()->insertRow(0); plotLayout()->insertColumn(0);
   QString title = tr("Wavelet transformed '%0' [Fs=%1]")
       .arg(_item->label(), fmt_freq(_item->Fs()));
   _title = new QCPTextElement(this, title);
-  QFont font = _title->font(); font.setPointSize(18);
+  QFont font = _title->font(); font.setPointSize(20);
   _title->setFont(font);
   plotLayout()->addElement(0, 1, _title);
   _title->setVisible(_settings.showTitle());
-  xAxis->setLabel("Time [s]");
-  yAxis->setLabel("Scale [s]");
 
   _colorMap = new QCPColorMap(xAxis, yAxis);
   _colorMap->data()->setSize(item->data().rows(), item->data().cols());
@@ -128,6 +157,38 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   colorScale->setType(QCPAxis::atRight);
   _colorMap->setColorScale(colorScale);
 
+  _leftPaneAxes = new QCPAxisRect(this);
+  _leftPaneAxes->setupFullAxesBox(true);
+  plotLayout()->addElement(1,0, _leftPaneAxes);
+  _bottomPaneAxes = new QCPAxisRect(this);
+  _bottomPaneAxes->setupFullAxesBox(true);
+  _bottomPaneAxes->axis(QCPAxis::atRight)->setVisible(true);
+  _bottomPaneAxes->axis(QCPAxis::atRight)->setTickLabels(true);
+  plotLayout()->addElement(2,1, _bottomPaneAxes);
+  plotLayout()->setColumnStretchFactor(1,5);
+  plotLayout()->setRowStretchFactor(1,4);
+
+  QCPMarginGroup *marginGroup = new QCPMarginGroup(this);
+  _mainAxes->setMarginGroup(QCP::msBottom|QCP::msTop, marginGroup);
+  colorScale->setMarginGroup(QCP::msBottom|QCP::msTop, marginGroup);
+  _leftPaneAxes->setMarginGroup(QCP::msBottom|QCP::msTop, marginGroup);
+  marginGroup = new QCPMarginGroup(this);
+  _mainAxes->setMarginGroup(QCP::msLeft|QCP::msRight, marginGroup);
+  _bottomPaneAxes->setMarginGroup(QCP::msLeft|QCP::msRight, marginGroup);
+
+  _voiceGraph = new QCPGraph(_bottomPaneAxes->axis(QCPAxis::atBottom),
+                             _bottomPaneAxes->axis(QCPAxis::atLeft));
+  _realWaveletGraph = new QCPGraph(_bottomPaneAxes->axis(QCPAxis::atBottom),
+                                   _bottomPaneAxes->axis(QCPAxis::atRight));
+  QPen realPen = _realWaveletGraph->pen(); realPen.setColor(Qt::red);
+  _realWaveletGraph->setPen(realPen);
+  _imagWaveletGraph = new QCPGraph(_bottomPaneAxes->axis(QCPAxis::atBottom),
+                                   _bottomPaneAxes->axis(QCPAxis::atRight));
+  QPen imagPen = _imagWaveletGraph->pen(); imagPen.setColor(Qt::red); imagPen.setStyle(Qt::DotLine);
+  _imagWaveletGraph->setPen(imagPen);
+  _zoomGraph = new QCPGraph(_leftPaneAxes->axis(QCPAxis::atLeft),
+                            _leftPaneAxes->axis(QCPAxis::atBottom));
+
   QSharedPointer<QCPAxisTickerLog> ticker;
   switch (_item->scaling()) {
     case TransformedItem::LINEAR:
@@ -137,12 +198,16 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
       ticker->setLogBase(2);
       yAxis->setTicker(ticker);
       yAxis->setScaleType(QCPAxis::stLogarithmic);
+      _leftPaneAxes->axis(QCPAxis::atLeft)->setTicker(ticker);
+      _leftPaneAxes->axis(QCPAxis::atLeft)->setScaleType(QCPAxis::stLogarithmic);
       break;
     case TransformedItem::DECADIC:
       ticker = QSharedPointer<QCPAxisTickerLog>(new QCPAxisTickerLog());
       ticker->setLogBase(10);
       yAxis->setTicker(ticker);
       yAxis->setScaleType(QCPAxis::stLogarithmic);
+      _leftPaneAxes->axis(QCPAxis::atLeft)->setTicker(ticker);
+      _leftPaneAxes->axis(QCPAxis::atLeft)->setScaleType(QCPAxis::stLogarithmic);
       break;
   }
 
@@ -158,11 +223,6 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   _rkOverlay->setGradient(cmap);
   _rkOverlay->setInterpolate(false);
   _rkOverlay->setVisible(false);
-
-  QCPMarginGroup *marginGroup = new QCPMarginGroup(this);
-  axisRect()->setMarginGroup(QCP::msBottom|QCP::msTop, marginGroup);
-  colorScale->setMarginGroup(QCP::msBottom|QCP::msTop, marginGroup);
-  rescaleAxes();
 
   _valid = new QCPCurve(xAxis, yAxis);
   QPen pen = _valid->pen(); pen.setColor(Qt::black); _valid->setPen(pen);
@@ -182,13 +242,6 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   pen = _curve->pen(); pen.setWidth(2); _curve->setPen(pen);
   _curve->setVisible(false);
 
-  _leftPaneAxis = new QCPAxisRect(this);
-  plotLayout()->addElement(1,0, _leftPaneAxis);
-  _bottomPaneAxis = new QCPAxisRect(this);
-  plotLayout()->addElement(2,1, _bottomPaneAxis);
-
-  plotLayout()->setColumnStretchFactor(1,7);
-  plotLayout()->setRowStretchFactor(1,5);
   applySettings(settings);
 }
 
@@ -205,6 +258,30 @@ TransformedPlot::applySettings(const Settings &settings) {
       .arg(_item->label(), fmt_freq(_item->Fs()));
   _title->setText(title);
   _title->setVisible(_settings.showTitle());
+
+  if (_settings.showBottomPane()) {
+    xAxis->setLabel("");
+    xAxis->setVisible(false);
+    _bottomPaneAxes->setVisible(true);
+    _bottomPaneAxes->axis(QCPAxis::atBottom)->setLabel("Time [s]");
+  } else {
+    xAxis->setLabel("Time [s]");
+    xAxis->setVisible(true);
+    _bottomPaneAxes->setVisible(false);
+    _bottomPaneAxes->axis(QCPAxis::atBottom)->setLabel("");
+  }
+
+  if (_settings.showLeftPane()) {
+    yAxis->setLabel("");
+    yAxis->setVisible(false);
+    _leftPaneAxes->setVisible(true);
+    _leftPaneAxes->axis(QCPAxis::atLeft)->setLabel("Scale [s]");
+  } else {
+    yAxis->setLabel("Scale [s]");
+    yAxis->setVisible(true);
+    _leftPaneAxes->setVisible(false);
+    _leftPaneAxes->axis(QCPAxis::atLeft)->setLabel("");
+  }
 
   for (int i=0; i<_item->data().rows(); i++) {
     for (int j=0; j<_item->data().cols(); j++) {
@@ -225,7 +302,7 @@ TransformedPlot::applySettings(const Settings &settings) {
     _colorMap->setGradient(QCPColorGradient::gpHues);
   }
   _colorMap->rescaleDataRange(true);
-  rescaleAxes();
+  rescaleAxes(true);
   replot();
 }
 
@@ -274,6 +351,8 @@ TransformedPlot::mouseReleaseEvent(QMouseEvent *event) {
     double dt = 1./_item->Fs();
     double b = xAxis->pixelToCoord(event->x());
     double a = yAxis->pixelToCoord(event->y());
+
+    // Draw RK
     if ((b<xAxis->range().lower) || (b>xAxis->range().upper) || (a<yAxis->range().lower) || (a>yAxis->range().upper)) {
       _rkOverlay->setVisible(false);
     } else {
@@ -287,6 +366,50 @@ TransformedPlot::mouseReleaseEvent(QMouseEvent *event) {
       }
       _rkOverlay->rescaleDataRange();
       _rkOverlay->setVisible(true);
+    }
+
+    // Show voice if enabled
+    if (_settings.showVoice() && (a>yAxis->range().lower) && (a<yAxis->range().upper)) {
+      int idx = find_index(_item->scales(), a);
+      _voiceGraph->data()->clear();
+      for (int i=0; i<_item->data().rows(); i++) {
+        _voiceGraph->addData(i/_item->Fs(),std::abs(_item->data()(i,idx)));
+      }
+      _voiceGraph->setVisible(true);
+      _voiceGraph->rescaleAxes();
+    } else {
+      _voiceGraph->setVisible(false);
+    }
+
+    // Show zoom if enabled
+    if (_settings.showZoom() && (b>xAxis->range().lower) && (b<xAxis->range().upper)) {
+      int idx = b*_item->Fs();
+      _zoomGraph->data()->clear();
+      for (int i=0; i<_item->data().cols(); i++) {
+        _zoomGraph->addData(_item->scales()(i),std::abs(_item->data()(idx,i)));
+      }
+      _zoomGraph->setVisible(true);
+      _zoomGraph->rescaleAxes();
+    } else {
+      _zoomGraph->setVisible(false);
+    }
+
+    // Show wavelet if enabled
+    if (_settings.showWavelet() && (b>xAxis->range().lower) && (b<xAxis->range().upper)) {
+      _realWaveletGraph->data()->clear();
+      _imagWaveletGraph->data()->clear();
+      for (int i=0; i<_item->data().rows(); i++) {
+        std::complex<double> val = _item->wavelet().evalAnalysis((i*dt - b)/a)/a;
+        _realWaveletGraph->addData(i/_item->Fs(), val.real());
+        _imagWaveletGraph->addData(i/_item->Fs(), val.imag());
+      }
+      _realWaveletGraph->setVisible(true);
+      _imagWaveletGraph->setVisible(true);
+      _realWaveletGraph->rescaleAxes(false);
+      _imagWaveletGraph->rescaleAxes(true);
+    } else {
+      _realWaveletGraph->setVisible(false);
+      _imagWaveletGraph->setVisible(false);
     }
   }
 

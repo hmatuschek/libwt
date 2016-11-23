@@ -83,6 +83,9 @@ protected:
   Application *_application;
   QCheckBox *_showTitle;
   QComboBox *_showModulus;
+  QCheckBox *_showVoice;
+  QCheckBox *_showZoom;
+  QCheckBox *_showWavelet;
   QLineEdit *_label;
   QString _oldLabel;
 };
