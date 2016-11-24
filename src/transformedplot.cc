@@ -225,17 +225,17 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   _rkOverlay->setVisible(false);
 
   _valid = new QCPCurve(xAxis, yAxis);
-  QPen pen = _valid->pen(); pen.setColor(Qt::black); _valid->setPen(pen);
+  QPen pen = _valid->pen(); pen.setColor(Qt::black); pen.setWidth(2); _valid->setPen(pen);
   _valid->setVisible(true);
   for (int j=0; j<_item->scales().size(); j++) {
     double w = _item->wavelet().cutOffTime()*_item->scales()(j)/2;
-    if (w < xAxis->range().center())
-      _valid->addData(w,_item->scales()(j));
+    if (w < (_item->data().rows()/_item->Fs()/2))
+      _valid->addData(w, _item->scales()(j));
   }
   for (int j=(_item->scales().size()-1); j>=0; j--) {
     double w = _item->wavelet().cutOffTime()*_item->scales()(j)/2;
-    if (w < xAxis->range().center())
-      _valid->addData(xAxis->range().upper-w, _item->scales()(j));
+    if (w < (_item->data().rows()/_item->Fs()/2))
+      _valid->addData(_item->data().rows()/_item->Fs()-w, _item->scales()(j));
   }
 
   _curve = new QCPCurve(xAxis, yAxis);
