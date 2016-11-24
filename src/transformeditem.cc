@@ -182,7 +182,7 @@ TransformedItemView::cropped(const Polygon &poly) {
   for (int i=0; i<tmp.rows(); i++) {
     for (int j=0; j<tmp.cols(); j++) {
       double x = double(i)/_item->Fs();
-      double y = _item->scales()(j);
+      double y = _item->scales()(j)/_item->Fs();
       if (poly.inside(x,y))
         tmp(i,j) = _item->data()(i,j);
       else

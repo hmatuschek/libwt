@@ -366,7 +366,7 @@ TransformedPlot::mouseReleaseEvent(QMouseEvent *event) {
       // Plot modulus of rep. kern. at x,y
       for (int i=0; i<_item->data().rows(); i++) {
         for (int j=0; j<_item->data().cols(); j++) {
-          double value = std::abs(_item->wavelet().evalRepKern((b-i*dt)/a, _item->scales()(j)/a));
+          double value = std::abs(_item->wavelet().evalRepKern((b-i*dt)/a, _item->scales()(j)/a/_item->Fs()));
           _rkOverlay->data()->setCell(i, j, value/rval);
         }
       }
