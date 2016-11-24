@@ -19,7 +19,7 @@ TransformDialog::TransformDialog(size_t Ns, double Fs, QWidget *parent) :
   val->setBottom(2./Fs); val->setTop(Ns/Fs);
   _minScale->setValidator(val);
 
-  _maxScale = new QLineEdit(QString::number(Ns/Fs));
+  _maxScale = new QLineEdit(QString::number(Ns/Fs/4));
   val = new QDoubleValidator();
   val->setBottom(2./Fs); val->setTop(Ns/Fs);
   _maxScale->setValidator(val);

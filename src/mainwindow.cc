@@ -7,6 +7,7 @@
 #include <QToolBar>
 #include <QComboBox>
 #include <QMenu>
+#include <QShortcut>
 #include "fmtutil.hh"
 
 #include "loghandler.hh"
@@ -74,19 +75,18 @@ MainWindow::MainWindow(Application &app, QWidget *parent)
   connect(logHandler, SIGNAL(message(QString)), _statusBar, SLOT(showMessage(QString)));
   connect(itemview, SIGNAL(itemSelected(size_t)), this, SLOT(selectedItemChanged(size_t)));
 
-  QAction *importAction = new QAction(tr("Import timeseres ..."), this);
-  importAction->setShortcut(Qt::CTRL+Qt::Key_I);
-  importAction->setShortcutContext(Qt::ApplicationShortcut);
-  connect(importAction, SIGNAL(triggered(bool)), &app, SLOT(importTimeseries()));
-  QAction *saveSessionAction = new QAction(tr("Save session ..."), this);
-  saveSessionAction->setShortcut(Qt::CTRL+Qt::Key_S);
-  connect(saveSessionAction, SIGNAL(triggered(bool)), &app, SLOT(saveSession()));
-  QAction *openSessionAction = new QAction(tr("Open session ..."), this);
-  openSessionAction->setShortcut(Qt::CTRL+Qt::Key_O);
-  connect(openSessionAction, SIGNAL(triggered(bool)), &app, SLOT(loadSession()));
-  QAction *addSessionAction = new QAction(tr("Add session ..."), this);
-  addSessionAction->setShortcut(Qt::CTRL+Qt::SHIFT+Qt::Key_O);
-  connect(addSessionAction, SIGNAL(triggered(bool)), &app, SLOT(addSession()));
+  QShortcut *importAction = new QShortcut(Qt::CTRL+Qt::Key_I, this);
+  importAction->setContext(Qt::ApplicationShortcut);
+  connect(importAction, SIGNAL(activated()), &app, SLOT(importTimeseries()));
+  QShortcut *saveSessionAction = new QShortcut(Qt::CTRL+Qt::Key_S, this);
+  saveSessionAction->setContext(Qt::ApplicationShortcut);
+  connect(saveSessionAction, SIGNAL(activated()), &app, SLOT(saveSession()));
+  QShortcut *openSessionAction = new QShortcut(Qt::CTRL+Qt::Key_O, this);
+  openSessionAction->setContext(Qt::ApplicationShortcut);
+  connect(openSessionAction, SIGNAL(activated()), &app, SLOT(loadSession()));
+  QShortcut *addSessionAction = new QShortcut(Qt::CTRL+Qt::SHIFT+Qt::Key_O, this);
+  addSessionAction->setContext(Qt::ApplicationShortcut);
+  connect(addSessionAction, SIGNAL(activated()), &app, SLOT(addSession()));
 }
 
 void

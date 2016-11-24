@@ -6,7 +6,6 @@
 #include <QItemSelection>
 #include <QStatusBar>
 #include "application.hh"
-#include <QAction>
 
 
 class MainWindow : public QMainWindow
