@@ -28,6 +28,7 @@ protected:
   static bool getAttribute(H5::DataSet &dataset, const std::string &name, Eigen::VectorXd &value);
   static bool setAttribute(H5::DataSet &dataset, const std::string &name, const Eigen::Ref<const Eigen::VectorXd> &value);
   static bool readArray(H5::DataSet &dataset, Eigen::VectorXd &value);
+  static bool readArray(H5::DataSet &dataset, Eigen::VectorXcd &value);
   static bool readArray(H5::DataSet &dataset, Eigen::MatrixXcd &value);
 };
 

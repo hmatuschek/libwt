@@ -15,7 +15,8 @@ class TransformDialog : public QDialog
 public:
   typedef enum {
     MORLET_WAVELET,
-    CAUCHY_WAVELET
+    CAUCHY_WAVELET,
+    REGMORLET_WAVELET
   } Wavelet;
 
 public:

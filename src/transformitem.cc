@@ -42,7 +42,7 @@ TransformTask::progresscb(double frac) {
 TransformItem::TransformItem(TimeseriesItem *timeseries, wt::Wavelet &wavelet,
                              const Eigen::Ref<const Eigen::VectorXd> &scales,
                              TransformedItem::Scaling scaling, const QString &label, QObject *parent)
-  : Item(parent), _timeseries(timeseries->data().size()), _scales(scales), _scaling(scaling),
+  : Item(parent), _timeseries(timeseries->size()), _scales(scales), _scaling(scaling),
     _result(_timeseries.size(), scales.size()), _wavelet(wavelet),
     _task(_wavelet, _timeseries, _scales, _result),
     _Fs(timeseries->Fs())
@@ -51,8 +51,14 @@ TransformItem::TransformItem(TimeseriesItem *timeseries, wt::Wavelet &wavelet,
   _icon  = QIcon("://icons/task16.png");
 
   // copy TS values
-  for (int i=0; i<_timeseries.size(); i++) {
-    _timeseries(i) = timeseries->data()(i);
+  if (RealTimeseriesItem *ritem = dynamic_cast<RealTimeseriesItem *>(timeseries)) {
+    for (int i=0; i<_timeseries.size(); i++) {
+      _timeseries(i) = ritem->data()(i);
+    }
+  } else if (ComplexTimeseriesItem *citem = dynamic_cast<ComplexTimeseriesItem *>(timeseries)) {
+    for (int i=0; i<_timeseries.size(); i++) {
+      _timeseries(i) = citem->data()(i);
+    }
   }
   connect(&_task, SIGNAL(started()), this, SLOT(onTaskStarted()));
   connect(&_task, SIGNAL(progress(int)), this, SIGNAL(progress(int)));

@@ -68,6 +68,38 @@ protected:
 };
 
 
+/** Implements the Morlet wavelet.
+ * Do not use this class directly, consider using the associated container @c Morlet. */
+class RegMorletObj: public WaveletObj
+{
+public:
+  /** Constructor.
+   * @param dff Specifies the frequency resolution. */
+  explicit RegMorletObj(double dff=2);
+  /** Destructor. */
+  virtual ~RegMorletObj();
+
+  /** Returns the frequency resolution parameter. */
+  double dff() const;
+
+  /** Evaluates the mother wavelet at the specified time. */
+  virtual std::complex<double> evalAnalysis(const double &t) const;
+  /** Evaluates the mother wavelet at the specified time. */
+  virtual std::complex<double> evalSynthesis(const double &t) const;
+  /** Evaluates the reproducing kernel located at time 0 and scale 1 at the given time and scale. */
+  virtual std::complex<double> evalRepKern(const double &b, const double &a) const;
+
+  /** Returns the with of the mother wavelet in the time domain. */
+  virtual double cutOffTime() const;
+  /** Returns the with of the mother wavelet in the frequency domain. */
+  virtual double cutOffFreq() const;
+
+protected:
+  /** Holds the frequency resolution parameter. */
+  double _dff;
+};
+
+
 /** Implementation of an augmented Cauchy or Paul wavelet.
  * Do not use this class directly, consider using the associated container @c Cauchy. */
 class CauchyObj: public WaveletObj

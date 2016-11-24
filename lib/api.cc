@@ -75,6 +75,44 @@ Morlet::dff() const {
 
 
 /* ******************************************************************************************** *
+ * Implementation of RegMorlet container
+ * ******************************************************************************************** */
+RegMorlet::RegMorlet(double dff)
+  : Wavelet(new RegMorletObj(dff)), _morlet(static_cast<RegMorletObj *>(_wavelet))
+{
+  // pass...
+}
+
+RegMorlet::RegMorlet(RegMorletObj *obj)
+  : Wavelet(obj), _morlet(obj)
+{
+  // pass...
+}
+
+RegMorlet::RegMorlet(const RegMorlet &other)
+  : Wavelet(other), _morlet(other._morlet)
+{
+  // pass...
+}
+
+RegMorlet::~RegMorlet() {
+  // pass...
+}
+
+RegMorlet &
+RegMorlet::operator =(const RegMorlet &other) {
+  Wavelet::operator =(other);
+  _morlet = other._morlet;
+  return *this;
+}
+
+double
+RegMorlet::dff() const {
+  return _morlet->dff();
+}
+
+
+/* ******************************************************************************************** *
  * Implementation of Cauchy container
  * ******************************************************************************************** */
 Cauchy::Cauchy(double alpha)

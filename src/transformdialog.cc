@@ -32,6 +32,7 @@ TransformDialog::TransformDialog(size_t Ns, double Fs, QWidget *parent) :
   _wavelet = new QComboBox();
   _wavelet->addItem(tr("Morlet"), int(MORLET_WAVELET));
   _wavelet->addItem(tr("Cauchy"), int(CAUCHY_WAVELET));
+  _wavelet->addItem(tr("Morlet (regressive)"), int(REGMORLET_WAVELET));
   _wavelet->setCurrentIndex(1);
 
   _param1 = new QLineEdit("20");
@@ -94,7 +95,7 @@ TransformDialog::param1() const {
 
 void
 TransformDialog::waveletSelected(int idx) {
-  if (0 == idx) { // Morlet
+  if ((0 == idx) || (2 == idx)) { // Morlet || reg. Morlet
     _param1Label->setText(tr("df/f"));
     _param1->setText("0.5");
   } else if (1 == idx) { // Cauchy

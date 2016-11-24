@@ -187,6 +187,45 @@ protected:
   MorletObj *_morlet;
 };
 
+
+
+/** The Morlet wavelet.
+ *
+ * \f[
+ *  g(t) = \sqrt{\frac{\delta}{2\pi}}\exp(2\pi\,i\,t-t^2\,\delta)\,,
+ * \f]
+ * where \f$\delta\f$ specifies the time-frequency resolution of the wavelet. Default
+ * \f$\delta=2\f$.
+ * @ingroup api */
+class RegMorlet: public Wavelet
+{
+public:
+  /** Object type of the container. */
+  typedef RegMorletObj ObjectType;
+
+public:
+  /** Constructor.
+   * @param dff Specifies the frequency resolution. */
+  RegMorlet(double dff=2.0);
+  /** Packs the given @c MorletObj instance into a container, the constructor takes the
+   * ownership of the instance. */
+  RegMorlet(RegMorletObj *obj);
+  /** Copy constructor, manages references. */
+  RegMorlet(const RegMorlet &other);
+  /** Destructor. */
+  virtual ~RegMorlet();
+  /** Assignment operator, manages references. */
+  RegMorlet &operator=(const RegMorlet &other);
+
+  /** Returns the frequency resolution parameter. */
+  double dff() const;
+
+protected:
+  /** Holds a reference to the actual instance @c RegMorletObj instance. */
+  RegMorletObj *_morlet;
+};
+
+
 /** Samples a regular grid in the range \f$[a,b)\f$ into @c out.
  * @ingroup api */
 void linear_range(double a, double b, Eigen::Ref<Eigen::VectorXd> out);

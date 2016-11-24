@@ -13,9 +13,8 @@
 /* ******************************************************************************************** *
  * Implementation of TimeseriesItem
  * ******************************************************************************************** */
-TimeseriesItem::TimeseriesItem(const Eigen::Ref<const Eigen::VectorXd> &data, double Fs,
-                               const QString &label, QObject *parent)
-  : Item(parent), _data(data), _Fs(Fs)
+TimeseriesItem::TimeseriesItem(double Fs, const QString &label, QObject *parent)
+  : Item(parent), _Fs(Fs)
 {
   _label = label;
   _icon  = QIcon("://icons/timeseries16.png");
@@ -30,6 +29,46 @@ TimeseriesItem::view() {
   QWidget *view = new TimeseriesItemView(this);
   connect(this, SIGNAL(destroyed()), view, SLOT(deleteLater()));
   return view;
+}
+
+
+/* ******************************************************************************************** *
+ * Implementation of RealTimeseriesItem
+ * ******************************************************************************************** */
+RealTimeseriesItem::RealTimeseriesItem(const Eigen::Ref<const Eigen::VectorXd> &data, double Fs,
+                                       const QString &label, QObject *parent)
+  : TimeseriesItem(Fs, label, parent), _data(data)
+{
+  // pass...
+}
+
+RealTimeseriesItem::~RealTimeseriesItem() {
+  // pass...
+}
+
+size_t
+RealTimeseriesItem::size() const {
+  return _data.size();
+}
+
+
+/* ******************************************************************************************** *
+ * Implementation of ComplexTimeseriesItem
+ * ******************************************************************************************** */
+ComplexTimeseriesItem::ComplexTimeseriesItem(const Eigen::Ref<const Eigen::VectorXcd> &data, double Fs,
+                                             const QString &label, QObject *parent)
+  : TimeseriesItem(Fs, label, parent), _data(data)
+{
+  // pass...
+}
+
+ComplexTimeseriesItem::~ComplexTimeseriesItem() {
+  // pass...
+}
+
+size_t
+ComplexTimeseriesItem::size() const {
+  return _data.size();
 }
 
 
@@ -106,7 +145,11 @@ TimeseriesItemView::cropped(double x1, double x2) {
 
   Application *app = qobject_cast<Application *>(QApplication::instance());
   int i1 = x1*_item->Fs(), i2 = x2*_item->Fs();
-  app->addTimeseries(label, _item->data().segment(i1, i2-i1), _item->Fs());
+  if (RealTimeseriesItem *ritem = dynamic_cast<RealTimeseriesItem *>(_item)) {
+    app->addTimeseries(label, Eigen::Ref<const Eigen::VectorXd>(ritem->data().segment(i1, i2-i1)), ritem->Fs());
+  } else if (ComplexTimeseriesItem *citem = dynamic_cast<ComplexTimeseriesItem *>(_item)) {
+    app->addTimeseries(label, Eigen::Ref<const Eigen::VectorXcd>(citem->data().segment(i1, i2-i1)), citem->Fs());
+  }
 }
 
 void
@@ -117,10 +160,16 @@ TimeseriesItemView::detrend() {
         QLineEdit::Normal, _item->label(), &ok);
   if (! ok)
     return;
-  TimeseriesItem *item = new TimeseriesItem(_item->data(), _item->Fs(), label);
-  wt::detrend(item->data());
   Application *app = qobject_cast<Application *>(QApplication::instance());
-  app->items()->addItem(item);
+  if (RealTimeseriesItem *ritem = dynamic_cast<RealTimeseriesItem *>(_item)) {
+    RealTimeseriesItem *item = new RealTimeseriesItem(ritem->data(), ritem->Fs(), label);
+    wt::detrend(item->data());
+    app->items()->addItem(item);
+  } else if (ComplexTimeseriesItem *citem = dynamic_cast<ComplexTimeseriesItem *>(_item)){
+    ComplexTimeseriesItem *item = new ComplexTimeseriesItem(citem->data(), citem->Fs(), label);
+    wt::detrend(item->data());
+    app->items()->addItem(item);
+  }
 }
 
 void
@@ -172,7 +221,14 @@ TimeseriesItemView::saveData() {
           tr("Cannot save timeseries as '%1', cannot open file.").arg(finfo.fileName()));
     return;
   }
-  wt::CSV::write(_item->data(), file);
+  if (RealTimeseriesItem *ritem = dynamic_cast<RealTimeseriesItem *>(_item)) {
+    wt::CSV::write(ritem->data(), file);
+  } else if (ComplexTimeseriesItem *citem = dynamic_cast<ComplexTimeseriesItem *>(_item)) {
+    Eigen::MatrixXd tab(citem->data().rows(),2);
+    tab.col(0) = citem->data().real();
+    tab.col(1) = citem->data().imag();
+    wt::CSV::write(tab, file);
+  }
   file.close();
 }
 

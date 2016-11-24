@@ -128,6 +128,7 @@ TransformedPlot::Settings::setDefaultSettings(const TransformedPlot::Settings &s
 }
 
 
+
 /* ********************************************************************************************* *
  * Implementation of TransformedPlot
  * ********************************************************************************************* */
@@ -150,7 +151,8 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   _colorMap = new QCPColorMap(xAxis, yAxis);
   _colorMap->data()->setSize(item->data().rows(), item->data().cols());
   _colorMap->data()->setRange(QCPRange(0, item->data().rows()/item->Fs()),
-                              QCPRange(item->scales()(0), item->scales()(item->scales().size()-1)));
+                              QCPRange(item->scales()(0)/item->Fs(),
+                                       item->scales()(item->scales().size()-1)/item->Fs()));
 
   QCPColorScale *colorScale = new QCPColorScale(this);
   plotLayout()->addElement(1, 2, colorScale);
@@ -159,11 +161,14 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
 
   _leftPaneAxes = new QCPAxisRect(this);
   _leftPaneAxes->setupFullAxesBox(true);
+  _leftPaneAxes->axis(QCPAxis::atLeft)->setRange(item->scales()(0)/item->Fs(),
+                                                 item->scales()(item->scales().size()-1)/item->Fs());
   plotLayout()->addElement(1,0, _leftPaneAxes);
   _bottomPaneAxes = new QCPAxisRect(this);
   _bottomPaneAxes->setupFullAxesBox(true);
   _bottomPaneAxes->axis(QCPAxis::atRight)->setVisible(true);
   _bottomPaneAxes->axis(QCPAxis::atRight)->setTickLabels(true);
+  _bottomPaneAxes->axis(QCPAxis::atBottom)->setRange(0, item->data().rows()/item->Fs());
   plotLayout()->addElement(2,1, _bottomPaneAxes);
   plotLayout()->setColumnStretchFactor(1,5);
   plotLayout()->setRowStretchFactor(1,4);
@@ -214,7 +219,8 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   _rkOverlay = new QCPColorMap(xAxis, yAxis);
   _rkOverlay->data()->setSize(item->data().rows(), item->data().cols());
   _rkOverlay->data()->setRange(QCPRange(0, item->data().rows()/item->Fs()),
-                               QCPRange(item->scales()(0), item->scales()(item->scales().size()-1)));
+                               QCPRange(item->scales()(0)/item->Fs(),
+                                        item->scales()(item->scales().size()-1)/item->Fs()));
   QCPColorGradient cmap;
   for (int i=0; i<cmap.levelCount(); i++) {
     double a = double(i)/(cmap.levelCount()-1);
@@ -228,14 +234,14 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   QPen pen = _valid->pen(); pen.setColor(Qt::black); pen.setWidth(2); _valid->setPen(pen);
   _valid->setVisible(true);
   for (int j=0; j<_item->scales().size(); j++) {
-    double w = _item->wavelet().cutOffTime()*_item->scales()(j)/2;
+    double w = _item->wavelet().cutOffTime()*_item->scales()(j)/item->Fs()/2;
     if (w < (_item->data().rows()/_item->Fs()/2))
-      _valid->addData(w, _item->scales()(j));
+      _valid->addData(w, _item->scales()(j)/item->Fs());
   }
   for (int j=(_item->scales().size()-1); j>=0; j--) {
-    double w = _item->wavelet().cutOffTime()*_item->scales()(j)/2;
+    double w = _item->wavelet().cutOffTime()*_item->scales()(j)/item->Fs()/2;
     if (w < (_item->data().rows()/_item->Fs()/2))
-      _valid->addData(_item->data().rows()/_item->Fs()-w, _item->scales()(j));
+      _valid->addData(_item->data().rows()/_item->Fs()-w, _item->scales()(j)/item->Fs());
   }
 
   _curve = new QCPCurve(xAxis, yAxis);
@@ -370,7 +376,7 @@ TransformedPlot::mouseReleaseEvent(QMouseEvent *event) {
 
     // Show voice if enabled
     if (_settings.showVoice() && (a>yAxis->range().lower) && (a<yAxis->range().upper)) {
-      int idx = find_index(_item->scales(), a);
+      int idx = find_index(_item->scales()/_item->Fs(), a);
       _voiceGraph->data()->clear();
       for (int i=0; i<_item->data().rows(); i++) {
         _voiceGraph->addData(i/_item->Fs(),std::abs(_item->data()(i,idx)));
@@ -386,7 +392,7 @@ TransformedPlot::mouseReleaseEvent(QMouseEvent *event) {
       int idx = b*_item->Fs();
       _zoomGraph->data()->clear();
       for (int i=0; i<_item->data().cols(); i++) {
-        _zoomGraph->addData(_item->scales()(i),std::abs(_item->data()(idx,i)));
+        _zoomGraph->addData(_item->scales()(i)/_item->Fs(),std::abs(_item->data()(idx,i)));
       }
       _zoomGraph->setVisible(true);
       _zoomGraph->rescaleAxes();

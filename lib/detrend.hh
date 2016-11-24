@@ -14,20 +14,20 @@ void detrend(Eigen::DenseBase<oDerived> &x) {
   typedef typename oDerived::Scalar Scalar;
 
   Scalar n = x.size();
-  Scalar xsum = (n*(n-1))/2;
-  Scalar xx = (n*(n-1)*(2*n-1))/6;
+  Scalar xsum = (n*(n-Scalar(1)))/Scalar(2);
+  Scalar xx = (n*(n-Scalar(1))*(Scalar(2)*n-Scalar(1)))/Scalar(6);
   Scalar ysum = 0;
   Scalar xy = 0;
 
   for (int i=0; i<x.size(); i++) {
-    xy   += i*x(i);
+    xy   += Scalar(i)*x(i);
     ysum += x(i);
   }
 
   Scalar a = (n*xy - xsum*ysum)/(n*xx - xsum*xsum);
   Scalar b = (ysum - a*xsum)/n;
   for (int i=0; i<x.size(); i++)
-    x(i) -= (b + a*i);
+    x(i) -= (b + a*Scalar(i));
 }
 
 }

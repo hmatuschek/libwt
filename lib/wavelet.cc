@@ -75,6 +75,57 @@ MorletObj::cutOffFreq() const {
 
 
 /* ******************************************************************************************** *
+ * Implementation of RegMorletObj wavelet
+ * ******************************************************************************************** */
+RegMorletObj::RegMorletObj(double dff)
+  : WaveletObj(), _dff(dff)
+{
+  // pass...
+}
+
+RegMorletObj::~RegMorletObj() {
+  // pass...
+}
+
+double
+RegMorletObj::dff() const {
+  return _dff;
+}
+
+std::complex<double>
+RegMorletObj::evalAnalysis(const double &t) const {
+  return std::exp(std::complex<double>(-t*t*_dff/2, -2*M_PI*t)) * std::sqrt(_dff/(2*M_PI));
+}
+
+std::complex<double>
+RegMorletObj::evalSynthesis(const double &t) const {
+  return this->evalAnalysis(t);
+}
+
+std::complex<double>
+RegMorletObj::evalRepKern(const double &b, const double &a) const {
+  double a2p1 = (a*a+1.), am1 = (a-1.);
+  double d = _dff, d2 = d*d;
+  double c = d2/std::sqrt(2*M_PI*d*a2p1);
+  double re = -(d2*b*b + 4*M_PI*M_PI*am1*am1)/(2*d*a2p1);
+  double im = 2*M_PI*b*(1. + am1/a2p1)/a;
+  return  c * std::exp(std::complex<double>(re, im));
+}
+
+double
+RegMorletObj::cutOffTime() const {
+  // 99% power at scale 1
+  return 3./std::sqrt(_dff);
+}
+
+double
+RegMorletObj::cutOffFreq() const {
+  // 99.% power at scale 1
+  return 1+3.*std::sqrt(_dff);
+}
+
+
+/* ******************************************************************************************** *
  * Implementation of Couchy wavelet object
  * ******************************************************************************************** */
 CauchyObj::CauchyObj(double alpha)

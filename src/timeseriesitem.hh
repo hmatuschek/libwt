@@ -9,23 +9,58 @@
 #include "timeseriesplot.hh"
 #include "application.hh"
 
+
 class TimeseriesItem: public Item
 {
   Q_OBJECT
 
+protected:
+  TimeseriesItem(double Fs, const QString &label="timeseries", QObject *parent=0);
+
 public:
-  TimeseriesItem(const Eigen::Ref<const Eigen::VectorXd> &data, double Fs, const QString &label="timeseries", QObject *parent=0);
   virtual ~TimeseriesItem();
 
   inline double Fs() const { return _Fs; }
-  inline const Eigen::VectorXd &data() const { return _data; }
-  inline Eigen::VectorXd &data() { return _data; }
+  virtual size_t size() const = 0;
 
   QWidget *view();
 
 protected:
-  Eigen::VectorXd _data;
   double _Fs;
+};
+
+
+class RealTimeseriesItem: public TimeseriesItem
+{
+  Q_OBJECT
+
+public:
+  RealTimeseriesItem(const Eigen::Ref<const Eigen::VectorXd> &data, double Fs, const QString &label="timeseries", QObject *parent=0);
+  virtual ~RealTimeseriesItem();
+
+  inline const Eigen::VectorXd &data() const { return _data; }
+  inline Eigen::VectorXd &data() { return _data; }
+  virtual size_t size() const;
+
+protected:
+  Eigen::VectorXd _data;
+};
+
+
+class ComplexTimeseriesItem: public TimeseriesItem
+{
+  Q_OBJECT
+
+public:
+  ComplexTimeseriesItem(const Eigen::Ref<const Eigen::VectorXcd> &data, double Fs, const QString &label="timeseries", QObject *parent=0);
+  virtual ~ComplexTimeseriesItem();
+
+  inline const Eigen::VectorXcd &data() const { return _data; }
+  inline Eigen::VectorXcd &data() { return _data; }
+  virtual size_t size() const;
+
+protected:
+  Eigen::VectorXcd _data;
 };
 
 

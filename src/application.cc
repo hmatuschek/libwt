@@ -14,6 +14,7 @@
 #include "synthesisitem.hh"
 #include "projectionitem.hh"
 #include "session.hh"
+#include "importdialog.hh"
 
 
 Application::Application(int &argc, char **argv)
@@ -62,48 +63,39 @@ Application::importTimeseries(const QString &filename) {
     return false;
   }
 
-  int column = 0;
-  if (1 < data.cols()) {
-    bool ok;
-    column = QInputDialog::getInt(
-          0, tr("Select column"),
-          tr("The file contains more than one column, select the column to import."),
-          0, 0, data.cols(), 1, &ok);
-    if (! ok)
-      return false;
-  }
-  logDebug() << "CSV: read column " << column;
-
-  bool ok;
-  double Fs = QInputDialog::getDouble(
-        0, tr("Set sample rate"), tr("Specify the sample rate for the time series."),
-        1, 0, 1e12, 3, &ok);
-  if (! ok)
+  ImportDialog dialog(filename, data.cols(), *this);
+  if (QDialog::Accepted != dialog.exec())
     return false;
 
-  QFileInfo finfo(filename);
-  QString name = finfo.baseName();
-  while (_items->contains(name) || name.isEmpty()) {
-    bool ok;
-    name = QInputDialog::getText(
-          0, tr("Choose a label"), tr("There is already an item labeled '%0', choose a different label.").arg(name),
-          QLineEdit::Normal, name, &ok);
-    if (! ok)
-      return false;
+  if (dialog.real()) {
+    return addTimeseries(
+          dialog.label(), Eigen::Ref<const Eigen::VectorXd>(data.col(dialog.realColumn())), dialog.Fs());
   }
 
-  return addTimeseries(name, data.col(column), Fs);
+  Eigen::VectorXcd tmp(data.rows());
+  for (int i=0; i<data.rows(); i++) {
+    tmp(i) = std::complex<double>(data(i, dialog.realColumn()),
+                                  data(i, dialog.imagColumn()));
+  }
+
+  return addTimeseries(dialog.label(), Eigen::Ref<const Eigen::VectorXcd>(tmp), dialog.Fs());
 }
 
 bool
 Application::addTimeseries(const QString &label, const Eigen::Ref<const Eigen::VectorXd> &data, double Fs) {
-  _items->addItem(new TimeseriesItem(data, Fs, label));
+  _items->addItem(new RealTimeseriesItem(data, Fs, label));
+  return true;
+}
+
+bool
+Application::addTimeseries(const QString &label, const Eigen::Ref<const Eigen::VectorXcd> &data, double Fs) {
+  _items->addItem(new ComplexTimeseriesItem(data, Fs, label));
   return true;
 }
 
 bool
 Application::startTransform(TimeseriesItem *item) {
-  TransformDialog dialog(item->data().size(), item->Fs());
+  TransformDialog dialog(item->size(), item->Fs());
   if (QDialog::Rejected == dialog.exec())
     return false;
 
@@ -130,6 +122,9 @@ Application::startTransform(TimeseriesItem *item) {
     break;
   case TransformDialog::CAUCHY_WAVELET:
     wavelet = wt::Cauchy(dialog.param1());
+    break;
+  case TransformDialog::REGMORLET_WAVELET:
+    wavelet = wt::RegMorlet(dialog.param1());
     break;
   }
 
@@ -205,7 +200,7 @@ Application::onTransformFinished(TransformItem *item) {
 
 void
 Application::onSynthesisFinished(SynthesisItem *item) {
-  TimeseriesItem *sitem = new TimeseriesItem(item->result().real(), item->Fs(), item->label());
+  ComplexTimeseriesItem *sitem = new ComplexTimeseriesItem(item->result(), item->Fs(), item->label());
   _items->addItem(sitem);
   _items->remItem(item);
 }

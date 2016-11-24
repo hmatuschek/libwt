@@ -42,7 +42,14 @@ TimeseriesPlot::TimeseriesPlot(TimeseriesItem *item, const Settings &settings, Q
   :QCustomPlot(parent), _item(item), _title(0), _settings(settings),
     _cropping(false), _dragging(false), _selection(0)
 {
+  RealTimeseriesItem *ritem = dynamic_cast<RealTimeseriesItem *>(_item);
+  ComplexTimeseriesItem *citem = dynamic_cast<ComplexTimeseriesItem *>(_item);
+
   addGraph();
+  if (citem) {
+    addGraph();
+    QPen pen = graph(1)->pen(); pen.setColor(Qt::red); graph(1)->setPen(pen);
+  }
 
   _selection = new QCPItemRect(this);
   _selection->setVisible(false);
@@ -50,8 +57,13 @@ TimeseriesPlot::TimeseriesPlot(TimeseriesItem *item, const Settings &settings, Q
   _selection->setBrush(QColor(0, 0, 255, 32));
 
   double t=0, dt = 1/_item->Fs();
-  for (int i=0; i<_item->data().size(); i++, t+=dt) {
-    graph(0)->addData(t, _item->data()(i));
+  for (size_t i=0; i<_item->size(); i++, t+=dt) {
+    if (ritem) {
+      graph(0)->addData(t, ritem->data()(i));
+    } else if (citem) {
+      graph(0)->addData(t, citem->data()(i).real());
+      graph(1)->addData(t, citem->data()(i).imag());
+    }
   }
   plotLayout()->insertRow(0);
   QString title = tr("Timeseries '%0' [Fs=%1]").arg(_item->label(), fmt_freq(_item->Fs()));

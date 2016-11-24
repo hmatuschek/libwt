@@ -2,10 +2,13 @@
 #include "utils/logger.hh"
 #include "timeseriesitem.hh"
 #include "transformeditem.hh"
+#include <H5CompType.h>
+
 
 typedef enum {
   WAVELET_MORLET = 0,
-  WAVELET_CAUCHY
+  WAVELET_CAUCHY,
+  WAVELET_REGMORLET
 } WaveletType;
 
 typedef enum {
@@ -101,25 +104,54 @@ Session::loadTimeseriesItem(const std::string &objname, H5::DataSet &dataset) {
     return 0;
   }
 
-  // Get data
-  Eigen::VectorXd data;
+  QString label = QString::fromStdString(objname);
+  if (label.startsWith("/")) label.remove("/");
+
+  // Dispatch by type & get data
+  if (dataset.getTypeClass() == H5T_FLOAT) {
+    Eigen::VectorXd data;
+    if (! readArray(dataset, data)) {
+      logError() << "Cannot load timeseries " << objname << ".";
+      return 0;
+    }
+    return new RealTimeseriesItem(data, Fs, label);
+  }
+
+  Eigen::VectorXcd data;
   if (! readArray(dataset, data)) {
     logError() << "Cannot load timeseries " << objname << ".";
     return 0;
   }
-  QString label = QString::fromStdString(objname);
-  if (label.startsWith("/")) label.remove("/");
-  return new TimeseriesItem(data, Fs, label);
+  return new ComplexTimeseriesItem(data, Fs, label);
 }
 
 bool
 Session::saveTimeseriesItem(H5::H5File &file, TimeseriesItem *item) {
   logDebug() << "Save timeseries " << item->label().toStdString() << "...";
-  hsize_t dims[1] = { hsize_t(item->data().size()) };
+
+  hsize_t dims[1] = { 0 };
+  if (RealTimeseriesItem *ritem = dynamic_cast<RealTimeseriesItem *>(item)) {
+    dims[0] = ritem->data().size();
+  } if (ComplexTimeseriesItem *citem = dynamic_cast<ComplexTimeseriesItem *>(item)) {
+    dims[0] = citem->data().size();
+  }
+
   H5::DataSpace fspace(1, dims);
-  H5::DataSet dataset = file.createDataSet(
-        item->label().toStdString(), H5::PredType::NATIVE_DOUBLE, fspace);
-  dataset.write(item->data().data(), H5::PredType::NATIVE_DOUBLE);
+  H5::DataSet dataset;
+
+  if (RealTimeseriesItem *ritem = dynamic_cast<RealTimeseriesItem *>(item)) {
+    dataset = file.createDataSet(
+          item->label().toStdString(), H5::PredType::NATIVE_DOUBLE, fspace);
+    dataset.write(ritem->data().data(), H5::PredType::NATIVE_DOUBLE);
+  } else if (ComplexTimeseriesItem *citem = dynamic_cast<ComplexTimeseriesItem *>(item)) {
+    H5::CompType ctype(sizeof(std::complex<double>));
+    ctype.insertMember("re", 0, H5::PredType::NATIVE_DOUBLE);
+    ctype.insertMember("im", sizeof(double), H5::PredType::NATIVE_DOUBLE);
+    dataset = file.createDataSet(
+          item->label().toStdString(), ctype, fspace);
+    dataset.write(citem->data().data(), ctype);
+  }
+
   setAttribute(dataset, "type", uint(ITEM_TIMESERIES));
   setAttribute(dataset, "Fs", item->Fs());
   fspace.close(); dataset.close();
@@ -173,6 +205,14 @@ Session::loadTransformedItem(const std::string &objname, H5::DataSet &dataset) {
       return 0;
     }
     wavelet = wt::Cauchy(alpha);
+  } else if (WAVELET_REGMORLET == waveletId) {
+    double dff;
+    if (! getAttribute(dataset, "dff", dff)) {
+      logError() << "Cannot load transformed " << objname
+                 << ": No valid wavelet parameter set.";
+      return 0;
+    }
+    wavelet = wt::RegMorlet(dff);
   } else {
     logError() << "Cannot load transformed " << objname
                << ": Unknown wavelet type ID " << uint(waveletId) << ".";
@@ -213,6 +253,9 @@ Session::saveTransformedItem(H5::H5File &file, TransformedItem *item) {
   } else if (item->wavelet().is<wt::Cauchy>()) {
     setAttribute(dataset, "wavelet", uint(WAVELET_CAUCHY));
     setAttribute(dataset, "alpha", item->wavelet().as<wt::Cauchy>().alpha());
+  } else if (item->wavelet().is<wt::RegMorlet>()) {
+    setAttribute(dataset, "wavelet", uint(WAVELET_REGMORLET));
+    setAttribute(dataset, "dff", item->wavelet().as<wt::RegMorlet>().dff());
   }
   fspace.close(); dataset.close();
   file.flush(H5F_SCOPE_GLOBAL);
@@ -331,6 +374,32 @@ Session::readArray(H5::DataSet &dataset, Eigen::VectorXd &value) {
 
   value.resize(N);
   dataset.read(value.data(), H5::PredType::NATIVE_DOUBLE);
+
+  return true;
+}
+
+bool
+Session::readArray(H5::DataSet &dataset, Eigen::VectorXcd &value) {
+  H5::CompType ctype(sizeof(std::complex<double>));
+  ctype.insertMember("re", 0, H5::PredType::NATIVE_DOUBLE);
+  ctype.insertMember("im", sizeof(double), H5::PredType::NATIVE_DOUBLE);
+
+  H5::DataSpace dataspace = dataset.getSpace();
+  if (1 != dataspace.getSimpleExtentNdims()) {
+    logError() << "Cannot read vector: Unexpected rank-"
+               << dataspace.getSimpleExtentNdims() << ", Expected rank-1.";
+    return 0;
+  }
+  hsize_t N;
+  dataspace.getSimpleExtentDims(&N, 0);
+
+  value.resize(N);
+
+  try { dataset.read(value.data(), ctype); }
+  catch (H5::DataSetIException error) {
+    logError() << "Cannot read matrix: " << error.getCDetailMsg();
+    return false;
+  }
 
   return true;
 }
