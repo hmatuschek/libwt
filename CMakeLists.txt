@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 option(ENABLE_PYTHON "Build python binding." ON)
 option(INSTALL_PYTHON_USERSITE "Install python module into user site." OFF)
 option(ENABLE_OPENMP "Build with OpenMP support." ON)
+option(BUILD_UNITTEST "Build unit tests." ON)
 
 # Required packages
 find_package(FFTW3 REQUIRED)
@@ -73,7 +74,7 @@ MESSAGE(STATUS "Using HDF5 libraries: ${HDF_LIBRARIES}")
 
 SET(libwt_VERSION_MAJOR "1")
 SET(libwt_VERSION_MINOR "0")
-SET(libwt_VERSION_PATCH "1")
+SET(libwt_VERSION_PATCH "2")
 
 #
 # Get default install directories under Linux
@@ -97,7 +98,9 @@ SET(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_FULL_LIBDIR})
 
 add_subdirectory(lib)
 add_subdirectory(src)
-add_subdirectory(test)
+if(${BUILD_UNITTEST})
+ add_subdirectory(test)
+endif(${BUILD_UNITTEST})
 if(${BUILD_PYTHON_INTERFACE})
  add_subdirectory(python)
 endif(${BUILD_PYTHON_INTERFACE})
@@ -112,5 +115,15 @@ set(CPACK_SOURCE_PACKAGE_FILE_NAME
  "${CMAKE_PROJECT_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 set(CPACK_SOURCE_IGNORE_FILES
  "/build/;/.git/;~$;${CPACK_SOURCE_IGNORE_FILES}")
+
+#
+# Install logo and .desktop file under Linux:
+#
+IF(UNIX AND NOT APPLE)
+ INSTALL(FILES shared/wtool.png
+         DESTINATION share/icons)
+ INSTALL(FILES shared/wtool.desktop
+         DESTINATION share/applications)
+ENDIF(UNIX AND NOT APPLE)
 
 include(CPack)

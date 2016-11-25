@@ -49,6 +49,14 @@ public:
   virtual ~Morlet();
 };
 
+%feature("autodoc","Implements the regressive Morlet \"wavelet\".");
+class RegMorlet: public Wavelet
+{
+public:
+  %feature("autodoc", "Constructor. The argument dff specifies the frequency resolution.");
+  RegMorlet(double dff=2.0);
+  virtual ~RegMorlet();
+};
 
 %feature("autodoc","Implements the Cauchy or Paul wavelet.");
 class Cauchy: public Wavelet
