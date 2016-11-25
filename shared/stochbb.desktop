@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Wavelet Tool
+GenericName=Wavelet Analysis Tool
+Comment=A GUI tool to perform continuous wavelet transforms.
+Exec=wtool
+Icon=/usr/share/icons/wtool.png
+Type=Application
+Categories=Science
+Terminal=false
+Encoding=UTF-8
