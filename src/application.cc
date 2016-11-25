@@ -128,6 +128,9 @@ Application::startTransform(TimeseriesItem *item) {
   case TransformDialog::REGMORLET_WAVELET:
     wavelet = wt::RegMorlet(dialog.param1());
     break;
+  case TransformDialog::REGCAUCHY_WAVELET:
+    wavelet = wt::RegCauchy(dialog.param1());
+    break;
   }
 
   QString label = tr("W:%0").arg(item->label());

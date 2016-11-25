@@ -245,6 +245,8 @@ TimeseriesItemViewConfigDialog::TimeseriesItemViewConfigDialog(Application *app,
     const QString &label, const TimeseriesPlot::Settings &settings, QWidget *parent)
   : QDialog(parent), _application(app)
 {
+  setWindowTitle(tr("Configure time-series view"));
+
   _oldLabel = label;
   _label = new QLineEdit(label);
 

@@ -178,3 +178,58 @@ CauchyObj::cutOffFreq() const {
   double eps = 1e-2;
   return 1+1./( _alpha*_alpha * ( std::pow(eps, -2. / (_alpha+1)) - 1) / ((2*M_PI)*(2*M_PI)) );
 }
+
+
+/* ******************************************************************************************** *
+ * Implementation of RegCouchy wavelet object
+ * ******************************************************************************************** */
+RegCauchyObj::RegCauchyObj(double alpha)
+  : WaveletObj(), _alpha(alpha)
+{
+  // Compute normalization constant, a.k.a. c_gh
+  _norm = std::exp( -2*std::log(2*M_PI) - std::lgamma(2*_alpha+1)/2 + std::lgamma(_alpha+1)
+                    + (2*_alpha+1)*std::log(2)/2 + std::log(_alpha));
+}
+
+RegCauchyObj::~RegCauchyObj() {
+  // pass...
+}
+
+double
+RegCauchyObj::alpha() const {
+  return _alpha;
+}
+
+std::complex<double>
+RegCauchyObj::evalAnalysis(const double &t) const {
+  return std::pow(std::complex<double>(1, 2*M_PI*t/_alpha), -1-_alpha);
+}
+
+std::complex<double>
+RegCauchyObj::evalSynthesis(const double &t) const {
+  return RegCauchyObj::evalAnalysis(t);
+}
+
+std::complex<double>
+RegCauchyObj::evalRepKern(const double &b, const double &a) const {
+  double c = _alpha*std::log(a) + std::lgamma(2*_alpha-1) - (1+2*_alpha)*log(2*M_PI);
+  return std::exp(c) * std::pow(std::complex<double>(1+a, 2*M_PI*b/_alpha), -(1+2*_alpha));
+}
+
+double
+RegCauchyObj::normConstant() const {
+  return _norm;
+}
+
+double
+RegCauchyObj::cutOffTime() const {
+  // where the envelope reduced to 1% of max.
+  double eps = 1e-2;
+  return _alpha*std::sqrt(std::pow(eps, -2/(_alpha+1))-1)/(2*M_PI);
+}
+
+double
+RegCauchyObj::cutOffFreq() const {
+  double eps = 1e-2;
+  return 1+1./( _alpha*_alpha * ( std::pow(eps, -2. / (_alpha+1)) - 1) / ((2*M_PI)*(2*M_PI)) );
+}

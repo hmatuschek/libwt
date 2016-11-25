@@ -151,6 +151,48 @@ protected:
 };
 
 
+/** The regressive Cauchy or Paul wavelet.
+ * In contrast to the @c Morlet wavelet, the Cauchy or Paul wavelet is a proper wavelet with a
+ * similar good localization in time and scale.
+ *
+ * There are different definitoins of the Cauchy wavelet around. Here one is implemented where
+ * the center frequency is always 1 irrespective of the value of \f$\alpha\f$:
+ * \f[
+ * g(t) = h(t) = \left(1-i\,\frac{2\pi\,t}{\alpha}\right)^{-(1+\alpha)}\,,
+ * \f]
+ * and its reproducing kernel
+ * \f[
+ * P_{g,h}(b, a) = \Gamma(2\alpha+1)\,a^{\alpha+1}\,\left(1+a-\frac{i\,b}{a}\right)^{-(2\alpha+1)}\,.
+ * \f]
+ * @ingroup api */
+class RegCauchy: public Wavelet
+{
+public:
+  /** Object type of the container. */
+  typedef RegCauchyObj ObjectType;
+
+public:
+  /** Constructor.
+   * @param alpha Specifies the time resolution. */
+  explicit RegCauchy(double alpha=2.0);
+  /** Packs the given @c CauchyObj instance into a container. The ownership is taken. */
+  RegCauchy(RegCauchyObj *obj);
+  /** Copy constructor, manages references. */
+  RegCauchy(const RegCauchy &other);
+  /** Destructor. */
+  virtual ~RegCauchy();
+  /** Assignment operator, manages references. */
+  RegCauchy &operator=(const RegCauchy &other);
+
+  /** Returns the frequency resolution parameter. */
+  double alpha() const;
+
+protected:
+  /** Holds a reference to the @c CauchyObj instance. */
+  RegCauchyObj *_cauchy;
+};
+
+
 /** The Morlet wavelet.
  *
  * \f[

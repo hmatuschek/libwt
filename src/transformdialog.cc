@@ -25,7 +25,7 @@ TransformDialog::TransformDialog(size_t Ns, double Fs, QWidget *parent) :
   _maxScale->setValidator(val);
 
   _numScales = new QSpinBox();
-  _numScales->setValue(32);
+  _numScales->setValue(64);
   _numScales->setMinimum(1);
   _numScales->setMaximum(Ns/2);
 
@@ -33,6 +33,7 @@ TransformDialog::TransformDialog(size_t Ns, double Fs, QWidget *parent) :
   _wavelet->addItem(tr("Morlet"), int(MORLET_WAVELET));
   _wavelet->addItem(tr("Cauchy"), int(CAUCHY_WAVELET));
   _wavelet->addItem(tr("Morlet (regressive)"), int(REGMORLET_WAVELET));
+  _wavelet->addItem(tr("Cauchy (regressive)"), int(REGCAUCHY_WAVELET));
   _wavelet->setCurrentIndex(1);
 
   _param1 = new QLineEdit("20");
@@ -98,7 +99,7 @@ TransformDialog::waveletSelected(int idx) {
   if ((0 == idx) || (2 == idx)) { // Morlet || reg. Morlet
     _param1Label->setText(tr("df/f"));
     _param1->setText("0.5");
-  } else if (1 == idx) { // Cauchy
+  } else if ((1 == idx) || (3 == idx)) { // Cauchy || reg. Cauchy
     _param1Label->setText(tr("alpha"));
     _param1->setText("20");
   }

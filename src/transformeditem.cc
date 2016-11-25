@@ -214,6 +214,8 @@ TransformedItemViewConfigDialog::TransformedItemViewConfigDialog(
     Application *app, const QString &label, const TransformedPlot::Settings &plotSettings, QWidget *parent)
   : QDialog(parent), _application(app), _oldLabel(label)
 {
+  setWindowTitle(tr("Configure transformed view"));
+
   _showTitle = new QCheckBox();
   _showTitle->setChecked(plotSettings.showTitle());
   _showModulus = new QComboBox();

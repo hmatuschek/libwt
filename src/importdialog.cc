@@ -13,6 +13,8 @@
 ImportDialog::ImportDialog(const QString &filename, size_t cols, Application &app, QWidget *parent)
   : QDialog(parent), _application(app)
 {
+  setWindowTitle(tr("Import time-series."));
+
   _typeSel = new QComboBox();
   _typeSel->addItem(tr("real"));
   if (cols>1) _typeSel->addItem(tr("complex"));

@@ -16,7 +16,8 @@ public:
   typedef enum {
     MORLET_WAVELET,
     CAUCHY_WAVELET,
-    REGMORLET_WAVELET
+    REGMORLET_WAVELET,
+    REGCAUCHY_WAVELET
   } Wavelet;
 
 public:

@@ -67,6 +67,15 @@ public:
   virtual ~Cauchy();
 };
 
+%feature("autodoc","Implements the regressive Cauchy or Paul wavelet.");
+class RegCauchy: public Wavelet
+{
+public:
+  %feature("autodoc", "Constructor. The argument alpha specifies the time resolution.");
+  RegCauchy(double alpha=1.0);
+  virtual ~RegCauchy();
+};
+
 }
 
 

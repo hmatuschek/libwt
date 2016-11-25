@@ -151,6 +151,44 @@ Cauchy::alpha() const {
 
 
 /* ******************************************************************************************** *
+ * Implementation of RegCauchy container
+ * ******************************************************************************************** */
+RegCauchy::RegCauchy(double alpha)
+  : Wavelet(new RegCauchyObj(alpha)), _cauchy(static_cast<RegCauchyObj *>(_wavelet))
+{
+  // pass...
+}
+
+RegCauchy::RegCauchy(RegCauchyObj *obj)
+  : Wavelet(obj), _cauchy(obj)
+{
+  // pass...
+}
+
+RegCauchy::RegCauchy(const RegCauchy &other)
+  : Wavelet(other), _cauchy(other._cauchy)
+{
+  // pass...
+}
+
+RegCauchy::~RegCauchy() {
+  // pass...
+}
+
+RegCauchy &
+RegCauchy::operator=(const RegCauchy &other) {
+  Wavelet::operator =(other);
+  _cauchy = other._cauchy;
+  return *this;
+}
+
+double
+RegCauchy::alpha() const {
+  return _cauchy->alpha();
+}
+
+
+/* ******************************************************************************************** *
  * Implementation of linear, dyadic etc.
  * ******************************************************************************************** */
 void

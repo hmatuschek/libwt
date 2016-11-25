@@ -135,6 +135,42 @@ protected:
   double _norm;
 };
 
+
+/** Implementation of an augmented, regressive Cauchy or Paul wavelet.
+ * Do not use this class directly, consider using the associated container @c Cauchy. */
+class RegCauchyObj: public WaveletObj
+{
+public:
+  /** Constructor.
+   * @param alpha Specifies the time resolution. */
+  explicit RegCauchyObj(double alpha=2);
+  /** Destructor. */
+  virtual ~RegCauchyObj();
+
+  /** Returns the frequency resolution parameter. */
+  double alpha() const;
+
+  /** Evaluates the mother wavelet at the given time. */
+  virtual std::complex<double> evalAnalysis(const double &t) const;
+  /** Evaluates the mother wavelet at the given time. */
+  virtual std::complex<double> evalSynthesis(const double &t) const;
+  /** Evaluates the reproducing kernel located at time 0 and scale 1 at the given time and scale. */
+  virtual std::complex<double> evalRepKern(const double &b, const double &a) const;
+  /** Returns the normalization constant. */
+  virtual double normConstant() const;
+
+  /** Returns the width of the mother wavelet in the time domain. */
+  virtual double cutOffTime() const;
+  /** Returns the width of the mother wavelet in the frequency domain. */
+  virtual double cutOffFreq() const;
+
+protected:
+  /** Holds the order. */
+  double _alpha;
+  /** Holds the normalization constant, \f$c_{gh}\f$. */
+  double _norm;
+};
+
 }
 
 #endif // __WT_WAVELET_HH__

@@ -8,7 +8,8 @@
 typedef enum {
   WAVELET_MORLET = 0,
   WAVELET_CAUCHY,
-  WAVELET_REGMORLET
+  WAVELET_REGMORLET,
+  WAVELET_REGCAUCHY
 } WaveletType;
 
 typedef enum {
@@ -227,6 +228,14 @@ Session::loadTransformedItem(const std::string &objname, H5::DataSet &dataset) {
       return 0;
     }
     wavelet = wt::RegMorlet(dff);
+  } else if (WAVELET_REGCAUCHY == waveletId) {
+    double alpha;
+    if (! getAttribute(dataset, "alpha", alpha)) {
+      logError() << "Cannot load transformed " << objname
+                 << ": No valid wavelet parameter set.";
+      return 0;
+    }
+    wavelet = wt::RegCauchy(alpha);
   } else {
     logError() << "Cannot load transformed " << objname
                << ": Unknown wavelet type ID " << uint(waveletId) << ".";
@@ -271,6 +280,9 @@ Session::saveTransformedItem(H5::H5File &file, TransformedItem *item) {
   } else if (item->wavelet().is<wt::RegMorlet>()) {
     setAttribute(dataset, "wavelet", uint(WAVELET_REGMORLET));
     setAttribute(dataset, "dff", item->wavelet().as<wt::RegMorlet>().dff());
+  } else if (item->wavelet().is<wt::RegCauchy>()) {
+    setAttribute(dataset, "wavelet", uint(WAVELET_REGCAUCHY));
+    setAttribute(dataset, "alpha", item->wavelet().as<wt::RegCauchy>().alpha());
   }
   fspace.close(); dataset.close();
   file.flush(H5F_SCOPE_GLOBAL);
