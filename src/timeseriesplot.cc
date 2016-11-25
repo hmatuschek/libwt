@@ -56,7 +56,7 @@ TimeseriesPlot::TimeseriesPlot(TimeseriesItem *item, const Settings &settings, Q
   _selection->setPen(QPen(Qt::transparent));
   _selection->setBrush(QColor(0, 0, 255, 32));
 
-  double t=0, dt = 1/_item->Fs();
+  double t=_item->t0(), dt = 1/_item->Fs();
   for (size_t i=0; i<_item->size(); i++, t+=dt) {
     if (ritem) {
       graph(0)->addData(t, ritem->data()(i));
@@ -74,7 +74,10 @@ TimeseriesPlot::TimeseriesPlot(TimeseriesItem *item, const Settings &settings, Q
   _title->setVisible(settings.showTitle());
   xAxis->setLabel(tr("Time [s]"));
   yAxis->setLabel(tr("Value [a.u.]"));
+
   graph(0)->rescaleAxes();
+  if (citem)
+    graph(1)->rescaleAxes(true);
 
   _selection->topLeft->setCoords(xAxis->range().lower, yAxis->range().upper);
   _selection->bottomRight->setCoords(xAxis->range().lower, yAxis->range().lower);

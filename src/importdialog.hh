@@ -21,6 +21,7 @@ public:
   size_t realColumn() const;
   size_t imagColumn() const;
   double Fs() const;
+  double t0() const;
   QString label() const;
 
 protected slots:
@@ -33,6 +34,7 @@ protected:
   QSpinBox *_realCol;
   QSpinBox *_imagCol;
   QLineEdit *_Fs;
+  QLineEdit *_t0;
   QLineEdit *_label;
 };
 

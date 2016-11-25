@@ -20,12 +20,14 @@ public:
   } Scaling;
 
 public:
-  TransformedItem(const wt::Wavelet &wavelet, double Fs, const Eigen::Ref<const Eigen::VectorXd> &scales,
+  TransformedItem(const wt::Wavelet &wavelet, double Fs, double t0,
+                  const Eigen::Ref<const Eigen::VectorXd> &scales,
                   Scaling scaling, const Eigen::Ref<const Eigen::MatrixXcd> &data,
                   const QString &label="transformed", QObject *parent=0);
   virtual ~TransformedItem();
 
   inline wt::Wavelet wavelet() const { return _wavelet; }
+  inline double t0() const { return _t0; }
   inline double Fs() const { return _Fs; }
   inline const Eigen::VectorXd &scales() const { return _scales; }
   inline Scaling scaling() const { return _scaling; }
@@ -36,10 +38,12 @@ public:
 protected:
   wt::Wavelet _wavelet;
   double _Fs;
+  double _t0;
   Eigen::VectorXd _scales;
   Scaling _scaling;
   Eigen::MatrixXcd _data;
 };
+
 
 class TransformedItemView: public QWidget
 {

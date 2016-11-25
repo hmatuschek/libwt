@@ -29,9 +29,9 @@ public slots:
   bool importTimeseries();
   bool importTimeseries(const QString &filename);
   bool addTimeseries(const QString &label, const Eigen::Ref<const Eigen::VectorXd> &data,
-                     double Fs);
+                     double Fs, double t0);
   bool addTimeseries(const QString &label, const Eigen::Ref<const Eigen::VectorXcd> &data,
-                     double Fs);
+                     double Fs, double t0);
   bool startTransform(TimeseriesItem *item);
   bool startSynthesis(TransformedItem *item);
   bool startProjection(TransformedItem *item);

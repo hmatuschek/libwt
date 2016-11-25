@@ -29,6 +29,10 @@ ImportDialog::ImportDialog(const QString &filename, size_t cols, Application &ap
   QDoubleValidator *dval = new QDoubleValidator(0, 1e12, 3);
   _Fs->setValidator(dval);
 
+  _t0 = new QLineEdit("0.0");
+  dval = new QDoubleValidator();
+  _t0->setValidator(dval);
+
   QFileInfo finfo(filename);
   QString name = finfo.baseName();
   _label = new QLineEdit(name);
@@ -40,6 +44,7 @@ ImportDialog::ImportDialog(const QString &filename, size_t cols, Application &ap
   form->addRow(tr("Column (real)"), _realCol);
   form->addRow(tr("Column (imag)"), _imagCol);
   form->addRow(tr("Sample rate [1/s]"), _Fs);
+  form->addRow(tr("Initial time [s]"), _t0);
   form->addRow(tr("Label"), _label);
 
   QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
@@ -70,6 +75,11 @@ ImportDialog::imagColumn() const {
 double
 ImportDialog::Fs() const {
   return _Fs->text().toDouble();
+}
+
+double
+ImportDialog::t0() const {
+  return _t0->text().toDouble();
 }
 
 QString

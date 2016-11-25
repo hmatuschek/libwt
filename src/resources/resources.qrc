@@ -43,5 +43,6 @@
         <file>icons/cog16.png</file>
         <file>icons/cog24.png</file>
         <file>icons/cog32.png</file>
+        <file>about.html</file>
     </qresource>
 </RCC>

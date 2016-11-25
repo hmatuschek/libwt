@@ -8,6 +8,7 @@
 #include <QComboBox>
 #include <QMenu>
 #include <QShortcut>
+#include <QTextBrowser>
 #include "fmtutil.hh"
 
 #include "loghandler.hh"
@@ -54,11 +55,9 @@ MainWindow::MainWindow(Application &app, QWidget *parent)
   connect(filter, SIGNAL(filterSelected(ItemFilter)), itemview, SLOT(filter(ItemFilter)));
 
   _viewstack = new QStackedWidget();
-  QLabel *label = new QLabel(tr("Select an item from the list on the left..."));
-  label->setAlignment(Qt::AlignCenter);
-  QFont font = label->font();
-  font.setBold(true);
-  label->setFont(font);
+  QTextBrowser *label = new QTextBrowser();
+  QFile about("://about.html"); about.open(QIODevice::ReadOnly);
+  label->setHtml(about.readAll());
   _viewstack->addWidget(label);
 
   QSplitter *splitter = new QSplitter();

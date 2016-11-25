@@ -10,7 +10,7 @@
 /* ******************************************************************************************** *
  * Implementation of TransformedItem
  * ******************************************************************************************** */
-TransformedItem::TransformedItem(const wt::Wavelet &wavelet, double Fs, const Eigen::Ref<const Eigen::VectorXd> &scales, Scaling scaling,
+TransformedItem::TransformedItem(const wt::Wavelet &wavelet, double Fs, double t0, const Eigen::Ref<const Eigen::VectorXd> &scales, Scaling scaling,
     const Eigen::Ref<const Eigen::MatrixXcd> &data, const QString &label, QObject *parent)
   : Item(parent), _wavelet(wavelet), _Fs(Fs), _scales(scales), _scaling(scaling), _data(data)
 {
@@ -122,8 +122,9 @@ TransformedItemView::truncate() {
   if (! ok) return;
 
   Application *app = qobject_cast<Application *>(QApplication::instance());
-  app->items()->addItem(new TransformedItem(_item->wavelet(), _item->Fs(), _item->scales(),
-                                            _item->scaling(), tmp, label));
+  app->items()->addItem(
+        new TransformedItem(_item->wavelet(), _item->Fs(), _item->t0(), _item->scales(),
+                            _item->scaling(), tmp, label));
 }
 
 void
@@ -200,8 +201,7 @@ TransformedItemView::cropped(const Polygon &poly) {
   Application *app = qobject_cast<Application *>(QApplication::instance());
   app->items()->addItem(
         new TransformedItem(
-          _item->wavelet(), _item->Fs(), _item->scales(), _item->scaling(),
-          tmp, label));
+          _item->wavelet(), _item->Fs(), _item->t0(), _item->scales(), _item->scaling(), tmp, label));
 }
 
 

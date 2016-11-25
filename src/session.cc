@@ -104,6 +104,13 @@ Session::loadTimeseriesItem(const std::string &objname, H5::DataSet &dataset) {
     return 0;
   }
 
+  double t0;
+  if (! getAttribute(dataset, "t0", t0)) {
+    logError() << "Cannot load timeseries " << objname
+               << ": No initial time attribute set.";
+    return 0;
+  }
+
   QString label = QString::fromStdString(objname);
   if (label.startsWith("/")) label.remove("/");
 
@@ -114,7 +121,7 @@ Session::loadTimeseriesItem(const std::string &objname, H5::DataSet &dataset) {
       logError() << "Cannot load timeseries " << objname << ".";
       return 0;
     }
-    return new RealTimeseriesItem(data, Fs, label);
+    return new RealTimeseriesItem(data, Fs, t0, label);
   }
 
   Eigen::VectorXcd data;
@@ -122,7 +129,7 @@ Session::loadTimeseriesItem(const std::string &objname, H5::DataSet &dataset) {
     logError() << "Cannot load timeseries " << objname << ".";
     return 0;
   }
-  return new ComplexTimeseriesItem(data, Fs, label);
+  return new ComplexTimeseriesItem(data, Fs, t0, label);
 }
 
 bool
@@ -154,6 +161,7 @@ Session::saveTimeseriesItem(H5::H5File &file, TimeseriesItem *item) {
 
   setAttribute(dataset, "type", uint(ITEM_TIMESERIES));
   setAttribute(dataset, "Fs", item->Fs());
+  setAttribute(dataset, "t0", item->t0());
   fspace.close(); dataset.close();
   file.flush(H5F_SCOPE_GLOBAL);
   return true;
@@ -162,6 +170,7 @@ Session::saveTimeseriesItem(H5::H5File &file, TimeseriesItem *item) {
 Item *
 Session::loadTransformedItem(const std::string &objname, H5::DataSet &dataset) {
   double Fs = 1;
+  double t0 = 0;
   uint waveletId;
   uint scalingId;
   Eigen::VectorXd scales;
@@ -169,6 +178,11 @@ Session::loadTransformedItem(const std::string &objname, H5::DataSet &dataset) {
   if (! getAttribute(dataset, "Fs", Fs)) {
     logError() << "Cannot load transformed " << objname
                << ": No valid sample rate attribute set.";
+    return 0;
+  }
+  if (! getAttribute(dataset, "t0", t0)) {
+    logError() << "Cannot load transformed " << objname
+               << ": No valid initial time attribute set.";
     return 0;
   }
   if (! getAttribute(dataset, "scaling", scalingId)) {
@@ -228,7 +242,7 @@ Session::loadTransformedItem(const std::string &objname, H5::DataSet &dataset) {
 
   QString label = QString::fromStdString(objname);
   if (label.startsWith("/")) label.remove("/");
-  return new TransformedItem(wavelet, Fs, scales, TransformedItem::Scaling(scalingId), data, label);
+  return new TransformedItem(wavelet, Fs, t0, scales, TransformedItem::Scaling(scalingId), data, label);
 }
 
 bool
@@ -245,6 +259,7 @@ Session::saveTransformedItem(H5::H5File &file, TransformedItem *item) {
   dataset.write(item->data().data(), ctype);
   setAttribute(dataset, "type", uint(ITEM_TRANSFORMED));
   setAttribute(dataset, "Fs", item->Fs());
+  setAttribute(dataset, "t0", item->t0());
   setAttribute(dataset, "scaling", uint(item->scaling()));
   setAttribute(dataset, "scales", item->scales());
   if (item->wavelet().is<wt::Morlet>()) {

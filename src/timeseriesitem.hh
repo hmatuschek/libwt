@@ -15,11 +15,12 @@ class TimeseriesItem: public Item
   Q_OBJECT
 
 protected:
-  TimeseriesItem(double Fs, const QString &label="timeseries", QObject *parent=0);
+  TimeseriesItem(double Fs, double t0=0, const QString &label="timeseries", QObject *parent=0);
 
 public:
   virtual ~TimeseriesItem();
 
+  inline double t0() const { return _t0; }
   inline double Fs() const { return _Fs; }
   virtual size_t size() const = 0;
 
@@ -27,6 +28,7 @@ public:
 
 protected:
   double _Fs;
+  double _t0;
 };
 
 
@@ -35,7 +37,8 @@ class RealTimeseriesItem: public TimeseriesItem
   Q_OBJECT
 
 public:
-  RealTimeseriesItem(const Eigen::Ref<const Eigen::VectorXd> &data, double Fs, const QString &label="timeseries", QObject *parent=0);
+  RealTimeseriesItem(const Eigen::Ref<const Eigen::VectorXd> &data, double Fs, double t0=0,
+                     const QString &label="timeseries", QObject *parent=0);
   virtual ~RealTimeseriesItem();
 
   inline const Eigen::VectorXd &data() const { return _data; }
@@ -52,7 +55,8 @@ class ComplexTimeseriesItem: public TimeseriesItem
   Q_OBJECT
 
 public:
-  ComplexTimeseriesItem(const Eigen::Ref<const Eigen::VectorXcd> &data, double Fs, const QString &label="timeseries", QObject *parent=0);
+  ComplexTimeseriesItem(const Eigen::Ref<const Eigen::VectorXcd> &data, double Fs, double t0=0,
+                        const QString &label="timeseries", QObject *parent=0);
   virtual ~ComplexTimeseriesItem();
 
   inline const Eigen::VectorXcd &data() const { return _data; }

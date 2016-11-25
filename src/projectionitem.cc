@@ -43,7 +43,7 @@ ProjectionItem::ProjectionItem(TransformedItem *transformed, const QString &labe
   : Item(parent), _transformed(transformed->data()), _scales(transformed->scales()),
     _scaling(transformed->scaling()), _result(_transformed.rows(), _transformed.cols()),
     _wavelet(transformed->wavelet()), _task(_wavelet, _transformed, _scales, _result),
-    _Fs(transformed->Fs())
+    _Fs(transformed->Fs()), _t0(transformed->t0())
 {
   _label = label;
   _icon  = QIcon("://icons/task16.png");
@@ -66,6 +66,11 @@ ProjectionItem::terminate() {
 double
 ProjectionItem::Fs() const {
   return _Fs;
+}
+
+double
+ProjectionItem::t0() const {
+  return _t0;
 }
 
 const Eigen::MatrixXcd &

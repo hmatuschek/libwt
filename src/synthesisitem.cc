@@ -43,7 +43,7 @@ SynthesisItem::SynthesisItem(TransformedItem *transformed, const QString &label,
   : Item(parent), _transformed(transformed->data()), _scales(transformed->scales()),
     _result(_transformed.rows()), _wavelet(transformed->wavelet()),
     _task(_wavelet, _transformed, _scales, _result),
-    _Fs(transformed->Fs())
+    _Fs(transformed->Fs()), _t0(transformed->t0())
 {
   _label = label;
   _icon  = QIcon("://icons/task16.png");
@@ -66,6 +66,11 @@ SynthesisItem::terminate() {
 double
 SynthesisItem::Fs() const {
   return _Fs;
+}
+
+double
+SynthesisItem::t0() const {
+  return _t0;
 }
 
 const Eigen::VectorXcd &

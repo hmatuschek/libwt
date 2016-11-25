@@ -45,7 +45,7 @@ TransformItem::TransformItem(TimeseriesItem *timeseries, wt::Wavelet &wavelet,
   : Item(parent), _timeseries(timeseries->size()), _scales(scales), _scaling(scaling),
     _result(_timeseries.size(), scales.size()), _wavelet(wavelet),
     _task(_wavelet, _timeseries, _scales, _result),
-    _Fs(timeseries->Fs())
+    _Fs(timeseries->Fs()), _t0(timeseries->t0())
 {
   _label = label;
   _icon  = QIcon("://icons/task16.png");
@@ -78,6 +78,11 @@ TransformItem::terminate() {
 double
 TransformItem::Fs() const {
   return _Fs;
+}
+
+double
+TransformItem::t0() const {
+  return _t0;
 }
 
 const Eigen::MatrixXcd &

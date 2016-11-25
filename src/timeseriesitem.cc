@@ -13,7 +13,7 @@
 /* ******************************************************************************************** *
  * Implementation of TimeseriesItem
  * ******************************************************************************************** */
-TimeseriesItem::TimeseriesItem(double Fs, const QString &label, QObject *parent)
+TimeseriesItem::TimeseriesItem(double Fs, double t0, const QString &label, QObject *parent)
   : Item(parent), _Fs(Fs)
 {
   _label = label;
@@ -36,8 +36,8 @@ TimeseriesItem::view() {
  * Implementation of RealTimeseriesItem
  * ******************************************************************************************** */
 RealTimeseriesItem::RealTimeseriesItem(const Eigen::Ref<const Eigen::VectorXd> &data, double Fs,
-                                       const QString &label, QObject *parent)
-  : TimeseriesItem(Fs, label, parent), _data(data)
+                                       double t0, const QString &label, QObject *parent)
+  : TimeseriesItem(Fs, t0, label, parent), _data(data)
 {
   // pass...
 }
@@ -55,9 +55,9 @@ RealTimeseriesItem::size() const {
 /* ******************************************************************************************** *
  * Implementation of ComplexTimeseriesItem
  * ******************************************************************************************** */
-ComplexTimeseriesItem::ComplexTimeseriesItem(const Eigen::Ref<const Eigen::VectorXcd> &data, double Fs,
-                                             const QString &label, QObject *parent)
-  : TimeseriesItem(Fs, label, parent), _data(data)
+ComplexTimeseriesItem::ComplexTimeseriesItem(const Eigen::Ref<const Eigen::VectorXcd> &data,
+                                             double Fs, double t0, const QString &label, QObject *parent)
+  : TimeseriesItem(Fs, t0, label, parent), _data(data)
 {
   // pass...
 }
@@ -144,11 +144,11 @@ TimeseriesItemView::cropped(double x1, double x2) {
     return;
 
   Application *app = qobject_cast<Application *>(QApplication::instance());
-  int i1 = x1*_item->Fs(), i2 = x2*_item->Fs();
+  int i1 = (x1-_item->t0())*_item->Fs(), i2 = (x2-_item->t0())*_item->Fs();
   if (RealTimeseriesItem *ritem = dynamic_cast<RealTimeseriesItem *>(_item)) {
-    app->addTimeseries(label, Eigen::Ref<const Eigen::VectorXd>(ritem->data().segment(i1, i2-i1)), ritem->Fs());
+    app->addTimeseries(label, Eigen::Ref<const Eigen::VectorXd>(ritem->data().segment(i1, i2-i1)), ritem->Fs(), x1);
   } else if (ComplexTimeseriesItem *citem = dynamic_cast<ComplexTimeseriesItem *>(_item)) {
-    app->addTimeseries(label, Eigen::Ref<const Eigen::VectorXcd>(citem->data().segment(i1, i2-i1)), citem->Fs());
+    app->addTimeseries(label, Eigen::Ref<const Eigen::VectorXcd>(citem->data().segment(i1, i2-i1)), citem->Fs(), x1);
   }
 }
 
@@ -162,11 +162,11 @@ TimeseriesItemView::detrend() {
     return;
   Application *app = qobject_cast<Application *>(QApplication::instance());
   if (RealTimeseriesItem *ritem = dynamic_cast<RealTimeseriesItem *>(_item)) {
-    RealTimeseriesItem *item = new RealTimeseriesItem(ritem->data(), ritem->Fs(), label);
+    RealTimeseriesItem *item = new RealTimeseriesItem(ritem->data(), ritem->Fs(), ritem->t0(), label);
     wt::detrend(item->data());
     app->items()->addItem(item);
   } else if (ComplexTimeseriesItem *citem = dynamic_cast<ComplexTimeseriesItem *>(_item)){
-    ComplexTimeseriesItem *item = new ComplexTimeseriesItem(citem->data(), citem->Fs(), label);
+    ComplexTimeseriesItem *item = new ComplexTimeseriesItem(citem->data(), citem->Fs(), citem->t0(), label);
     wt::detrend(item->data());
     app->items()->addItem(item);
   }

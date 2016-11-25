@@ -69,7 +69,8 @@ Application::importTimeseries(const QString &filename) {
 
   if (dialog.real()) {
     return addTimeseries(
-          dialog.label(), Eigen::Ref<const Eigen::VectorXd>(data.col(dialog.realColumn())), dialog.Fs());
+          dialog.label(), Eigen::Ref<const Eigen::VectorXd>(data.col(dialog.realColumn())),
+          dialog.Fs(), dialog.t0());
   }
 
   Eigen::VectorXcd tmp(data.rows());
@@ -78,18 +79,19 @@ Application::importTimeseries(const QString &filename) {
                                   data(i, dialog.imagColumn()));
   }
 
-  return addTimeseries(dialog.label(), Eigen::Ref<const Eigen::VectorXcd>(tmp), dialog.Fs());
+  return addTimeseries(
+        dialog.label(), Eigen::Ref<const Eigen::VectorXcd>(tmp), dialog.Fs(), dialog.t0());
 }
 
 bool
-Application::addTimeseries(const QString &label, const Eigen::Ref<const Eigen::VectorXd> &data, double Fs) {
-  _items->addItem(new RealTimeseriesItem(data, Fs, label));
+Application::addTimeseries(const QString &label, const Eigen::Ref<const Eigen::VectorXd> &data, double Fs, double t0) {
+  _items->addItem(new RealTimeseriesItem(data, Fs, t0, label));
   return true;
 }
 
 bool
-Application::addTimeseries(const QString &label, const Eigen::Ref<const Eigen::VectorXcd> &data, double Fs) {
-  _items->addItem(new ComplexTimeseriesItem(data, Fs, label));
+Application::addTimeseries(const QString &label, const Eigen::Ref<const Eigen::VectorXcd> &data, double Fs, double t0) {
+  _items->addItem(new ComplexTimeseriesItem(data, Fs, t0, label));
   return true;
 }
 
@@ -193,22 +195,25 @@ Application::startProjection(TransformedItem *item)
 void
 Application::onTransformFinished(TransformItem *item) {
   TransformedItem *ritem = new TransformedItem(
-        item->wavelet(), item->Fs(), item->scales(), item->scaling(), item->result(),item->label());
+        item->wavelet(), item->Fs(), item->t0(), item->scales(), item->scaling(), item->result(),
+        item->label());
   _items->addItem(ritem);
   _items->remItem(item);
 }
 
 void
 Application::onSynthesisFinished(SynthesisItem *item) {
-  ComplexTimeseriesItem *sitem = new ComplexTimeseriesItem(item->result(), item->Fs(), item->label());
+  ComplexTimeseriesItem *sitem = new ComplexTimeseriesItem(
+        item->result(), item->Fs(), item->t0(), item->label());
   _items->addItem(sitem);
   _items->remItem(item);
 }
 
 void
 Application::onProjectionFinished(ProjectionItem *item) {
-  TransformedItem *pitem = new TransformedItem(item->wavelet(), item->Fs(), item->scales(),
-                                               item->scaling(), item->result(), item->label());
+  TransformedItem *pitem = new TransformedItem(
+        item->wavelet(), item->Fs(), item->t0(), item->scales(), item->scaling(), item->result(),
+        item->label());
   _items->addItem(pitem);
   _items->remItem(item);
 }

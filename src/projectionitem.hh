@@ -47,6 +47,7 @@ public:
   ProjectionItem(TransformedItem *transformed, const QString &label="projected", QObject *parent=0);
 
   double Fs() const;
+  double t0() const;
   const Eigen::MatrixXcd &result() const;
   const Eigen::VectorXd &scales() const;
   TransformedItem::Scaling scaling() const;
@@ -76,6 +77,7 @@ protected:
   wt::Wavelet _wavelet;
   ProjectionTask _task;
   double _Fs;
+  double _t0;
 };
 
 

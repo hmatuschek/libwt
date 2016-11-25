@@ -48,6 +48,7 @@ public:
   SynthesisItem(TransformedItem *transformed, const QString &label="synthesized", QObject *parent=0);
 
   double Fs() const;
+  double t0() const;
   const Eigen::VectorXcd &result() const;
   const Eigen::VectorXd &scales() const;
   const wt::Wavelet &wavelet() const;
@@ -75,6 +76,7 @@ protected:
   wt::Wavelet _wavelet;
   SynthesisTask _task;
   double _Fs;
+  double _t0;
 };
 
 
