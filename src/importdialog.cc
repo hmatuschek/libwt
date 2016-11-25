@@ -43,8 +43,8 @@ ImportDialog::ImportDialog(const QString &filename, size_t cols, Application &ap
   form->addRow(tr("Data type"), _typeSel);
   form->addRow(tr("Column (real)"), _realCol);
   form->addRow(tr("Column (imag)"), _imagCol);
-  form->addRow(tr("Sample rate [1/s]"), _Fs);
-  form->addRow(tr("Initial time [s]"), _t0);
+  form->addRow(tr("Sample rate"), _Fs);
+  form->addRow(tr("Initial time"), _t0);
   form->addRow(tr("Label"), _label);
 
   QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);

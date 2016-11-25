@@ -14,9 +14,8 @@
  * Implementation of TimeseriesItem
  * ******************************************************************************************** */
 TimeseriesItem::TimeseriesItem(double Fs, double t0, const QString &label, QObject *parent)
-  : Item(parent), _Fs(Fs)
+  : Item(label, parent), _Fs(Fs), _t0(t0)
 {
-  _label = label;
   _icon  = QIcon("://icons/timeseries16.png");
 }
 

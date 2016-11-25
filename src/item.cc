@@ -11,8 +11,8 @@
 /* ******************************************************************************************** *
  * Implementation of Item
  * ******************************************************************************************** */
-Item::Item(QObject *parent)
-  : QObject(parent), _label(""), _icon()
+Item::Item(const QString &label, QObject *parent)
+  : QObject(parent), _label(label), _icon()
 {
   // pass...
 }

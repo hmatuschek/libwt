@@ -6,14 +6,14 @@
 QString
 fmt_freq(double f) {
   if (f < 10)
-    return QString("%0Hz").arg(QString::number(f, 'f', 3));
+    return QString("%0").arg(QString::number(f, 'f', 3));
   if (f<1e3)
-    return QString("%0Hz").arg(QString::number(f, 'f', 1));
+    return QString("%0").arg(QString::number(f, 'f', 1));
   if (f<1e6)
-    return QString("%0kHz").arg(QString::number(f/1e3,'f',1));
+    return QString("%0k").arg(QString::number(f/1e3,'f',1));
   if (f<1e9)
-    return QString("%0MHz").arg(QString::number(f/1e6,'f',1));
-  return QString("%0GHz").arg(QString::number(f/1e9,'f',1));
+    return QString("%0M").arg(QString::number(f/1e6,'f',1));
+  return QString("%0G").arg(QString::number(f/1e9,'f',1));
 }
 
 

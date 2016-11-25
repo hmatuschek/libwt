@@ -149,10 +149,10 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   _title->setVisible(_settings.showTitle());
 
   _colorMap = new QCPColorMap(xAxis, yAxis);
-  _colorMap->data()->setSize(item->data().rows(), item->data().cols());
-  _colorMap->data()->setRange(QCPRange(0, item->data().rows()/item->Fs()),
-                              QCPRange(item->scales()(0)/item->Fs(),
-                                       item->scales()(item->scales().size()-1)/item->Fs()));
+  _colorMap->data()->setSize(_item->data().rows(), _item->data().cols());
+  _colorMap->data()->setRange(QCPRange(_item->t0(), _item->t0()+(_item->data().rows()-1)/_item->Fs()),
+                              QCPRange(_item->scales()(0)/_item->Fs(),
+                                       _item->scales()(_item->scales().size()-1)/_item->Fs()));
 
   QCPColorScale *colorScale = new QCPColorScale(this);
   plotLayout()->addElement(1, 2, colorScale);
@@ -161,14 +161,15 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
 
   _leftPaneAxes = new QCPAxisRect(this);
   _leftPaneAxes->setupFullAxesBox(true);
-  _leftPaneAxes->axis(QCPAxis::atLeft)->setRange(item->scales()(0)/item->Fs(),
-                                                 item->scales()(item->scales().size()-1)/item->Fs());
+  _leftPaneAxes->axis(QCPAxis::atLeft)->setRange(
+        _item->scales()(0)/_item->Fs(), _item->scales()(_item->scales().size()-1)/_item->Fs());
   plotLayout()->addElement(1,0, _leftPaneAxes);
   _bottomPaneAxes = new QCPAxisRect(this);
   _bottomPaneAxes->setupFullAxesBox(true);
   _bottomPaneAxes->axis(QCPAxis::atRight)->setVisible(true);
   _bottomPaneAxes->axis(QCPAxis::atRight)->setTickLabels(true);
-  _bottomPaneAxes->axis(QCPAxis::atBottom)->setRange(0, item->data().rows()/item->Fs());
+  _bottomPaneAxes->axis(QCPAxis::atBottom)->setRange(
+        _item->t0(), _item->t0()+(_item->data().rows()-1)/_item->Fs());
   plotLayout()->addElement(2,1, _bottomPaneAxes);
   plotLayout()->setColumnStretchFactor(1,5);
   plotLayout()->setRowStretchFactor(1,4);
@@ -217,10 +218,10 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   }
 
   _rkOverlay = new QCPColorMap(xAxis, yAxis);
-  _rkOverlay->data()->setSize(item->data().rows(), item->data().cols());
-  _rkOverlay->data()->setRange(QCPRange(0, item->data().rows()/item->Fs()),
-                               QCPRange(item->scales()(0)/item->Fs(),
-                                        item->scales()(item->scales().size()-1)/item->Fs()));
+  _rkOverlay->data()->setSize(_item->data().rows(), _item->data().cols());
+  _rkOverlay->data()->setRange(QCPRange(_item->t0(), _item->t0()+(_item->data().rows()-1)/_item->Fs()),
+                               QCPRange(_item->scales()(0)/_item->Fs(),
+                                        _item->scales()(_item->scales().size()-1)/_item->Fs()));
   QCPColorGradient cmap;
   for (int i=0; i<cmap.levelCount(); i++) {
     double a = double(i)/(cmap.levelCount()-1);
@@ -234,14 +235,14 @@ TransformedPlot::TransformedPlot(TransformedItem *item, const Settings &settings
   QPen pen = _valid->pen(); pen.setColor(Qt::black); pen.setWidth(2); _valid->setPen(pen);
   _valid->setVisible(true);
   for (int j=0; j<_item->scales().size(); j++) {
-    double w = _item->wavelet().cutOffTime()*_item->scales()(j)/item->Fs()/2;
+    double w = _item->wavelet().cutOffTime()*_item->scales()(j)/_item->Fs()/2;
     if (w < (_item->data().rows()/_item->Fs()/2))
-      _valid->addData(w, _item->scales()(j)/item->Fs());
+      _valid->addData(_item->t0()+w, _item->scales()(j)/_item->Fs());
   }
   for (int j=(_item->scales().size()-1); j>=0; j--) {
-    double w = _item->wavelet().cutOffTime()*_item->scales()(j)/item->Fs()/2;
+    double w = _item->wavelet().cutOffTime()*_item->scales()(j)/_item->Fs()/2;
     if (w < (_item->data().rows()/_item->Fs()/2))
-      _valid->addData(_item->data().rows()/_item->Fs()-w, _item->scales()(j)/item->Fs());
+      _valid->addData(_item->t0()+_item->data().rows()/_item->Fs()-w, _item->scales()(j)/_item->Fs());
   }
 
   _curve = new QCPCurve(xAxis, yAxis);
@@ -269,9 +270,9 @@ TransformedPlot::applySettings(const Settings &settings) {
     xAxis->setLabel("");
     xAxis->setVisible(false);
     _bottomPaneAxes->setVisible(true);
-    _bottomPaneAxes->axis(QCPAxis::atBottom)->setLabel("Time [s]");
+    _bottomPaneAxes->axis(QCPAxis::atBottom)->setLabel("Time");
   } else {
-    xAxis->setLabel("Time [s]");
+    xAxis->setLabel("Time");
     xAxis->setVisible(true);
     _bottomPaneAxes->setVisible(false);
     _bottomPaneAxes->axis(QCPAxis::atBottom)->setLabel("");
@@ -281,9 +282,9 @@ TransformedPlot::applySettings(const Settings &settings) {
     yAxis->setLabel("");
     yAxis->setVisible(false);
     _leftPaneAxes->setVisible(true);
-    _leftPaneAxes->axis(QCPAxis::atLeft)->setLabel("Scale [s]");
+    _leftPaneAxes->axis(QCPAxis::atLeft)->setLabel("Scale");
   } else {
-    yAxis->setLabel("Scale [s]");
+    yAxis->setLabel("Scale");
     yAxis->setVisible(true);
     _leftPaneAxes->setVisible(false);
     _leftPaneAxes->axis(QCPAxis::atLeft)->setLabel("");
@@ -299,15 +300,16 @@ TransformedPlot::applySettings(const Settings &settings) {
   }
 
   if (_settings.showModulus()) {
-    _colorMap->colorScale()->axis()->setLabel("Modulus [a.u.]");
+    _colorMap->colorScale()->axis()->setLabel("Modulus");
     _colorMap->colorScale()->axis()->setTicker(QSharedPointer<QCPAxisTicker>(new QCPAxisTicker()));
     _colorMap->setGradient(QCPColorGradient::gpHot);
   } else {
-    _colorMap->colorScale()->axis()->setLabel("Phase [rad]");
+    _colorMap->colorScale()->axis()->setLabel("Phase");
     _colorMap->colorScale()->axis()->setTicker(QSharedPointer<QCPAxisTicker>(new QCPAxisTickerPi()));
     _colorMap->setGradient(QCPColorGradient::gpHues);
   }
   _colorMap->rescaleDataRange(true);
+
   rescaleAxes(true);
   replot();
 }
@@ -366,7 +368,7 @@ TransformedPlot::mouseReleaseEvent(QMouseEvent *event) {
       // Plot modulus of rep. kern. at x,y
       for (int i=0; i<_item->data().rows(); i++) {
         for (int j=0; j<_item->data().cols(); j++) {
-          double value = std::abs(_item->wavelet().evalRepKern((b-i*dt)/a, _item->scales()(j)/a/_item->Fs()));
+          double value = std::abs(_item->wavelet().evalRepKern((b-_item->t0()-i*dt)/a, _item->scales()(j)/a/_item->Fs()));
           _rkOverlay->data()->setCell(i, j, value/rval);
         }
       }
@@ -379,7 +381,7 @@ TransformedPlot::mouseReleaseEvent(QMouseEvent *event) {
       int idx = find_index(_item->scales()/_item->Fs(), a);
       _voiceGraph->data()->clear();
       for (int i=0; i<_item->data().rows(); i++) {
-        _voiceGraph->addData(i/_item->Fs(),std::abs(_item->data()(i,idx)));
+        _voiceGraph->addData(_item->t0()+i/_item->Fs(), std::abs(_item->data()(i,idx)));
       }
       _voiceGraph->setVisible(true);
       _voiceGraph->rescaleAxes();
@@ -389,7 +391,7 @@ TransformedPlot::mouseReleaseEvent(QMouseEvent *event) {
 
     // Show zoom if enabled
     if (_settings.showZoom() && (b>xAxis->range().lower) && (b<xAxis->range().upper)) {
-      int idx = b*_item->Fs();
+      int idx = std::min(int((b-_item->t0())*_item->Fs()), (int) _item->data().rows());
       _zoomGraph->data()->clear();
       for (int i=0; i<_item->data().cols(); i++) {
         _zoomGraph->addData(_item->scales()(i)/_item->Fs(),std::abs(_item->data()(idx,i)));
@@ -405,9 +407,9 @@ TransformedPlot::mouseReleaseEvent(QMouseEvent *event) {
       _realWaveletGraph->data()->clear();
       _imagWaveletGraph->data()->clear();
       for (int i=0; i<_item->data().rows(); i++) {
-        std::complex<double> val = _item->wavelet().evalAnalysis((i*dt - b)/a)/a;
-        _realWaveletGraph->addData(i/_item->Fs(), val.real());
-        _imagWaveletGraph->addData(i/_item->Fs(), val.imag());
+        std::complex<double> val = _item->wavelet().evalAnalysis((_item->t0() + i*dt - b)/a)/a;
+        _realWaveletGraph->addData(_item->t0()+i/_item->Fs(), val.real());
+        _imagWaveletGraph->addData(_item->t0()+i/_item->Fs(), val.imag());
       }
       _realWaveletGraph->setVisible(true);
       _imagWaveletGraph->setVisible(true);

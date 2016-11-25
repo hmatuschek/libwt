@@ -14,7 +14,7 @@ class Item : public QObject
 
 protected:
   /** Hidden constructor. */
-  explicit Item(QObject *parent = 0);
+  explicit Item(const QString &label="", QObject *parent = 0);
 
 public:
   virtual ~Item();

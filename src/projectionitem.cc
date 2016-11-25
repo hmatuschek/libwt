@@ -40,12 +40,11 @@ ProjectionTask::progresscb(double frac) {
  * Implementation of ProjectionItem
  * ******************************************************************************************** */
 ProjectionItem::ProjectionItem(TransformedItem *transformed, const QString &label, QObject *parent)
-  : Item(parent), _transformed(transformed->data()), _scales(transformed->scales()),
+  : Item(label, parent), _transformed(transformed->data()), _scales(transformed->scales()),
     _scaling(transformed->scaling()), _result(_transformed.rows(), _transformed.cols()),
     _wavelet(transformed->wavelet()), _task(_wavelet, _transformed, _scales, _result),
     _Fs(transformed->Fs()), _t0(transformed->t0())
 {
-  _label = label;
   _icon  = QIcon("://icons/task16.png");
 
   connect(&_task, SIGNAL(started()), this, SLOT(onTaskStarted()));

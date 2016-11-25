@@ -10,11 +10,13 @@
 /* ******************************************************************************************** *
  * Implementation of TransformedItem
  * ******************************************************************************************** */
-TransformedItem::TransformedItem(const wt::Wavelet &wavelet, double Fs, double t0, const Eigen::Ref<const Eigen::VectorXd> &scales, Scaling scaling,
-    const Eigen::Ref<const Eigen::MatrixXcd> &data, const QString &label, QObject *parent)
-  : Item(parent), _wavelet(wavelet), _Fs(Fs), _scales(scales), _scaling(scaling), _data(data)
+TransformedItem::TransformedItem(const wt::Wavelet &wavelet, double Fs, double t0,
+                                 const Eigen::Ref<const Eigen::VectorXd> &scales, Scaling scaling,
+                                 const Eigen::Ref<const Eigen::MatrixXcd> &data,
+                                 const QString &label, QObject *parent)
+  : Item(label, parent), _wavelet(wavelet), _Fs(Fs), _t0(t0), _scales(scales), _scaling(scaling),
+    _data(data)
 {
-  _label = label;
   _icon = QIcon("://icons/wavelet16.png");
 }
 
@@ -182,7 +184,7 @@ TransformedItemView::cropped(const Polygon &poly) {
   Eigen::MatrixXcd tmp(_item->data().rows(), _item->data().cols());
   for (int i=0; i<tmp.rows(); i++) {
     for (int j=0; j<tmp.cols(); j++) {
-      double x = double(i)/_item->Fs();
+      double x = _item->t0() + double(i)/_item->Fs();
       double y = _item->scales()(j)/_item->Fs();
       if (poly.inside(x,y))
         tmp(i,j) = _item->data()(i,j);

@@ -72,8 +72,8 @@ TimeseriesPlot::TimeseriesPlot(TimeseriesItem *item, const Settings &settings, Q
   _title->setFont(font);
   plotLayout()->addElement(0, 0, _title);
   _title->setVisible(settings.showTitle());
-  xAxis->setLabel(tr("Time [s]"));
-  yAxis->setLabel(tr("Value [a.u.]"));
+  xAxis->setLabel(tr("Time"));
+  yAxis->setLabel(tr("Value"));
 
   graph(0)->rescaleAxes();
   if (citem)
