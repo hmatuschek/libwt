@@ -32,3 +32,4 @@ savetxt("fm.csv", X5, delimiter="\t")
 
 earth = loadtxt("earth.csv")
 savetxt("earth.csv", earth, delimiter="\t")
+savetxt("mmg.csv", loadtxt("mmg.csv"), delimiter="\t")
